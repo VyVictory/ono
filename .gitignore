@@ -1,2 +1,4 @@
 .vercel
 .build
+.cache
+node_modules
