@@ -1,0 +1,13 @@
+.profileW {
+    max-width: 1200px;
+}
+/*bên dưới bằng 1/2 trên*/
+.profileContentW {
+    max-width: 600px;
+}
+
+
+.ShadowContent {
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.2);
+}
+

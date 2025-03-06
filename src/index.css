@@ -1,0 +1,81 @@
+    /* styles.css hoặc file CSS của bạn */
+    @tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+
+
+    select option[value=""] {
+        color: gray;
+    }
+
+    * {
+        padding: 0px;
+        margin: 0px;
+    }
+
+    .NavbarUser {
+        padding-top: 56px;
+        /* Chiều cao của NavBar */
+    }
+
+    body {
+        font-family: 'Roboto', sans-serif;
+    }
+
+    /* 🛠️ Navbar luôn nằm trên cùng */
+    .HighNavbar {
+        height: 56px;
+    }
+    .MarginTopNavbar {
+        margin-top: 56px;
+    }
+    /* Áp dụng cho toàn bộ trang hoặc container cần thanh cuộn */
+    body,
+    .scrollable-container {
+        overflow: overlay;
+    }
+
+    /* Thanh cuộn chính */
+    ::-webkit-scrollbar {
+        width: 4px;
+        height: 8px;
+    }
+
+    /* Thanh cuộn nền */
+    ::-webkit-scrollbar-track {
+        border-radius: 10px;
+    }
+
+    /* Thanh cuộn trượt */
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(45deg, #e1b7ff, rgb(255, 148, 148));
+        border-radius: 10px;
+        transition: background 0.3s ease-in-out;
+    }
+
+    /* Hover vào thanh cuộn */
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(45deg, #c26dff, rgb(255, 95, 95));
+    }
+
+    /* Thanh cuộn ngang */
+    ::-webkit-scrollbar-horizontal {
+        height: 6px;
+    }
+
+    /* Ẩn thanh cuộn nhưng vẫn có thể cuộn */
+    .hidden-scrollbar {
+        scrollbar-width: none;
+        /* Firefox */
+    }
+
+    .hidden-scrollbar::-webkit-scrollbar {
+        display: none;
+        /* Chrome, Safari */
+    }
+
+    body,
+    .app-container {
+        min-height: 100dvh;
+        /* Dynamic viewport height, tránh lỗi thanh URL */
+    }
