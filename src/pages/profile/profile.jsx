@@ -14,6 +14,8 @@ import {
   PencilIcon,
   UserPlusIcon,
   ChatBubbleLeftEllipsisIcon,
+  XMarkIcon,
+  UserMinusIcon,
 } from "@heroicons/react/24/solid";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import avt from "../../img/DefaultAvatar.jpg";
@@ -24,7 +26,7 @@ import MenuProfile from "./MenuProfile";
 import { useProfile } from "../../components/context/profile/ProfileProvider";
 import { m } from "framer-motion";
 import { useConfirm } from "../../components/context/ConfirmProvider";
-import { addFriend } from "../../service/friend";
+import { addFriend, getStatusByIdUser } from "../../service/friend";
 
 const Profile = () => {
   const { profile, isLoadingProfile } = useAuth();
@@ -39,6 +41,7 @@ const Profile = () => {
     content,
     setContent,
   } = useProfile();
+
   const [loadingAddFriend, setLoadingAddFriend] = useState(false);
 
   const confirm = useConfirm();
@@ -74,6 +77,20 @@ const Profile = () => {
       setProfileRender({ myprofile: true, profile: profile });
     }
   }, [currentUser, isLoadingProfile]);
+  useEffect(() => {
+    const fetchData = async () => {
+      console.log("profileRender", profileRender);
+      try {
+        if (!profileRender.profile._id) return;
+        const statusData = await getStatusByIdUser(profileRender.profile._id);
+        console.log(statusData);
+      } catch (error) {
+        console.error("Lỗi khi lấy trạng thái bạn bè:", error);
+      }
+    };
+
+    fetchData();
+  }, [profileRender]); // Chỉ theo dõi _id thay vì cả profileRender
 
   const scrollRef = useRef(null);
   useEffect(() => {
@@ -183,8 +200,37 @@ const Profile = () => {
                       </svg>
                     ) : (
                       <>
-                        <UserPlusIcon className="h-6 w-6 text-gray-500" />
-                        <span className="ml-1 text-gray-700">Add Friend</span>
+                        {profileRender.profile.friendStatus === "waiting" && (
+                          <>
+                            <XMarkIcon className="h-6 w-6 text-red-500" />
+                            <span className="ml-1 text-gray-700">
+                              Hủy yêu cầu
+                            </span>
+                          </>
+                        )}
+
+                        {profileRender.profile.friendStatus === "pending" && (
+                          <>
+                            <XMarkIcon className="h-6 w-6 text-red-500" />
+                            <span className="ml-1 text-gray-700">từ chối</span>
+                          </>
+                        )}
+
+                        {profileRender.profile.friendStatus === "friend" && (
+                          <>
+                            <UserMinusIcon className="h-6 w-6 text-gray-500" />
+                            <span className="ml-1 text-gray-700">Unfriend</span>
+                          </>
+                        )}
+
+                        {profileRender.profile.friendStatus === "noFriend" && (
+                          <>
+                            <UserPlusIcon className="h-6 w-6 text-gray-500" />
+                            <span className="ml-1 text-gray-700">
+                              Add Friend
+                            </span>
+                          </>
+                        )}
                       </>
                     )}
                   </button>
