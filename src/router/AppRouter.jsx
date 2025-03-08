@@ -19,6 +19,7 @@ import Profile from "../pages/profile/profile.jsx";
 import Test from "../pages/test.jsx";
 import { useEffect } from "react";
 import ProfileLayout from "../Layout/ProfileLayout.jsx";
+
 const AppRouter = () => (
   <Routes>
     <Route element={<Layout />}>

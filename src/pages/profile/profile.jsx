@@ -15,6 +15,7 @@ import {
   UserPlusIcon,
   ChatBubbleLeftEllipsisIcon,
 } from "@heroicons/react/24/solid";
+import ConfirmDialog from "../../components/ConfirmDialog";
 import avt from "../../img/DefaultAvatar.jpg";
 import "../../css/post.css";
 import ContentProfile from "./post/ContentProfile";
@@ -22,6 +23,8 @@ import pictureBG from "../../img/sky.webp";
 import MenuProfile from "./MenuProfile";
 import { useProfile } from "../../components/context/profile/ProfileProvider";
 import { m } from "framer-motion";
+import { useConfirm } from "../../components/context/ConfirmProvider";
+import { addFriend } from "../../service/friend";
 
 const Profile = () => {
   const { profile, isLoadingProfile } = useAuth();
@@ -36,7 +39,30 @@ const Profile = () => {
     content,
     setContent,
   } = useProfile();
-  const [isShow, setIsShow] = useState(false);
+  const [loadingAddFriend, setLoadingAddFriend] = useState(false);
+
+  const confirm = useConfirm();
+
+  const handleAddFriend = async (idUser) => {
+    if (loadingAddFriend) return; // Tránh spam click
+
+    setLoadingAddFriend(true); // Bắt đầu trạng thái loading
+    try {
+      const isConfirmed = await confirm("Bạn có chắc muốn kết bạn?");
+      if (!isConfirmed) {
+        setLoadingAddFriend(false);
+        return;
+      }
+
+      console.log("Đang gửi yêu cầu kết bạn ID:", idUser);
+      const result = await addFriend(idUser);
+      console.log(result?.message || "Yêu cầu kết bạn đã được gửi.");
+    } catch (error) {
+      console.error("Lỗi khi gửi yêu cầu kết bạn:", error);
+    } finally {
+      setLoadingAddFriend(false); // Kết thúc loading khi có phản hồi
+    }
+  };
 
   const navigate = useNavigate();
   const urlParams = new URLSearchParams(window.location.search);
@@ -113,6 +139,7 @@ const Profile = () => {
                   </div>
                 </div>
               </div>
+              {/* lựa chọn  */}
               {profileRender.myprofile ? (
                 <div className="flex flex-row md:flex-col md:items-center mb-2 md:mb-0 items-center justify-center space-y-0 md:space-y-2 space-x-2 md:space-x-0">
                   <button className="bg-gray-50 hover:bg-violet-50 px-2 py-2 rounded-md flex items-center transition-transform duration-200 hover:scale-110">
@@ -126,9 +153,40 @@ const Profile = () => {
               ) : (
                 <div className="flex flex-row flex-wrap items-center justify-center space-x-4 py-2 sm:pb-4">
                   {/* Nút Add Friend */}
-                  <button className="bg-gray-50 hover:bg-green-50 px-2 py-2 rounded-md flex items-center transition-transform duration-200 hover:scale-110">
-                    <UserPlusIcon className="h-6 w-6 text-gray-500" />
-                    <span className="ml-1 text-gray-700">Add Friend</span>
+                  <button
+                    onClick={() => handleAddFriend(profileRender.profile._id)}
+                    disabled={loadingAddFriend}
+                    className={`bg-gray-50 px-2 py-2 rounded-md flex items-center transition-transform duration-200 ${
+                      loadingAddFriend
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:bg-green-50 hover:scale-110"
+                    }`}
+                  >
+                    {loadingAddFriend ? (
+                      <svg
+                        className="animate-spin h-6 w-6 text-gray-500"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v8H4z"
+                        ></path>
+                      </svg>
+                    ) : (
+                      <>
+                        <UserPlusIcon className="h-6 w-6 text-gray-500" />
+                        <span className="ml-1 text-gray-700">Add Friend</span>
+                      </>
+                    )}
                   </button>
 
                   {/* Nút Messenger */}
@@ -137,6 +195,12 @@ const Profile = () => {
                   </button>
                 </div>
               )}
+
+              {/* {result !== null && (
+                <p className="mt-4 text-lg">
+                  Bạn đã chọn: {result ? "✅ Xác nhận" : "❌ Hủy"}
+                </p>
+              )} */}
             </div>
             <MenuProfile />
           </div>

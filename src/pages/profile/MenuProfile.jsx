@@ -25,7 +25,9 @@ const MenuPost = () => {
               <div
                 key={index}
                 className={`flex items-center justify-center pt-1 ${
-                  isActive ? " border-b-4 border-violet-300" : " border-b-4 border-transparent"
+                  isActive
+                    ? " border-b-4 border-violet-300"
+                    : " border-b-4 border-transparent"
                 } ${index > 1 && "sm:block hidden"}`}
               >
                 <Link
