@@ -59,6 +59,10 @@ const Profile = () => {
 
       console.log("Đang gửi yêu cầu kết bạn ID:", idUser);
       const result = await addFriend(idUser);
+      setProfileRender((prev) => ({
+        ...prev,
+        profile: { ...prev.profile, friendStatus: "waiting" },
+      }));
       console.log(result?.message || "Yêu cầu kết bạn đã được gửi.");
     } catch (error) {
       console.error("Lỗi khi gửi yêu cầu kết bạn:", error);
