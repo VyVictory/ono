@@ -14,6 +14,11 @@ const Messages = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+useEffect(() => {
+  return () => {
+    document.body.className = ""; // Xóa hết class khi rời trang
+  };
+}, []);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isRightbarOpen, setRightbarOpen] = useState(false);
   const [isRightbarOpen1, setRightbarOpen1] = useState(true);
