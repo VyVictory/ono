@@ -13,7 +13,6 @@ import ChatMessages from "./ChatMessages";
 const Messages = () => {
   useEffect(() => {
     window.scrollTo(0, 0); 
-    window.location.reload();
   }, []);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isRightbarOpen, setRightbarOpen] = useState(false);
