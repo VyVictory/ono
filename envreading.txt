@@ -1,2 +1,0 @@
-DATABASE_URL="https://ono-wtxp.onrender.com/"
-SECRET_KEY=mysecretkey
