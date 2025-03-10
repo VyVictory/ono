@@ -12,7 +12,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import ChatMessages from "./ChatMessages";
 const Messages = () => {
   useEffect(() => {
-    window.scrollTo(0, 0); 
+    window.scrollTo(0, 0);
+    document.body.offsetHeight; 
+    setTimeout(() => {
+    window.dispatchEvent(new Event('resize'));
+  }, 100);
   }, []);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isRightbarOpen, setRightbarOpen] = useState(false);
