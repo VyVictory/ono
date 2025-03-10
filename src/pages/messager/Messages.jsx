@@ -19,6 +19,7 @@ useEffect(() => {
     document.body.className = ""; // Xóa hết class khi rời trang
   };
 }, []);
+  const location = useLocation();
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isRightbarOpen, setRightbarOpen] = useState(false);
   const [isRightbarOpen1, setRightbarOpen1] = useState(true);
@@ -71,7 +72,7 @@ useEffect(() => {
 
   const [searchText, setSearchText] = useState(false);
   return (
-    <div className="flex h-screen ">
+    <div key={location.pathname} className="flex h-screen ">
       {/* Sidebar className={sidebarClass} */}
       <motion.div
         ref={MessMenuLeft}
