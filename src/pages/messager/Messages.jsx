@@ -11,9 +11,7 @@ import { FriendIcon, GroupIcon, NewsIcon } from "../../css/icon";
 import { motion, AnimatePresence } from "framer-motion";
 import ChatMessages from "./ChatMessages";
 const Messages = () => {
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  });
+  
 
   const location = useLocation();
   const [isSidebarOpen, setSidebarOpen] = useState(false);
