@@ -13,12 +13,8 @@ import ChatMessages from "./ChatMessages";
 const Messages = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
-useEffect(() => {
-  return () => {
-    document.body.className = ""; // Xóa hết class khi rời trang
-  };
-}, []);
+  });
+
   const location = useLocation();
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isRightbarOpen, setRightbarOpen] = useState(false);
