@@ -66,7 +66,7 @@ const Messages = () => {
 
   const [searchText, setSearchText] = useState(false);
   return (
-    <div key={location.pathname} className="flex h-screen ">
+    <div  className="flex h-screen ">
       {/* Sidebar className={sidebarClass} */}
       <motion.div
         ref={MessMenuLeft}
