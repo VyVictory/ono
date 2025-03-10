@@ -12,22 +12,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import ChatMessages from "./ChatMessages";
 const Messages = () => {
   useEffect(() => {
-    window.scrollTo(0, 0);
+    window.scrollTo(0, 0); 
+    window.location.reload();
   }, []);
-  useEffect(() => {
-  const resetPadding = () => {
-    const element = document.querySelector('.NavbarUser');
-    if (element) {
-      element.style.paddingTop = '0px';
-      element.style.paddingBottom = '0px';
-    }
-  };
-
-  resetPadding();
-
-  // Cleanup để tránh memory leak
-  return () => resetPadding();
-}, []);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isRightbarOpen, setRightbarOpen] = useState(false);
   const [isRightbarOpen1, setRightbarOpen1] = useState(true);
