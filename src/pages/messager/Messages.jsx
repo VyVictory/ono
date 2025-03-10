@@ -13,10 +13,17 @@ import ChatMessages from "./ChatMessages";
 const Messages = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.body.offsetHeight; 
-    setTimeout(() => {
-    window.dispatchEvent(new Event('resize'));
-  }, 100);
+  }, []);
+  useEffect(() => {
+    // Kiểm tra nếu trang đã được reload chưa
+    const hasReloaded = sessionStorage.getItem('hasReloaded');
+
+    if (!hasReloaded) {
+      sessionStorage.setItem('hasReloaded', 'true');
+      window.location.reload();
+    } else {
+      sessionStorage.removeItem('hasReloaded'); // Để khi vào lại sẽ reload
+    }
   }, []);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isRightbarOpen, setRightbarOpen] = useState(false);
