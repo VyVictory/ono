@@ -116,8 +116,8 @@ const Messages = () => {
                   </motion.button>
                 )}
               </AnimatePresence>
-              <motion.div 
-                transition={{ duration: 0.3, ease: "easeInOut" }} 
+              <motion.div
+                transition={{ duration: 0.3, ease: "easeInOut" }}
                 className="flex items-center w-full max-w-lg bg-violet-100 rounded-3xl shadow-sm pl-2 transition duration-300 ease-in-out"
               >
                 <button
