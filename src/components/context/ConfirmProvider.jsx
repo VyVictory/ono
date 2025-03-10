@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import { createPortal } from "react-dom";
-
+import { useEffect } from "react";
 const ConfirmContext = createContext();
 
 export const ConfirmProvider = ({ children }) => {
@@ -20,7 +20,6 @@ export const ConfirmProvider = ({ children }) => {
     if (confirmState.resolve) confirmState.resolve(confirmed);
     setConfirmState({ isOpen: false, message: "", resolve: null });
   };
-
   return (
     <ConfirmContext.Provider value={openConfirm}>
       {children}
