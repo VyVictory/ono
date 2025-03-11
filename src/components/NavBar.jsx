@@ -172,24 +172,6 @@ const NavBar = () => {
           {/* Phần dưới: Hiển thị kết quả tìm kiếm */}
           {isSearchVisible && <SearchList value={searchTerm} />}
         </div>
-        <a
-          href="/messages"
-          onClick={(e) => {
-            e.preventDefault();
-            window.location.href = "/messages";
-          }}
-        >
-          messs
-        </a>
-        <a
-          href="/profile"
-          onClick={(e) => {
-            e.preventDefault();
-            window.location.href = "/profile";
-          }}
-        >
-          profile
-        </a>
 
         <div className="flex-grow"></div>
         {/* Right: Profile and Menu */}

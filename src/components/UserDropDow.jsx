@@ -8,6 +8,7 @@ import {
   MoonIcon,
   Cog6ToothIcon,
 } from "@heroicons/react/24/solid";
+import { useNavigate } from "react-router-dom";
 import { useModule } from "./context/Module";
 const UserDropDow = ({ avt }) => {
   const { setUsecase } = useModule();
@@ -15,6 +16,7 @@ const UserDropDow = ({ avt }) => {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const containerRef = useRef(null);
   const { profile } = useAuth();
+  const navigate = useNavigate();
 
   // Đóng dropdown khi click bên ngoài container
   useEffect(() => {
@@ -41,22 +43,22 @@ const UserDropDow = ({ avt }) => {
   };
 
   return (
-    <>
-      <div className=" w-full h-full flex justify-center " ref={containerRef}>
-        {/* Nút Avatar */}
-        <button className="" onClick={() => setIsOpen(!isOpen)}>
-          <div className="w-12 h-12 rounded-full relative">
-            <img
-              className="w-12 h-12 rounded-full border-2 border-blue-200 "
-              src={avt}
-              alt="user photo"
-            />
-            <ChevronDownIcon className="absolute bottom-0 right-0 h-4 w-4 p-[2px] rounded-full bg-gray-200 border border-white text-gray-900 " />
-          </div>
-        </button>
-
-        {/* Dropdown Menu */}
-      </div>
+    <div
+      className="relative w-full h-full flex justify-center"
+      ref={containerRef}
+    >
+      {/* Nút Avatar */}
+      <button className="" onClick={() => setIsOpen(!isOpen)}>
+        <div className="w-12 h-12 rounded-full relative">
+          <img
+            className="w-12 h-12 rounded-full border-2 border-blue-200 "
+            src={avt}
+            alt="user photo"
+          />
+          <ChevronDownIcon className="absolute bottom-0 right-0 h-4 w-4 p-[2px] rounded-full bg-gray-200 border border-white text-gray-900 " />
+        </div>
+      </button>
+      {/* Dropdown Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -64,11 +66,11 @@ const UserDropDow = ({ avt }) => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="absolute min-w-60 right-4 top-14 z-10 divide-y bg-white rounded-lg shadow-lg shadow-zinc-500"
+            className="absolute min-w-60 right-4 mt-14 z-10 divide-y bg-white rounded-lg shadow-lg shadow-zinc-500"
           >
-            <a
-              href="/profile"
-              className="px-4  py-3 flex flex-row justify-center items-center space-x-2 hover:scale-110 duration-700"
+            <button
+              onClick={() => navigate("/profile")}
+              className="px-4  py-3 flex w-full flex-row justify-center items-center space-x-2 hover:scale-110 duration-700"
             >
               <button className="w-10 h-10 border-2 border-blue-100 rounded-full flex justify-center items-center ">
                 <img className="rounded-full" src={avt} alt="user photo" />
@@ -80,7 +82,7 @@ const UserDropDow = ({ avt }) => {
                 </div>
                 <div className="truncate">{profile.email}</div>
               </div>
-            </a>
+            </button>
             <ul className="py-2 text-base px-2 ">
               <li>
                 <a
@@ -172,7 +174,7 @@ const UserDropDow = ({ avt }) => {
           </div>
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
 };
 
