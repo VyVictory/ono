@@ -63,14 +63,14 @@ const Messages = () => {
 
   const [searchText, setSearchText] = useState(false);
   return (
-    <div className="flex h-screen ">
+    <div className="flex ">
       {/* Sidebar className={sidebarClass} */}
       <motion.div
         ref={MessMenuLeft}
         initial={false} // Không cần animate bằng Framer Motion nữa
         transition={{ duration: 0.5, ease: "easeInOut" }}
         className={` NavbarUser
-    fixed left-0 top-0  w-[360px] h-56 shadow-lg shadow-gray-300  border-x-gray-300 bg-white z-30  transition-transform duration-300 ease-in-out   ${
+    fixed left-0 top-0 h-screen w-[360px] shadow-lg shadow-gray-300  border-x-gray-300 bg-white z-30  transition-transform duration-300 ease-in-out   ${
       isSidebarOpen ? "translate-x-0" : "translate-x-[-100%]"
     }   lg:w-[350px] lg:relative lg:block lg:translate-x-0  `}
       >
@@ -152,9 +152,9 @@ const Messages = () => {
       </motion.div>
 
       {/* Z-INDEX Chat Section */}
-      <div className="w-full h-screen NavbarUser flex flew-grow flex-col justify-end bg-blue-200">
+      <div className="w-full h-screen NavbarUser flex flew-grow flex-col justify-end">
         {/* top nav */}
-        <div className="shadow-sm border-b px-3 z-10  flex items-center bg-red-600  ">
+        <div className="shadow-sm border-b px-3 z-10  flex items-center bg-white  ">
           <button
             className="lg:hidden"
             onClick={() => setSidebarOpen((prevState) => !prevState)}
@@ -196,7 +196,7 @@ const Messages = () => {
           </div>
         </div>
         {/* center */}
-        <div className="flex-grow overflow-y-auto bg-slate-700">
+        <div className="flex-grow overflow-y-auto">
           <div className="flex flex-col space-y-4 p-4 h-full">
             {divs}
             <ChatMessages
@@ -205,7 +205,7 @@ const Messages = () => {
           </div>
         </div>
         {/* Chat input */}
-        <div className="shadow-sm border-t flex items-center p-2 bg-yellow-200">
+        <div className="shadow-sm border-t flex items-center p-2 bg-white">
           <div className="flex items-center flex-row space-x-1 pr-2">
             <button>
               <svg
@@ -304,7 +304,7 @@ const Messages = () => {
         </div>
       </div>
       {/* Rightbar */}
-      <div className="h-56">
+      <div className="">
         <div
           ref={MessMenuRight}
           className={`NavbarUser
