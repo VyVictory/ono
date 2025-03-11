@@ -59,7 +59,7 @@ const PostProfile = ({ data }) => {
     >
       {/* left */}
       <div className={`h-full  w-full min-h-screen  flex justify-center `}>
-        <div
+        {/* <div
           ref={targetRefH}
           className={`pb-4  hidden  w-full md:flex profileW   flex-row ${
             isPassed ? "fixed bottom-0 px-3" : ""
@@ -69,7 +69,7 @@ const PostProfile = ({ data }) => {
             <PostLeft data={data} />
           </div>
           <div className="  min-h-screen w-3/5 hidden md:block"></div>
-        </div>
+        </div> */}
       </div>
       <div className="absolute">
         <div className="bg-violet-600 " style={{ height: `${height}px` }}></div>
