@@ -15,6 +15,34 @@ export const addFriend = async (idUser) => {
     return res(error);
   }
 };
+export const acceptedAddFriend = async (idUser) => {
+  //request= accepted or other
+  try {
+    if (!authToken.getToken()) {
+      return null;
+    }
+    const response = await api.post(`friend/respond/${encodeURIComponent(idUser)}`, {
+      status: "accepted",
+    });
+    return response.data;
+  } catch (error) {
+    return res(error);
+  }
+};
+export const rejectedAddFriend = async (idUser) => {
+  //request= accepted or other
+  try {
+    if (!authToken.getToken()) {
+      return null;
+    }
+    const response = await api.post(`friend/respond/${encodeURIComponent(idUser)}`, {
+      status: "rejected",
+    });
+    return response.data;
+  } catch (error) {
+    return res(error);
+  }
+};
 export const getStatusByIdUser = async (idUser) => {
   try {
     if (!authToken.getToken()) {
