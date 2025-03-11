@@ -40,18 +40,18 @@ const PostProfile = ({ data }) => {
     }
   }, []);
   // Xử lý sự kiện cuộn
-  const handleScroll = useCallback(() => {
-    if (targetRef.current && height != 0) {
-      const rect = targetRef.current.getBoundingClientRect();
-      setIsPassed(rect.bottom - window.innerHeight < 0);
-    }
-  }, [height]);
+  // const handleScroll = useCallback(() => {
+  //   if (targetRef.current && height != 0) {
+  //     const rect = targetRef.current.getBoundingClientRect();
+  //     setIsPassed(rect.bottom - window.innerHeight < 0);
+  //   }
+  // }, [height]);
 
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [handleScroll]);
+  // useEffect(() => {
+  //   window.addEventListener("scroll", handleScroll);
+  //   handleScroll();
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, [handleScroll]);
   return (
     <div
       className="relative  flex" //bg-black
