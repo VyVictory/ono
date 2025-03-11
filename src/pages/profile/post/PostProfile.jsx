@@ -71,18 +71,7 @@ const PostProfile = ({ data }) => {
           <div className="  min-h-screen w-3/5 hidden md:block"></div>
         </div> */}
       </div>
-      <div className="absolute">
-        <div className="bg-violet-600 " style={{ height: `${height}px` }}></div>
-        <div className="w-full" ref={targetRef}></div>
-      </div>
-      {/* right */}
-      <div
-        ref={violetRef}
-        className="absolute  pb-2"
-        style={{ pointerEvents: "none" }}
-      >
 
-      </div>
     </div>
   );
 };
