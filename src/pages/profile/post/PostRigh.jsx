@@ -41,7 +41,10 @@ const PostRight = () => {
         </div>
       </div>
       {[...Array(20)].map((_, index) => (
-        <div key={index} className="border border-gray-200 bg-white rounded-lg Post w-full ShadowContent">
+        <div
+          key={index}
+          className="border border-gray-200 bg-white rounded-lg Post w-full ShadowContent"
+        >
           <div className="  pb-4 mx-6">
             <div className="flex flex-row   space-x-2 items-center ">
               <button className="">

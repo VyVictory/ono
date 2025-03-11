@@ -16,7 +16,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // import Profile from "../pages/profile/profile.jsx";
 import Profile from "../pages/profile/profile.jsx";
-import Test from "../pages/test.jsx";
+// import Test from "../pages/test.jsx";
 import { useEffect } from "react";
 import ProfileLayout from "../Layout/ProfileLayout.jsx";
 
@@ -29,7 +29,7 @@ const AppRouter = () => (
       {/* <Route path="/profile1" element={<Profile1 />} /> */}
       {/* Các route khác */}
     </Route>
-    <Route path="/test" element={<Test />} />
+    {/* <Route path="/test" element={<Test />} /> */}
     <Route path="/login" element={<Auth />} />
   </Routes>
 );

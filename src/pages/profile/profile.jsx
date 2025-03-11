@@ -7,11 +7,12 @@ import {
 } from "@heroicons/react/24/solid";
 import avt from "../../img/DefaultAvatar.jpg";
 import "../../css/post.css";
-import ContentProfile from "./post/ContentProfile";
+import ContentProfile from "./ContentProfile";
 import pictureBG from "../../img/sky.webp";
 import MenuProfile from "./MenuProfile";
 import { useProfile } from "../../components/context/profile/ProfileProvider";
 import AddFriend from "../../components/AddFriend";
+import PostLeft from "./post/PostLeft";
 const Profile = () => {
   const { profile, isLoadingProfile } = useAuth();
   const {
@@ -47,6 +48,7 @@ const Profile = () => {
   if (profileRender == null) {
     return <div>Loading...</div>;
   }
+
   return (
     <div className="NavbarUser ">
       <div className="w-full  flex-col relative min-h-screen ">
@@ -126,10 +128,7 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* left lăn hết mới được lăn right*/}
-        {content == null || content == "posts" ? (
-          <ContentProfile data={profileRender} />
-        ) : null}
+        <ContentProfile data={profileRender.profile} content={content} />
       </div>
     </div>
   );

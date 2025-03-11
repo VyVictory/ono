@@ -9,7 +9,7 @@ import { useProfile } from "../../../components/context/profile/ProfileProvider"
 const PostLeft = ({ data }) => {
   const iconSize = "w-8 h-8";
   return (
-    <>
+    <div className="space-y-3">
       <div
         className={`border border-gray-200 bg-white rounded-lg Post p-4 space-y-3 ShadowContent `}
       >
@@ -127,7 +127,7 @@ const PostLeft = ({ data }) => {
           máy dễ dàng, cân bằng học tập và làm việc.{index}
         </div>
       ))} */}
-    </>
+    </div>
   );
 };
 

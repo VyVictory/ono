@@ -9,8 +9,7 @@ import { useAuth } from "../../../components/context/AuthProvider";
 import "../../../css/post.css";
 import PostLeft from "./PostLeft";
 import PostRight from "./PostRigh";
-const ContentProfile = ({data}) => {
-  const { profile } = useAuth();
+const PostProfile = ({ data }) => {
   const scrollRef = useRef(null);
   const targetRef = useRef(null);
   const targetRefH = useRef(null);
@@ -55,19 +54,19 @@ const ContentProfile = ({data}) => {
   }, [handleScroll]);
   return (
     <div
-      className="relative flex  justify-center  " //bg-black
+      className="relative  flex" //bg-black
       style={{ minHeight: heightBG }}
     >
       {/* left */}
       <div className={`h-full  w-full min-h-screen  flex justify-center `}>
         <div
           ref={targetRefH}
-          className={`pb-4 space-y-4 hidden  w-full md:flex profileW py-4 flex-row ${
-            isPassed ? "fixed bottom-0" : ""
+          className={`pb-4  hidden  w-full md:flex profileW   flex-row ${
+            isPassed ? "fixed bottom-0 px-4" : ""
           }`}
         >
-          <div className="flex flex-col  w-2/5 space-y-4 md:pl-4">
-            <PostLeft data={data}/>
+          <div className="flex flex-col  w-2/5 ">
+            <PostLeft data={data} />
           </div>
           <div className="  min-h-screen w-3/5 hidden md:block"></div>
         </div>
@@ -79,15 +78,15 @@ const ContentProfile = ({data}) => {
       {/* right */}
       <div
         ref={violetRef}
-        className="absolute py-4"
+        className="absolute  pb-2"
         style={{ pointerEvents: "none" }}
       >
-        <div className="  w-full flex profileW justify-center md:pl-8">
+        <div className="  w-full flex profileW justify-center md:pl-6">
           <div className="flex flex-row justify-center">
             {/* // độn div left */}
             <div className="  min-h-screen w-2/5 hidden md:block"></div>
             <div
-              className="flex flex-col space-y-4   md:w-3/5 px-5 md:pr-4 md:px-0"
+              className="flex flex-col space-y-3   md:w-3/5 px-5 md:px-0"
               style={{ pointerEvents: "auto" }}
             >
               <PostRight />
@@ -99,4 +98,4 @@ const ContentProfile = ({data}) => {
   );
 };
 
-export default ContentProfile;
+export default PostProfile;
