@@ -58,20 +58,7 @@ const PostProfile = ({ data }) => {
       style={{ minHeight: heightBG }}
     >
       {/* left */}
-      <div className={`h-full  w-full min-h-screen  flex justify-center `}>
-        {/* <div
-          ref={targetRefH}
-          className={`pb-4  hidden  w-full md:flex profileW   flex-row ${
-            isPassed ? "fixed bottom-0 px-3" : ""
-          }`}
-        >
-          <div className="flex flex-col  w-2/5 ">
-            <PostLeft data={data} />
-          </div>
-          <div className="  min-h-screen w-3/5 hidden md:block"></div>
-        </div> */}
-      </div>
-
+     
     </div>
   );
 };
