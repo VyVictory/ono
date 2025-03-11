@@ -11,9 +11,6 @@ import { FriendIcon, GroupIcon, NewsIcon } from "../../css/icon";
 import { motion, AnimatePresence } from "framer-motion";
 import ChatMessages from "./ChatMessages";
 const Messages = () => {
-  
-
-  const location = useLocation();
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isRightbarOpen, setRightbarOpen] = useState(false);
   const [isRightbarOpen1, setRightbarOpen1] = useState(true);
@@ -66,7 +63,7 @@ const Messages = () => {
 
   const [searchText, setSearchText] = useState(false);
   return (
-    <div  className="flex h-screen ">
+    <div className="flex h-screen ">
       {/* Sidebar className={sidebarClass} */}
       <motion.div
         ref={MessMenuLeft}
@@ -311,7 +308,7 @@ const Messages = () => {
         <div
           ref={MessMenuRight}
           className={`
-      fixed  right-0 top-0 NavbarUser lg:pt-0 h-screen w-[360px] border-l shadow-lg shadow-gray-300 bg-white z-30
+      fixed  right-0 top-0 lg:pt-0 h-full w-[360px] border-l shadow-lg shadow-gray-300 bg-white z-30
       transition-transform duration-300  ease-in-out
       ${isRightbarOpen ? "translate-x-0 " : "translate-x-[100%]"}
       ${
