@@ -18,6 +18,7 @@ import {
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
 import { useConfirm } from "./context/ConfirmProvider";
+import { toast } from "react-toastify";
 export default function PostForm({ children }) {
   const confirm = useConfirm();
   const [isOpen, setIsOpen] = useState(false);
@@ -35,12 +36,14 @@ export default function PostForm({ children }) {
 
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
-    const maxImages = 50; // Đặt giới hạn tối đa là 50 ảnh
+    const maxImages = 20; // Đặt giới hạn tối đa là 50 ảnh
     const currentCount = post.images.length;
     const remainingSlots = maxImages - currentCount;
 
     if (remainingSlots <= 0) {
-      alert("Bạn chỉ có thể tải lên tối đa 50 ảnh.");
+      toast.info(`Bạn chỉ có thể tải lên tối đa ${maxImages} ảnh.`, {
+        autoClose: 3000,
+      });
       return;
     }
 
@@ -55,7 +58,10 @@ export default function PostForm({ children }) {
 
     for (let file of files) {
       if (!validImageTypes.includes(file.type)) {
-        alert(`"${file.name}" không phải là tệp ảnh hợp lệ!`);
+        // alert(`"${file.name}" không phải là tệp ảnh hợp lệ!`);
+        toast.error(`"${file.name}" không phải là tệp ảnh hợp lệ!`, {
+          autoClose: 3000,
+        });
         continue; // Bỏ qua tệp không hợp lệ
       }
       if (newImages.length < remainingSlots) {
@@ -80,7 +86,10 @@ export default function PostForm({ children }) {
       // Danh sách định dạng video hợp lệ
       const validVideoTypes = ["video/mp4", "video/webm", "video/ogg"];
       if (!validVideoTypes.includes(file.type)) {
-        alert(`"${file.name}" không phải là tệp video hợp lệ!`);
+        // alert(`"${file.name}" không phải là tệp video hợp lệ!`);
+        toast.error(`"${file.name}" không phải là tệp video hợp lệ!`, {
+          autoClose: 3000,
+        });
         return;
       }
       const videoUrl = URL.createObjectURL(file);
@@ -99,7 +108,11 @@ export default function PostForm({ children }) {
       prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
     );
   };
-
+  const removeVideo = async () => {
+    const isConfirmed = await confirm("Bạn có chắc muốn xóa video này?");
+    if (!isConfirmed) return;
+    setPost((prev) => ({ ...prev, video: null }));
+  };
   const removeSelectedImages = async () => {
     const isConfirmed = await confirm("Bạn có chắc muốn xóa ảnh đã chọn?");
     if (!isConfirmed) return;
@@ -128,7 +141,7 @@ export default function PostForm({ children }) {
             onClick={(e) => e.stopPropagation()} // Ngăn chặn đóng modal khi click vào bên trong
             className="bg-white shadow-lg shadow-violet-950 rounded-lg border border-gray-200 w-full max-w-[500px] relative flex flex-col p-4"
           >
-            <div className="w-full flex justify-between">
+            <div className="w-full flex justify-between mb-4">
               <div>
                 {" "}
                 {post.images.length > 0 && (
@@ -146,7 +159,7 @@ export default function PostForm({ children }) {
               />
             </div>
 
-            <h2 className="text-xl font-bold text-center mb-3">
+            <h2 className="text-xl font-bold text-center mb-3 w-full absolute pointer-events-none">
               Đăng bài viết
             </h2>
 
@@ -159,10 +172,33 @@ export default function PostForm({ children }) {
               size="small"
               value={post.content}
               onChange={(e) => setPost({ ...post, content: e.target.value })}
+              sx={{
+                "& fieldset": {
+                  borderLeft: "none",
+                  borderRight: "none",
+                  borderBottom: "none",
+                  borderRadius: 0, // Loại bỏ bo góc
+                }, // Loại bỏ border trái và phải
+                "& .MuiOutlinedInput-root": {
+                  "&:hover fieldset": {
+                    borderLeft: "none",
+                    borderRight: "none",
+                    borderBottom: "none",
+                    borderRadius: 0,
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderLeft: "none",
+                    borderRight: "none",
+                    borderBottom: "none",
+                    borderRadius: 0,
+                  },
+                },
+              }}
             />
+
             {/* img show */}
             {post.images.length > 0 && (
-              <div className="relative flex items-center justify-center w-full h-48 mt-3 overflow-hidden">
+              <div className="relative flex items-center justify-center w-full h-48 mt-3 overflow-hidden border">
                 {post.images.length > 1 && (
                   <button
                     onClick={() => {
@@ -212,7 +248,7 @@ export default function PostForm({ children }) {
             )}
             {/* video show */}
             {post.video && (
-              <div className="relative mt-3">
+              <div className="relative mt-3 border">
                 <video
                   key={post.video.url}
                   controls
@@ -222,10 +258,10 @@ export default function PostForm({ children }) {
                   Trình duyệt của bạn không hỗ trợ video.
                 </video>
                 <button
-                  onClick={() => setPost((prev) => ({ ...prev, video: null }))}
-                  className="absolute top-2 right-2 bg-red-500 rounded-full p-1 hover:bg-red-700"
+                  onClick={() => removeVideo()}
+                  className="absolute top-2 right-2  rounded-full p-1 hover:bg-red-300"
                 >
-                  <XCircleIcon className="w-5 h-5 text-white" />
+                  <XCircleIcon className="w-5 h-5 text-red-500" />
                 </button>
               </div>
             )}
@@ -331,8 +367,8 @@ export default function PostForm({ children }) {
       {showGallery && post.images.length > 0 && (
         <Modal open={showGallery} onClose={() => setShowGallery(false)}>
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
+            // initial={{ opacity: 0, scale: 0.8 }}
+            // animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             onClick={() => setShowGallery(false)} // Khi bấm vào nền đen, đóng modal
             className="fixed inset-0 flex items-center justify-center bg-black h-screen p-4 bg-opacity-50"
@@ -388,12 +424,12 @@ export default function PostForm({ children }) {
                         selectedImages.includes(index)
                           ? "border-red-500 border hover:border-none"
                           : ""
-                      } relative shadow-lg shadow-violet-200 flex items-center justify-center border  hover:scale-105 duration-500`}
+                      } relative shadow-lg shadow-violet-200  flex items-center justify-center border  hover:scale-105 duration-500 `}
                     >
                       <img
                         src={img.url}
                         alt="gallery-img"
-                        className={`h-32 object-cover cursor-pointer  `}
+                        className={`h-32  object-cover cursor-pointer  `}
                         onClick={() => setCurrentIndex(index)}
                       />
                       <button
