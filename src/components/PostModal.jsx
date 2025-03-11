@@ -17,7 +17,9 @@ import {
   PhotoIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
+import { useConfirm } from "./context/ConfirmProvider";
 export default function PostForm({ children }) {
+  const confirm = useConfirm();
   const [isOpen, setIsOpen] = useState(false);
   const [post, setPost] = useState({ content: "", images: [], video: null });
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -98,7 +100,9 @@ export default function PostForm({ children }) {
     );
   };
 
-  const removeSelectedImages = () => {
+  const removeSelectedImages = async () => {
+    const isConfirmed = await confirm("Bạn có chắc muốn xóa ảnh đã chọn?");
+    if (!isConfirmed) return;
     setPost((prev) => ({
       ...prev,
       images: prev.images.filter((_, i) => !selectedImages.includes(i)),
@@ -246,9 +250,9 @@ export default function PostForm({ children }) {
                   key={index}
                   src={img.url}
                   alt="thumbnail"
-                  className={`w-16 h-16 object-cover rounded-md cursor-pointer border-2 ${
+                  className={`w-16 h-16 object-cover rounded-md cursor-pointer border-2 hover:scale-105 duration-500 ${
                     selectedImages.includes(index)
-                      ? "border-red-500 border-4"
+                      ? "border-red-500 border-4  hover:border-violet-500 hover:border"
                       : "hover:border-violet-500"
                   }`}
                   onClick={() => toggleSelectImage(index)}
@@ -286,6 +290,14 @@ export default function PostForm({ children }) {
                 )}
               </div>
               <div className="flex flex-row space-x-4">
+                {selectedImages.length > 0 && (
+                  <button
+                    onClick={removeSelectedImages}
+                    className=" shadow-sm shadow-violet-200 hover:bg-red-100 rounded-lg"
+                  >
+                    <TrashIcon className="w-10 h-10 text-red-400 hover:scale-110 hover:text-red-500 duration-300" />
+                  </button>
+                )}
                 {post.images.length > 0 && (
                   <button
                     onClick={() => {
@@ -295,21 +307,13 @@ export default function PostForm({ children }) {
                         setSelectedImages(post.images.map((_, index) => index)); // Chọn tất cả
                       }
                     }}
-                    className=" w-10 h-10 shadow-sm shadow-gray-400 flex items-center justify-center  hover:bg-blue-200 text-blue-600 font-semibold rounded-lg transition-all "
+                    className=" w-10 h-10 shadow-sm shadow-violet-200 flex items-center justify-center  hover:bg-blue-50 text-blue-600 font-semibold rounded-lg transition-all "
                   >
                     {selectedImages.length === post.images.length ? (
-                      <XCircleIcon className="w-10 h-10" />
+                      <XCircleIcon className="w-8 h-10 hover:scale-110 duration-300" />
                     ) : (
-                      <CheckCircleIcon className="w-8 h-10" />
+                      <CheckCircleIcon className="w-8 h-10 hover:scale-110 duration-300" />
                     )}
-                  </button>
-                )}
-                {selectedImages.length > 0 && (
-                  <button
-                    onClick={removeSelectedImages}
-                    className="bg-red-50 hover:bg-red-100 rounded-lg"
-                  >
-                    <TrashIcon className="w-10 h-10 text-red-400 hover:scale-105 hover:text-red-500" />
                   </button>
                 )}
               </div>
@@ -334,8 +338,9 @@ export default function PostForm({ children }) {
             className="fixed inset-0 flex items-center justify-center bg-black h-screen p-4 bg-opacity-50"
           >
             <div
-             onClick={(e) => e.stopPropagation()} // Ngăn chặn đóng modal khi click vào bên trong
-            className="bg-white shadow-lg rounded-lg p-1 ">
+              onClick={(e) => e.stopPropagation()} // Ngăn chặn đóng modal khi click vào bên trong
+              className="bg-white shadow-lg rounded-lg p-1 "
+            >
               <div className="flex justify-between items-center p-2 border-b shadow-lg">
                 <div className="flex justify-center space-x-4">
                   {/* Nút chọn tất cả / Hủy chọn tất cả */}
@@ -350,7 +355,7 @@ export default function PostForm({ children }) {
                           ); // Chọn tất cả
                         }
                       }}
-                      className=" w-10 h-10 shadow-sm shadow-violet-500 flex items-center justify-center   hover:bg-blue-200 text-blue-600 font-semibold rounded-full transition-all "
+                      className=" w-10 h-10 shadow-sm shadow-violet-300 flex items-center justify-center    hover:scale-105 duration-500 text-blue-600 font-semibold rounded-full transition-all "
                     >
                       {selectedImages.length === post.images.length ? (
                         <XCircleIcon className="w-10 h-10" />
@@ -362,9 +367,9 @@ export default function PostForm({ children }) {
                   {selectedImages.length > 0 && (
                     <button
                       onClick={removeSelectedImages}
-                      className="bg-red-50 hover:bg-red-100 rounded-lg  shadow-sm shadow-red-500"
+                      className="  hover:bg-red-100 rounded-lg  shadow-sm shadow-red-200"
                     >
-                      <TrashIcon className="w-10 h-10 text-red-400 hover:scale-105 hover:text-red-500" />
+                      <TrashIcon className="w-10 h-10 text-red-300 hover:scale-110 duration-300 hover:text-red-400" />
                     </button>
                   )}
                 </div>
@@ -374,30 +379,33 @@ export default function PostForm({ children }) {
                   onClick={() => setShowGallery(false)}
                 />
               </div>
-              <div className="   w-full h-[80vh] overflow-y-auto p-2">
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 mt-4">
+              <div className="   w-full h-[80vh] overflow-y-auto p-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 mt-4 space-x-4 space-y-2">
                   {post.images.map((img, index) => (
-                    <div key={index} className="relative">
+                    <div
+                      key={index}
+                      className={` ${
+                        selectedImages.includes(index)
+                          ? "border-red-500 border hover:border-none"
+                          : ""
+                      } relative shadow-lg shadow-violet-200 flex items-center justify-center border  hover:scale-105 duration-500`}
+                    >
                       <img
                         src={img.url}
                         alt="gallery-img"
-                        className={`w-full h-24 object-cover rounded-lg cursor-pointer border-2 hover:scale-105 ${
-                          selectedImages.includes(index)
-                            ? "border-red-500 border-4"
-                            : "hover:border-violet-500"
-                        }`}
+                        className={`h-32 object-cover cursor-pointer  `}
                         onClick={() => setCurrentIndex(index)}
                       />
                       <button
                         onClick={() => toggleSelectImage(index)}
                         className={`absolute top-1 right-1 rounded-full p-1 ${
                           selectedImages.includes(index) ? "bg-green-500" : ""
-                        } text-white hover:bg-green-700`}
+                        } text-white hover:`}
                       >
                         {selectedImages.includes(index) ? (
                           <CheckCircleIcon className="w-4 h-4" />
                         ) : (
-                          <div className="w-5 h-5 bg-none border-2 border-gray-500 opacity-60 hover:opacity-100 rounded-full"></div>
+                          <div className="w-4 h-4 bg-none border-2 border-gray-500 opacity-60 hover:opacity-100 rounded-full"></div>
                         )}
                       </button>
                     </div>
