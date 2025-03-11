@@ -11,7 +11,7 @@ import PostLeft from "./PostLeft";
 import PostRight from "./PostRigh";
 const PostProfile = ({ data }) => {
   const scrollRef = useRef(null);
-  const targetRef = useRef(null);
+  const targetHigh113 = useRef(null);
   const targetRefH = useRef(null);
 
   const [isPassed, setIsPassed] = useState(false);
@@ -41,8 +41,8 @@ const PostProfile = ({ data }) => {
   }, []);
   // Xử lý sự kiện cuộn
   const handleScroll = useCallback(() => {
-    if (targetRef.current && height != 0) {
-      const rect = targetRef.current.getBoundingClientRect();
+    if (targetHigh113.current && height != 0) {
+      const rect = targetHigh113.current.getBoundingClientRect();
       setIsPassed(rect.bottom - window.innerHeight < 0);
     }
   }, [height]);
@@ -73,7 +73,7 @@ const PostProfile = ({ data }) => {
       </div>
       <div className="absolute">
         <div className="bg-violet-600 " style={{ height: `${height}px` }}></div>
-        <div className="w-full" ref={targetRef}></div>
+        <div className="w-full" ref={targetHigh113}></div>
       </div>
       {/* right */}
       <div
