@@ -12,11 +12,12 @@ import {
   rejectedAddFriend,
 } from "../service/friend";
 import { useConfirm } from "./context/ConfirmProvider";
-
+import { toast } from "react-toastify";
 const AddFriend = ({ profile }) => {
   const [loading, setLoading] = useState(false);
   const confirm = useConfirm();
   const [friendStatus, setFriendStatus] = useState(profile.friendStatus); // ✅ Thêm state lưu trạng thái
+
   useEffect(() => {
     setLoading(true);
     setFriendStatus(profile.friendStatus);
@@ -48,62 +49,74 @@ const AddFriend = ({ profile }) => {
 
     setLoading(false);
   };
-
+  const notification = (res) => {
+    if (res.status == 200) {
+      toast.success(res.data.message || "thành công.", {
+        autoClose: 500,
+      });
+    } else {
+      toast.error(res.data.message || "thất bại.", {
+        autoClose: 500,
+      });
+    }
+  };
   const adFriend = async () => {
+    const isConfirmed = await confirm("Bạn có chắc muốn kết bạn?");
+    if (!isConfirmed) return;
     try {
-      const isConfirmed = await confirm("Bạn có chắc muốn kết bạn?");
-      if (!isConfirmed) return;
-
       console.log("Đang gửi yêu cầu kết bạn ID:", profile._id);
-      await addFriend(profile._id);
-      setFriendStatus("waiting"); // ✅ Cập nhật state thay vì thay đổi trực tiếp profile
+      notification(await addFriend(profile._id));
     } catch (error) {
       console.error("Lỗi khi gửi yêu cầu kết bạn:", error);
+    } finally {
+      setFriendStatus("waiting"); // ✅ Cập nhật state thay vì thay đổi trực tiếp profile
     }
   };
 
   const acceptedFriend = async () => {
+    const isConfirmed = await confirm("Bạn có chắc muốn đồng ý kết bạn?");
+    if (!isConfirmed) return;
     try {
-      const isConfirmed = await confirm("Bạn có chắc muốn đồng ý kết bạn?");
-      if (!isConfirmed) return;
-      await acceptedAddFriend(profile._id);
-      setFriendStatus("accepted"); // ✅ Cập nhật state
+      notification( await acceptedAddFriend(profile._id));
     } catch (error) {
       console.error("Lỗi khi đồng ý kết bạn:", error);
+    } finally {
+      setFriendStatus("accepted"); // ✅ Cập nhật state
     }
   };
 
   const rejectedFriend = async () => {
+    const isConfirmed = await confirm("Bạn có chắc muốn từ chối kết bạn?");
+    if (!isConfirmed) return;
     try {
-      const isConfirmed = await confirm("Bạn có chắc muốn từ chối kết bạn?");
-      if (!isConfirmed) return;
-      await rejectedAddFriend(profile._id);
-      setFriendStatus("noFriend"); // ✅ Cập nhật state
+      notification(await rejectedAddFriend(profile._id));
     } catch (error) {
       console.error("Lỗi khi từ chối kết bạn:", error);
+    } finally {
+      setFriendStatus("noFriend"); // ✅ Cập nhật state
     }
   };
 
   const cancelRequest = async () => {
+    const isConfirmed = await confirm("Bạn có chắc muốn hủy yêu cầu kết bạn?");
+    if (!isConfirmed) return;
     try {
-      const isConfirmed = await confirm(
-        "Bạn có chắc muốn hủy yêu cầu kết bạn?"
-      );
-      if (!isConfirmed) return;
-      await cancelFriendRequest(profile._id);
-      setFriendStatus("noFriend"); // ✅ Cập nhật state
+      notification(await cancelFriendRequest(profile._id));
     } catch (error) {
       console.error("Lỗi khi hủy yêu cầu kết bạn:", error);
+    } finally {
+      setFriendStatus("noFriend"); // ✅ Cập nhật state
     }
   };
 
   const removeFriend = async () => {
+    const isConfirmed = await confirm("Bạn có chắc muốn xóa bạn bè?");
+    if (!isConfirmed) return;
     try {
-      const isConfirmed = await confirm("Bạn có chắc muốn xóa bạn bè?");
-      if (!isConfirmed) return;
-      setFriendStatus("noFriend"); // ✅ Cập nhật state
     } catch (error) {
       console.error("Lỗi khi xóa bạn bè:", error);
+    } finally {
+      setFriendStatus("noFriend"); // ✅ Cập nhật state
     }
   };
 
@@ -127,7 +140,7 @@ const AddFriend = ({ profile }) => {
       color: "text-gray-500",
     },
   };
-  console.log(friendStatus);
+  // console.log(friendStatus);
   const { icon: Icon, text, color } = statusConfig[friendStatus] || {};
 
   return (

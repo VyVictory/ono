@@ -25,7 +25,7 @@ const NavBar = () => {
   const { showLogin, setShowLogin, profile, isLoadingProfile } = useAuth();
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const dropdownRef = useRef(null);
   const searchRef = useRef(null);

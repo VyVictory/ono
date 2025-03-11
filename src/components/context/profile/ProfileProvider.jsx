@@ -35,8 +35,7 @@ export const ProfileProvider = ({ children }) => {
       }
     };
     idUser && fetchProfile();
-  }, [idUser]);
-  console.log(content);
+  }, [idUser]); 
   return (
     <ProfileContext.Provider
       value={{

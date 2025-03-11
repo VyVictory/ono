@@ -1,4 +1,4 @@
-import api from "./api";
+import api from "./components/api";
 import authToken from "./storage/authToken";
 /**
  * Đăng ký tài khoản.

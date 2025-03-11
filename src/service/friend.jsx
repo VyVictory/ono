@@ -1,25 +1,28 @@
-import api from "./api";
+import api from "./components/api";
 import authToken from "./storage/authToken";
-import res from "./res";
+import res from "./components/res";
+import { nextLogin, nextError } from "./components/nextLogin";
 
+const token = authToken.getToken();
 export const addFriend = async (idUser) => {
   try {
-    if (!authToken.getToken()) {
-      return null;
+    if (!token) {
+      nextLogin();
     }
     const response = await api.post("friend/request", {
       recipientId: idUser,
     });
-    return response.data;
+    return response;
   } catch (error) {
+    nextError(error);
     return res(error);
   }
 };
 export const acceptedAddFriend = async (idUser) => {
   //request= accepted or other
   try {
-    if (!authToken.getToken()) {
-      return null;
+    if (!token) {
+      nextLogin();
     }
     const response = await api.post(
       `friend/respond/${encodeURIComponent(idUser)}`,
@@ -27,16 +30,17 @@ export const acceptedAddFriend = async (idUser) => {
         status: "accepted",
       }
     );
-    return response.data;
+    return response;
   } catch (error) {
+    nextError(error);
     return res(error);
   }
 };
 export const rejectedAddFriend = async (idUser) => {
   //request= accepted or other
   try {
-    if (!authToken.getToken()) {
-      return null;
+    if (!token) {
+      nextLogin();
     }
     const response = await api.post(
       `friend/respond/${encodeURIComponent(idUser)}`,
@@ -44,35 +48,38 @@ export const rejectedAddFriend = async (idUser) => {
         status: "rejected",
       }
     );
-    return response.data;
+    return response;
   } catch (error) {
+    nextError(error);
     return res(error);
   }
 };
 export const cancelFriendRequest = async (idUser) => {
   //request= accepted or other
   try {
-    if (!authToken.getToken()) {
-      return null;
+    if (!token) {
+      nextLogin();
     }
     const response = await api.post(
       `friend/cancelRequest/${encodeURIComponent(idUser)}`
     );
-    return response.data;
+    return response;
   } catch (error) {
+    nextError(error);
     return res(error);
   }
 };
 export const getStatusByIdUser = async (idUser) => {
   try {
-    if (!authToken.getToken()) {
-      return null;
+    if (!token) {
+      nextLogin();
     }
     const response = await api.get(
       `/friend/status/${encodeURIComponent(idUser)}`
     );
-    return response.data;
+    return response;
   } catch (error) {
+    nextError(error);
     return res(error);
   }
 };

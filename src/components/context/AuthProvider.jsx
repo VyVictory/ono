@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { getProfile } from "../../service/user";
+import authToken from "../../service/storage/authToken";
 
 const AuthContext = createContext();
 
@@ -12,18 +13,23 @@ export const AuthProvider = ({ children }) => {
   const fetchProfile = async () => {
     try {
       const userData = await getProfile();
-      console.log("Profile:", userData);
+      console.log("Profilee:", userData);
       setProfile(userData);
     } catch (error) {
-      // console.error("Fetch profile failed err:", error); 
-    } finally { 
+      // console.error("Fetch profile failed err:", error);
+    } finally {
       setIsLoadingProfile(false); // 🟢 Đánh dấu đã load xong
     }
   };
 
   // Lấy thông tin người dùng ngay khi component mount
   useEffect(() => {
-    fetchProfile();
+    const token = authToken.getToken();
+    if (token) {
+      fetchProfile();
+    } else {
+      setIsLoadingProfile(false);
+    }
   }, []);
 
   return (
@@ -34,7 +40,6 @@ export const AuthProvider = ({ children }) => {
         profile,
         setProfile,
         isLoadingProfile,
-        fetchProfile,
       }}
     >
       {children}

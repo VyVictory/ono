@@ -1,6 +1,6 @@
 import axios from 'axios';
-import connectENV from './connectENV';
-import authToken from './storage/authToken';
+import connectENV from '../connectENV';
+import authToken from '../storage/authToken';
 
 // Tạo một instance của Axios với base URL
 const api = axios.create({

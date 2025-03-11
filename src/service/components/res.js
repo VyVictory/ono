@@ -4,4 +4,5 @@ export default (error) => {
   } else {
     return { message: "Lỗi kết nối" };
   }
+
 };
