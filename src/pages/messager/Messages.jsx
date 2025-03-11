@@ -11,9 +11,9 @@ import { FriendIcon, GroupIcon, NewsIcon } from "../../css/icon";
 import { motion, AnimatePresence } from "framer-motion";
 import ChatMessages from "./ChatMessages";
 const Messages = () => {
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  
+
+  const location = useLocation();
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isRightbarOpen, setRightbarOpen] = useState(false);
   const [isRightbarOpen1, setRightbarOpen1] = useState(true);
@@ -66,14 +66,14 @@ const Messages = () => {
 
   const [searchText, setSearchText] = useState(false);
   return (
-    <div className="flex h-screen ">
+    <div  className="flex h-screen ">
       {/* Sidebar className={sidebarClass} */}
       <motion.div
         ref={MessMenuLeft}
         initial={false} // Không cần animate bằng Framer Motion nữa
         transition={{ duration: 0.5, ease: "easeInOut" }}
         className={` NavbarUser
-    fixed left-0 top-0 h-full w-[360px] shadow-lg shadow-gray-300  border-x-gray-300 bg-white z-30  transition-transform duration-300 ease-in-out   ${
+    fixed left-0 top-0 h-screen w-[360px] shadow-lg shadow-gray-300  border-x-gray-300 bg-white z-30  transition-transform duration-300 ease-in-out   ${
       isSidebarOpen ? "translate-x-0" : "translate-x-[-100%]"
     }   lg:w-[350px] lg:relative lg:block lg:translate-x-0  `}
       >
@@ -155,7 +155,7 @@ const Messages = () => {
       </motion.div>
 
       {/* Z-INDEX Chat Section */}
-      <div className="w-full h-screen NavbarUser flex flex-col">
+      <div className="w-full h-screen NavbarUser flex flew-grow flex-col">
         {/* top nav */}
         <div className="shadow-sm border-b px-3 z-10  flex items-center bg-white  ">
           <button
@@ -311,7 +311,7 @@ const Messages = () => {
         <div
           ref={MessMenuRight}
           className={`
-      fixed  right-0 top-0 NavbarUser lg:pt-0 h-full w-[360px] border-l shadow-lg shadow-gray-300 bg-white z-30
+      fixed  right-0 top-0 NavbarUser lg:pt-0 h-screen w-[360px] border-l shadow-lg shadow-gray-300 bg-white z-30
       transition-transform duration-300  ease-in-out
       ${isRightbarOpen ? "translate-x-0 " : "translate-x-[100%]"}
       ${

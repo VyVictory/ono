@@ -40,10 +40,8 @@ const Profile = () => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [profileRender]);
 
-  const followersInfo = useMemo(
-    () => <div className="text-center">0 followers ❁ 9 following</div>,
-    []
-  );
+  const followersInfo = <div className="text-center">0 followers ❁ 9 following</div>;
+
   if (profileRender == null) {
     return <div>Loading...</div>;
   }
