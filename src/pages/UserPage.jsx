@@ -4,7 +4,7 @@ import PostRight from "./profile/post/PostRigh";
 const UserPage = () => {
   return (
     <div className="flex NavbarUser flex-col items-center  h-screen overflow-auto">
-      <div className="max-w-[800px] px-4 md:px-0">
+      <div className="max-w-[800px] px-3 md:px-0">
         <h1 className="text-4xl font-bold text-gray-800 text-center mt-2">
           Welcome to Home Pages
         </h1>

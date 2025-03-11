@@ -14,7 +14,7 @@ const ContentProfile = ({ data, content }) => {
   };
   return (
     <div className="flex justify-center">
-      <div className="profileW w-full py-4 px-4 ">{eventProfile(data)}</div>
+      <div className="profileW w-full p-3 md:p-3">{eventProfile(data)}</div>
     </div>
   );
 };

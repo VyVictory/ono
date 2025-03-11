@@ -62,7 +62,7 @@ const PostProfile = ({ data }) => {
         <div
           ref={targetRefH}
           className={`pb-4  hidden  w-full md:flex profileW   flex-row ${
-            isPassed ? "fixed bottom-0 px-4" : ""
+            isPassed ? "fixed bottom-0 px-3" : ""
           }`}
         >
           <div className="flex flex-col  w-2/5 ">
@@ -86,7 +86,7 @@ const PostProfile = ({ data }) => {
             {/* // độn div left */}
             <div className="  min-h-screen w-2/5 hidden md:block"></div>
             <div
-              className="flex flex-col space-y-3   md:w-3/5 px-5 md:px-0"
+              className="flex flex-col space-y-3   md:w-3/5 md:px-0"
               style={{ pointerEvents: "auto" }}
             >
               <PostRight />
