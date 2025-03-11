@@ -1,5 +1,6 @@
 import React from "react";
 import PostRight from "./profile/post/PostRigh";
+import PostModal from "../components/PostModal";
 
 const UserPage = () => {
   return (
@@ -11,6 +12,7 @@ const UserPage = () => {
         <p className="text-lg text-gray-600 mt-2 text-center mb-2">
           This is your home page content.
         </p>
+        <PostModal/>
         <div className="space-y-4">
           <PostRight />
         </div>
