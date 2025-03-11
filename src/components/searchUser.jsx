@@ -92,11 +92,13 @@ const SearchList = ({ value }) => {
         <ul className="overflow-y-auto max-h-96 px-2 overflow-x-hidden space-y-2">
           {searchListUser.length > 0 ? (
             searchListUser.map((profile) => (
-              <a
+              <button
                 key={profile._id}
-                href={`/profile/posts?id=${profile._id}`}
+                onClick={() => {
+                  handleSaveSearch(profile),
+                    navigate(`/profile/posts?id=${profile._id}`);
+                }}
                 className="flex items-center px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg shadow-sm transition-all duration-150"
-                onClick={() => handleSaveSearch(profile)}
               >
                 <img
                   className="w-10 h-10 border border-gray-300 rounded-full"
@@ -111,7 +113,7 @@ const SearchList = ({ value }) => {
                     {profile.email}
                   </div>
                 </div>
-              </a>
+              </button>
             ))
           ) : (
             <li className="text-gray-500 p-5 text-center">
