@@ -118,8 +118,12 @@ export default function PostForm({ children }) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={() => setIsOpen(false)} // Khi bấm vào nền đen, đóng modal
         >
-          <div className="bg-white shadow-lg shadow-violet-950 rounded-lg border border-gray-200 w-full max-w-[500px] relative flex flex-col p-4">
+          <div
+            onClick={(e) => e.stopPropagation()} // Ngăn chặn đóng modal khi click vào bên trong
+            className="bg-white shadow-lg shadow-violet-950 rounded-lg border border-gray-200 w-full max-w-[500px] relative flex flex-col p-4"
+          >
             <div className="w-full flex justify-between">
               <div>
                 {" "}
@@ -326,9 +330,12 @@ export default function PostForm({ children }) {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
+            onClick={() => setShowGallery(false)} // Khi bấm vào nền đen, đóng modal
             className="fixed inset-0 flex items-center justify-center bg-black h-screen p-4 bg-opacity-50"
           >
-            <div className="bg-white shadow-lg rounded-lg p-1">
+            <div
+             onClick={(e) => e.stopPropagation()} // Ngăn chặn đóng modal khi click vào bên trong
+            className="bg-white shadow-lg rounded-lg p-1 ">
               <div className="flex justify-between items-center p-2 border-b shadow-lg">
                 <div className="flex justify-center space-x-4">
                   {/* Nút chọn tất cả / Hủy chọn tất cả */}
