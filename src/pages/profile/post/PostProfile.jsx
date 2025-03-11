@@ -81,18 +81,7 @@ const PostProfile = ({ data }) => {
         className="absolute  pb-2"
         style={{ pointerEvents: "none" }}
       >
-        <div className="  w-full flex profileW justify-center md:pl-6">
-          <div className="flex flex-row justify-center">
-            {/* // độn div left */}
-            <div className="  min-h-screen w-2/5 hidden md:block"></div>
-            <div
-              className="flex flex-col space-y-3   md:w-3/5 md:px-0"
-              style={{ pointerEvents: "auto" }}
-            >
-              <PostRight />
-            </div>
-          </div>
-        </div>
+
       </div>
     </div>
   );
