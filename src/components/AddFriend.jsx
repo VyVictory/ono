@@ -10,6 +10,7 @@ import {
   addFriend,
   cancelFriendRequest,
   rejectedAddFriend,
+  unFriend,
 } from "../service/friend";
 import { useConfirm } from "./context/ConfirmProvider";
 import { toast } from "react-toastify";
@@ -50,6 +51,11 @@ const AddFriend = ({ profile }) => {
     setLoading(false);
   };
   const notification = (res) => {
+    if (res == 0) {
+      return toast.error("ôi không lỗi gì đó rồi", {
+        autoClose: 500,
+      });
+    }
     if (res.status == 200) {
       toast.success(res.data.message || "thành công.", {
         autoClose: 500,
@@ -67,6 +73,7 @@ const AddFriend = ({ profile }) => {
       console.log("Đang gửi yêu cầu kết bạn ID:", profile._id);
       notification(await addFriend(profile._id));
     } catch (error) {
+      notification(0);
       console.error("Lỗi khi gửi yêu cầu kết bạn:", error);
     } finally {
       setFriendStatus("waiting"); // ✅ Cập nhật state thay vì thay đổi trực tiếp profile
@@ -77,8 +84,9 @@ const AddFriend = ({ profile }) => {
     const isConfirmed = await confirm("Bạn có chắc muốn đồng ý kết bạn?");
     if (!isConfirmed) return;
     try {
-      notification( await acceptedAddFriend(profile._id));
+      notification(await acceptedAddFriend(profile._id));
     } catch (error) {
+      notification(0);
       console.error("Lỗi khi đồng ý kết bạn:", error);
     } finally {
       setFriendStatus("accepted"); // ✅ Cập nhật state
@@ -91,6 +99,7 @@ const AddFriend = ({ profile }) => {
     try {
       notification(await rejectedAddFriend(profile._id));
     } catch (error) {
+      notification(0);
       console.error("Lỗi khi từ chối kết bạn:", error);
     } finally {
       setFriendStatus("noFriend"); // ✅ Cập nhật state
@@ -103,6 +112,7 @@ const AddFriend = ({ profile }) => {
     try {
       notification(await cancelFriendRequest(profile._id));
     } catch (error) {
+      notification(0);
       console.error("Lỗi khi hủy yêu cầu kết bạn:", error);
     } finally {
       setFriendStatus("noFriend"); // ✅ Cập nhật state
@@ -113,7 +123,9 @@ const AddFriend = ({ profile }) => {
     const isConfirmed = await confirm("Bạn có chắc muốn xóa bạn bè?");
     if (!isConfirmed) return;
     try {
+      notification(await unFriend(profile._id));
     } catch (error) {
+      notification(0);
       console.error("Lỗi khi xóa bạn bè:", error);
     } finally {
       setFriendStatus("noFriend"); // ✅ Cập nhật state
