@@ -8,6 +8,7 @@ import {
 import {
   acceptedAddFriend,
   addFriend,
+  cancelFriendRequest,
   rejectedAddFriend,
 } from "../service/friend";
 import { useConfirm } from "./context/ConfirmProvider";
@@ -23,7 +24,7 @@ const AddFriend = ({ profile }) => {
 
     switch (status) {
       case "waiting": // bạn gửi cho đối phương
-        await cancelFriend();
+        await cancelRequest();
         break;
       case "pending": // chờ bạn đồng ý
         await acceptedFriend();
@@ -35,9 +36,6 @@ const AddFriend = ({ profile }) => {
         break;
       case "removeRequest": // gửi yêu cầu từ chối
         await rejectedFriend();
-        break;
-      case "cancelRequest": // gửi yêu cầu từ chối
-        await cancelRequest();
         break;
       default:
         await adFriend();
@@ -88,7 +86,7 @@ const AddFriend = ({ profile }) => {
         "Bạn có chắc muốn hủy yêu cầu kết bạn?"
       );
       if (!isConfirmed) return;
-      await rejectedAddFriend(profile._id);
+      await cancelFriendRequest(profile._id);
       setFriendStatus("noFriend"); // ✅ Cập nhật state
     } catch (error) {
       console.error("Lỗi khi hủy yêu cầu kết bạn:", error);
@@ -173,36 +171,15 @@ const AddFriend = ({ profile }) => {
           disabled={loading}
           className={`bg-gray-50 px-2 py-2 rounded-md flex items-center transition-transform duration-200 ${
             loading
-              ? "opacity-50 cursor-not-allowed"
+              ? "opacity-50 cursor-not-allowed hidden"
               : "hover:bg-green-50 hover:scale-110"
           }`}
         >
-          {loading ? (
-            <svg
-              className="animate-spin h-6 w-6 text-gray-500"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v8H4z"
-              />
-            </svg>
-          ) : (
-            Icon && (
-              <>
-                <XMarkIcon className={`h-6 w-6 text-red-500`} />
-                <span className="ml-1 text-red-700">Từ chối</span>
-              </>
-            )
+          {Icon && (
+            <>
+              <XMarkIcon className={`h-6 w-6 text-red-500`} />
+              <span className="ml-1 text-red-700">Từ chối</span>
+            </>
           )}
         </button>
       )}

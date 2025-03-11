@@ -37,10 +37,12 @@ const Profile = () => {
 
   const scrollRef = useRef(null);
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+    scrollRef.current?.scrollIntoView({ behavior: "auto" });
   }, [profileRender]);
 
-  const followersInfo = <div className="text-center">0 followers ❁ 9 following</div>;
+  const followersInfo = (
+    <div className="text-center">0 followers ❁ 9 following</div>
+  );
 
   if (profileRender == null) {
     return <div>Loading...</div>;

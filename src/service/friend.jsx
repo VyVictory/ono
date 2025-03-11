@@ -21,9 +21,12 @@ export const acceptedAddFriend = async (idUser) => {
     if (!authToken.getToken()) {
       return null;
     }
-    const response = await api.post(`friend/respond/${encodeURIComponent(idUser)}`, {
-      status: "accepted",
-    });
+    const response = await api.post(
+      `friend/respond/${encodeURIComponent(idUser)}`,
+      {
+        status: "accepted",
+      }
+    );
     return response.data;
   } catch (error) {
     return res(error);
@@ -35,9 +38,26 @@ export const rejectedAddFriend = async (idUser) => {
     if (!authToken.getToken()) {
       return null;
     }
-    const response = await api.post(`friend/respond/${encodeURIComponent(idUser)}`, {
-      status: "rejected",
-    });
+    const response = await api.post(
+      `friend/respond/${encodeURIComponent(idUser)}`,
+      {
+        status: "rejected",
+      }
+    );
+    return response.data;
+  } catch (error) {
+    return res(error);
+  }
+};
+export const cancelFriendRequest = async (idUser) => {
+  //request= accepted or other
+  try {
+    if (!authToken.getToken()) {
+      return null;
+    }
+    const response = await api.post(
+      `friend/cancelRequest/${encodeURIComponent(idUser)}`
+    );
     return response.data;
   } catch (error) {
     return res(error);
@@ -48,7 +68,9 @@ export const getStatusByIdUser = async (idUser) => {
     if (!authToken.getToken()) {
       return null;
     }
-    const response = await api.get(`/friend/status/${encodeURIComponent(idUser)}`);
+    const response = await api.get(
+      `/friend/status/${encodeURIComponent(idUser)}`
+    );
     return response.data;
   } catch (error) {
     return res(error);
