@@ -41,23 +41,22 @@ const UserDropDow = ({ avt }) => {
   };
 
   return (
-    <div
-      className="relative w-full h-full flex justify-center"
-      ref={containerRef}
-    >
-      {/* Nút Avatar */}
-      <button className="" onClick={() => setIsOpen(!isOpen)}>
-        <div className="w-12 h-12 rounded-full relative">
-          <img
-            className="w-12 h-12 rounded-full border-2 border-blue-200 "
-            src={avt}
-            alt="user photo"
-          />
-          <ChevronDownIcon className="absolute bottom-0 right-0 h-4 w-4 p-[2px] rounded-full bg-gray-200 border border-white text-gray-900 " />
-        </div>
-      </button>
+    <>
+      <div className=" w-full h-full flex justify-center " ref={containerRef}>
+        {/* Nút Avatar */}
+        <button className="" onClick={() => setIsOpen(!isOpen)}>
+          <div className="w-12 h-12 rounded-full relative">
+            <img
+              className="w-12 h-12 rounded-full border-2 border-blue-200 "
+              src={avt}
+              alt="user photo"
+            />
+            <ChevronDownIcon className="absolute bottom-0 right-0 h-4 w-4 p-[2px] rounded-full bg-gray-200 border border-white text-gray-900 " />
+          </div>
+        </button>
 
-      {/* Dropdown Menu */}
+        {/* Dropdown Menu */}
+      </div>
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -65,7 +64,7 @@ const UserDropDow = ({ avt }) => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="absolute min-w-60 right-4 mt-14 z-10 divide-y bg-white rounded-lg shadow-lg shadow-zinc-500"
+            className="absolute min-w-60 right-4 top-14 z-10 divide-y bg-white rounded-lg shadow-lg shadow-zinc-500"
           >
             <a
               href="/profile"
@@ -173,7 +172,7 @@ const UserDropDow = ({ avt }) => {
           </div>
         )}
       </AnimatePresence>
-    </div>
+    </>
   );
 };
 
