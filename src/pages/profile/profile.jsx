@@ -116,7 +116,7 @@ const Profile = () => {
                 <div className="flex flex-row flex-wrap items-center justify-center space-x-4 py-2 sm:pb-4">
                   {/* Nút Add Friend */}
                   <AddFriend profile={profileRender.profile} />
-
+                  {profileRender.profile.friendStatus}
                   {/* Nút Messenger */}
                   <button className="bg-gray-50 hover:bg-violet-50 min-w-16 justify-center px-2 py-1 rounded-md flex items-center transition-transform duration-200 hover:scale-110">
                     <ChatBubbleLeftEllipsisIcon className="w-8 h-8 text-gray-500 transition-transform duration-200 hover:scale-125 hover:text-violet-400" />

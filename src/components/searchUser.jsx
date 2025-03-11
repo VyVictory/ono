@@ -51,7 +51,7 @@ const SearchList = ({ value }) => {
   };
 
   return (
-    <div className=" px-1 bg-white shadow-md rounded-lg">
+    <div className=" p-4 bg-white shadow-md rounded-lg overflow-y-auto max-h-96">
       {!value ? (
         <ul className="space-y-2">
           <li className="font-bold text-lg text-gray-700">Lịch sử tìm kiếm</li>
@@ -89,7 +89,7 @@ const SearchList = ({ value }) => {
           )}
         </ul>
       ) : (
-        <ul className="overflow-y-auto max-h-96 px-2 overflow-x-hidden space-y-2">
+        <ul className="  space-y-2">
           {searchListUser.length > 0 ? (
             searchListUser.map((profile) => (
               <button
@@ -98,7 +98,7 @@ const SearchList = ({ value }) => {
                   handleSaveSearch(profile),
                     navigate(`/profile/posts?id=${profile._id}`);
                 }}
-                className="flex items-center px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg shadow-sm transition-all duration-150"
+                className="flex items-center w-full py-3 bg-gray-50 hover:bg-gray-100 rounded-lg shadow-sm transition-all duration-150"
               >
                 <img
                   className="w-10 h-10 border border-gray-300 rounded-full"

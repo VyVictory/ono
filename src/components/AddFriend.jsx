@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   XMarkIcon,
   UserMinusIcon,
@@ -17,7 +17,11 @@ const AddFriend = ({ profile }) => {
   const [loading, setLoading] = useState(false);
   const confirm = useConfirm();
   const [friendStatus, setFriendStatus] = useState(profile.friendStatus); // ✅ Thêm state lưu trạng thái
-
+  useEffect(() => {
+    setLoading(true);
+    setFriendStatus(profile.friendStatus);
+    setLoading(false);
+  }, [profile]);
   const handleAddFriend = async (status) => {
     if (loading) return;
     setLoading(true);
