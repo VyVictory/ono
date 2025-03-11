@@ -11,22 +11,22 @@ import PostLeft from "./PostLeft";
 import PostRight from "./PostRigh";
 const PostProfile = ({ data }) => {
   const scrollRef = useRef(null);
-  const targetHigh113 = useRef(null);
+  const targetRef = useRef(null);
   const targetRefH = useRef(null);
 
   const [isPassed, setIsPassed] = useState(false);
   const [height, setHeight] = useState(0);
   // Cập nhật chiều cao
-  // useEffect(() => {
-  //   const observer = new ResizeObserver(() => {
-  //     if (targetRefH.current) {
-  //       setHeight(targetRefH.current.offsetHeight);
-  //     }
-  //   });
-  //   // console.log("dawdaw");
-  //   targetRefH.current && observer.observe(targetRefH.current);
-  //   return () => observer.disconnect();
-  // }, []);
+  useEffect(() => {
+    const observer = new ResizeObserver(() => {
+      if (targetRefH.current) {
+        setHeight(targetRefH.current.offsetHeight);
+      }
+    });
+    // console.log("dawdaw");
+    targetRefH.current && observer.observe(targetRefH.current);
+    return () => observer.disconnect();
+  }, []);
   // Cuộn đến phần tử khi render
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -41,8 +41,8 @@ const PostProfile = ({ data }) => {
   }, []);
   // Xử lý sự kiện cuộn
   const handleScroll = useCallback(() => {
-    if (targetHigh113.current && height != 0) {
-      const rect = targetHigh113.current.getBoundingClientRect();
+    if (targetRef.current && height != 0) {
+      const rect = targetRef.current.getBoundingClientRect();
       setIsPassed(rect.bottom - window.innerHeight < 0);
     }
   }, [height]);
@@ -73,7 +73,7 @@ const PostProfile = ({ data }) => {
       </div>
       <div className="absolute">
         <div className="bg-violet-600 " style={{ height: `${height}px` }}></div>
-        <div className="w-full" ref={targetHigh113}></div>
+        <div className="w-full" ref={targetRef}></div>
       </div>
       {/* right */}
       <div
