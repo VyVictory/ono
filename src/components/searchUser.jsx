@@ -4,7 +4,7 @@ import { XMarkIcon } from "@heroicons/react/24/solid";
 import avt from "../img/DefaultAvatar.jpg";
 import { useNavigate } from "react-router-dom";
 
-const SearchList = ({ value,close }) => {
+const SearchList = ({ value, close }) => {
   const [searchListUser, setSearchListUser] = useState([]);
   const [searchHistory, setSearchHistory] = useState([]);
 
@@ -31,10 +31,10 @@ const SearchList = ({ value,close }) => {
   }, [value]);
 
   // Lưu lịch sử tìm kiếm
-  const handleNextProfile = (id)=>{
+  const handleNextProfile = (id) => {
     navigate(`/profile/posts?id=${id}`);
     close();
-  }
+  };
   const handleSaveSearch = (profile) => {
     const newHistory = [...searchHistory];
 
@@ -53,12 +53,27 @@ const SearchList = ({ value,close }) => {
     localStorage.setItem("searchHistory", JSON.stringify(updatedHistory));
     setSearchHistory(updatedHistory);
   };
+  const handleClearHistory = () => {
+    localStorage.removeItem("searchHistory");
+    setSearchHistory([]);
+  };
 
   return (
-    <div className=" p-4 bg-white shadow-md rounded-lg overflow-y-auto max-h-96">
+    <div className=" p-4 bg-white  shadow-md rounded-lg overflow-y-auto max-h-96">
       {!value ? (
         <ul className="space-y-2">
-          <li className="font-bold text-lg text-gray-700">Lịch sử tìm kiếm</li>
+          <li className="font-bold text-lg text-gray-700 flex justify-between w-full">
+            Lịch sử tìm kiếm
+            {searchHistory.length > 0 && (
+              <button className="hover:scale-125 ">
+                <XMarkIcon
+                  onClick={handleClearHistory}
+                  className="w-6 h-6 text-red-600"
+                />
+              </button>
+            )}
+          </li>
+
           {searchHistory.length > 0 ? (
             searchHistory.map((profile) => (
               <div
@@ -99,8 +114,7 @@ const SearchList = ({ value,close }) => {
               <button
                 key={profile._id}
                 onClick={() => {
-                  handleSaveSearch(profile),
-                  handleNextProfile(profile._id);
+                  handleSaveSearch(profile), handleNextProfile(profile._id);
                 }}
                 className="flex items-center w-full py-3 bg-gray-50 hover:bg-gray-100 rounded-lg shadow-sm transition-all duration-150"
               >

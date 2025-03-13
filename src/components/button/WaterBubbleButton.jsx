@@ -24,13 +24,13 @@ const WaterBubbleButton = ({ children, onClick }) => {
         createRipple(e);
         if (onClick) onClick();
       }}
-      className="relative w-full h-full p-2  border border-gray-100 shadow-gray-200 text-black rounded-full flex items-center justify-center shadow-lg  transition-transform duration-300 hover:scale-110 active:scale-95 overflow-hidden"
-    >
+      className="relative w-full h-full p-2  border border-gray-100 shadow-gray-200 text-black rounded-full flex items-center justify-center  transition-transform duration-300 hover:scale-110 active:scale-95 overflow-hidden"
+    > 
       {children}
       {ripple.map((r) => (
         <span
           key={r.id}
-          className="absolute bg-white opacity-95 rounded-full transform scale-0 animate-ripple"
+          className="absolute bg-white opacity-95 rounded-full transform scale-0 animate-ripple "
           style={{
             width: `${r.size}px`,
             height: `${r.size}px`,

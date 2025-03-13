@@ -10,6 +10,8 @@ import {
 } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
 import { useModule } from "./context/Module";
+import ThemeToggle from "./ThemeToggle";
+import { Button } from "@mui/material";
 const UserDropDow = ({ avt }) => {
   const { setUsecase } = useModule();
   const [isOpen, setIsOpen] = useState(false);
@@ -107,14 +109,13 @@ const UserDropDow = ({ avt }) => {
                 </a>
               </li>
               <li>
-                <a
+                <Button
                   href="#"
-                  className="flex px-4 py-2   rounded-md flex-row items-center hover:scale-105 hover:bg-violet-100"
+                  className="flex px-4 py-2  w-full rounded-md flex-row items-center hover:scale-105 hover:bg-violet-100"
                 >
                   {/* <MoonIcon className="h-6 w-6 text-gray-800" /> */}
-                  <SunIcon className="h-8 w-8 p-1 bg-gray-50 rounded-full  text-yellow-500" />
-                  <span className="pl-4">Nền Sáng</span>
-                </a>
+                  <ThemeToggle />
+                </Button>
               </li>
             </ul>
             <div className="py-2 px-2 flex ">

@@ -192,7 +192,7 @@ const NavBar = () => {
             {/* <div className="bg-gray-50 rounded-full shadow-md hover:shadow-lg ring-1 ring-gray-300 hover:ring-blue-300 active:scale-95 transition-all duration-300 ease-out">
               <ChatBubbleLeftIcon className=" h-10 w-10 p-2 text-gray-700 hover:text-blue-500 transition-transform duration-300 hover:scale-110" />
             </div> */}
-            <div className="h-11 w-11">
+            <div className="h-11 w-11 shadow-lg rounded-full">
               <WaterBubbleButton>
                 <ChatBubbleLeftIcon className="h-full w-full" />
               </WaterBubbleButton>
@@ -202,9 +202,9 @@ const NavBar = () => {
             {/* <div className="bg-gray-50 rounded-full shadow-md hover:shadow-lg ring-1 ring-gray-300 hover:ring-blue-300 active:scale-95 transition-all duration-300 ease-out">
               <ChatBubbleLeftIcon className=" h-10 w-10 p-2 text-gray-700 hover:text-blue-500 transition-transform duration-300 hover:scale-110" />
             </div> */}
-            <div className="h-11 w-11">
+            <div className="h-11 w-11 shadow-lg rounded-full">
               <WaterBubbleButton>
-                <BellIcon className="h-full w-full" />
+                <BellIcon className="h-full w-full " />
               </WaterBubbleButton>
             </div>
           </LinkTo>
@@ -239,10 +239,10 @@ const NavBar = () => {
               <LinkTo
                 namepage={namepage}
                 css="group flex items-center hover:bg-gray-200 w-24 h-full justify-center rounded-md transition-colors duration-200"
-              >
-                <div className="flex items-center justify-center h-full w-full aspect-square">
-                  <Icon className="h-6 w-6 text-gray-600 transition-colors duration-200 group-hover:text-blue-500 stroke-[1.5]" />
-                </div>
+              > 
+                  <Button className="flex items-center justify-center h-full w-full aspect-square">
+                    <Icon className="h-6 w-6 text-gray-600 transition-colors duration-200 group-hover:text-blue-500 stroke-[1.5]" />
+                  </Button> 
               </LinkTo>
             </div>
           ))}

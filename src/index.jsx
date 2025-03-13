@@ -7,6 +7,7 @@ import AppRouter from "./router/AppRouter";
 import { AuthProvider } from "./components/context/AuthProvider";
 import { ModuleProvider } from "./components/context/Module";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import ThemeToggle from "./components/ThemeToggle";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 
 serviceWorkerRegistration.register();
