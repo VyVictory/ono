@@ -13,14 +13,11 @@ import MenuProfile from "./MenuProfile";
 import { useProfile } from "../../components/context/profile/ProfileProvider";
 import AddFriend from "../../components/AddFriend";
 import PostLeft from "./post/PostLeft";
-const Profile = () => { 
-  const { 
-    profileRender,
-    content, 
-  } = useProfile();
+const Profile = () => {
+  const { profileRender, content } = useProfile();
   const [userRender, setUserRender] = useState(null);
-  useEffect(() => { 
-      setUserRender(profileRender); 
+  useEffect(() => {
+    setUserRender(profileRender);
   }, [profileRender]);
 
   const scrollRef = useRef(null);
@@ -33,9 +30,27 @@ const Profile = () => {
   );
 
   if (userRender?.profile == null) {
-    return <div>Loading...</div>;
+    return (
+      <div className="w-screen h-screen NavbarUser flex justify-center items-center">
+        <svg className="animate-spin h-6 w-6 text-gray-500" viewBox="0 0 24 24">
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          />
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v8H4z"
+          />
+        </svg>
+      </div>
+    );
   }
-  console.log(userRender)
+  console.log(userRender);
   return (
     <div className="NavbarUser ">
       <div className="w-full  flex-col relative min-h-screen ">
