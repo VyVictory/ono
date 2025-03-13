@@ -59,10 +59,10 @@ const SearchList = ({ value, close }) => {
   };
 
   return (
-    <div className=" p-4 bg-white  shadow-md rounded-lg overflow-y-auto max-h-96">
+    <div className=" p-4 pt-2 bg-white  shadow-md rounded-lg overflow-y-auto max-h-96">
       {!value ? (
         <ul className="space-y-2">
-          <li className="font-bold text-lg text-gray-700 flex justify-between w-full">
+          <li className="font-bold pb-2 text-lg text-gray-500 flex justify-between w-full">
             Lịch sử tìm kiếm
             {searchHistory.length > 0 && (
               <button className="hover:scale-125 ">
