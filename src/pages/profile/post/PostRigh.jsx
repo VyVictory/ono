@@ -8,10 +8,10 @@ import {
 import pngTest from "../../../img/post/post.png";
 import HeadCreatePost from "./HeadCreatePost";
 
-const PostRight = () => {
+const PostRight = ({ data }) => {
   return (
     <>
-      <HeadCreatePost  />
+      {data?.myprofile && <HeadCreatePost />}
       {[...Array(20)].map((_, index) => (
         <div
           key={index}

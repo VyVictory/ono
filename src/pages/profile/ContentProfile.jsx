@@ -4,12 +4,12 @@ import "../../css/post.css";
 import PostProfile from "./post/PostProfile";
 import PostLeft from "./post/PostLeft";
 const ContentProfile = ({ data, content }) => {
-  const eventProfile = (profile) => {
+  const eventProfile = (data) => {
     switch (content) {
       case "about":
-        return <PostLeft data={profile} />;
+        return <PostLeft data={data} />;
       default:
-        return <PostProfile data={profile} />;
+        return <PostProfile data={data} />;
     }
   };
   return (

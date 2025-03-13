@@ -9,6 +9,9 @@ import { useAuth } from "../../../components/context/AuthProvider";
 import PostModal from "../../../components/PostModal";
 const HeadCreatePost = () => {
   const { profile, isLoadingProfile } = useAuth();
+  if (isLoadingProfile) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className="border border-gray-200 bg-white rounded-lg Post px-4 py-2 w-full ShadowContent">
       <div className="border-b flex flex-row pb-2 space-x-2">

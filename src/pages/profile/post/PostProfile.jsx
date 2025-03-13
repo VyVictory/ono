@@ -89,7 +89,7 @@ const PostProfile = ({ data }) => {
               className="flex flex-col space-y-3   md:w-3/5 md:px-0"
               style={{ pointerEvents: "auto" }}
             >
-              <PostRight />
+              <PostRight data={data}/>
             </div>
           </div>
         </div>

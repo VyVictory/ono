@@ -114,7 +114,7 @@ const Profile = () => {
           </div>
         </div>
 
-        <ContentProfile data={userRender.profile} content={content} />
+        <ContentProfile data={userRender} content={content} />
       </div>
     </div>
   );
