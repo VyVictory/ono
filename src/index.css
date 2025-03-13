@@ -26,9 +26,11 @@
     .HighNavbar {
         height: 56px;
     }
+
     .MarginTopNavbar {
         margin-top: 56px;
     }
+
     /* Áp dụng cho toàn bộ trang hoặc container cần thanh cuộn */
     body,
     .scrollable-container {
@@ -78,4 +80,27 @@
     .app-container {
         min-height: 100dvh;
         /* Dynamic viewport height, tránh lỗi thanh URL */
+    }
+
+    @keyframes ripple {
+        0% {
+            transform: scale(0);
+            opacity: 0.5;
+            background-color: rgba(123, 174, 255, 0.4);
+            /* Màu xanh nhạt */
+        }
+
+        100% {
+            transform: scale(4);
+            opacity: 0;
+            background-color: rgba(59, 130, 246, 0);
+            /* Biến mất */
+        }
+    }
+
+    .animate-ripple {
+        animation: ripple 1s linear;
+        position: absolute;
+        border-radius: 50%;
+        pointer-events: none;
     }

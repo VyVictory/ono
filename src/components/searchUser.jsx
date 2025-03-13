@@ -4,7 +4,7 @@ import { XMarkIcon } from "@heroicons/react/24/solid";
 import avt from "../img/DefaultAvatar.jpg";
 import { useNavigate } from "react-router-dom";
 
-const SearchList = ({ value }) => {
+const SearchList = ({ value,close }) => {
   const [searchListUser, setSearchListUser] = useState([]);
   const [searchHistory, setSearchHistory] = useState([]);
 
@@ -31,6 +31,10 @@ const SearchList = ({ value }) => {
   }, [value]);
 
   // Lưu lịch sử tìm kiếm
+  const handleNextProfile = (id)=>{
+    navigate(`/profile/posts?id=${id}`);
+    close();
+  }
   const handleSaveSearch = (profile) => {
     const newHistory = [...searchHistory];
 
@@ -62,7 +66,7 @@ const SearchList = ({ value }) => {
                 className="flex justify-between items-center px-4 py-2 bg-gray-50 hover:bg-gray-100 duration-150 rounded-lg shadow-sm"
               >
                 <button
-                  onClick={() => navigate(`/profile/posts?id=${profile._id}`)}
+                  onClick={() => handleNextProfile(profile._id)}
                   className="flex items-center space-x-3 w-full"
                 >
                   <img
@@ -96,7 +100,7 @@ const SearchList = ({ value }) => {
                 key={profile._id}
                 onClick={() => {
                   handleSaveSearch(profile),
-                    navigate(`/profile/posts?id=${profile._id}`);
+                  handleNextProfile(profile._id);
                 }}
                 className="flex items-center w-full py-3 bg-gray-50 hover:bg-gray-100 rounded-lg shadow-sm transition-all duration-150"
               >

@@ -14,18 +14,19 @@ import {
   BellIcon,
   ArrowPathIcon,
 } from "@heroicons/react/24/outline"; // Import icon
-import logo from "../img/logo.gif";
-import avt from "../img/DefaultAvatar.jpg";
-import LinkTo from "./LinkTo";
-import UserDropDow from "./UserDropDow";
-import { useAuth } from "./context/AuthProvider";
-import SearchList from "./searchUser";
-
+import logo from "../../img/logo.gif";
+import avt from "../../img/DefaultAvatar.jpg";
+import LinkTo from "../LinkTo";
+import UserDropDow from "../UserDropDow";
+import { useAuth } from "../context/AuthProvider";
+import SearchList from "../searchUser";
+import MiniMenuCenter from "./miniMenuCenter";
+import WaterBubbleButton from "../button/WaterBubbleButton";
 const NavBar = () => {
   const { showLogin, setShowLogin, profile, isLoadingProfile } = useAuth();
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
   const dropdownRef = useRef(null);
   const searchRef = useRef(null);
@@ -170,53 +171,49 @@ const NavBar = () => {
           </div>
 
           {/* Phần dưới: Hiển thị kết quả tìm kiếm */}
-          {isSearchVisible && <SearchList value={searchTerm} />}
+          {isSearchVisible && (
+            <SearchList
+              value={searchTerm}
+              close={() => setIsSearchVisible(false)}
+            />
+          )}
         </div>
 
         <div className="flex-grow"></div>
         {/* Right: Profile and Menu */}
         <div className="flex items-center sm:space-x-2 space-x-1 pr-4 ">
-          <button
-            className="lg:hidden  bg-gray-100 p-2 rounded-full hover:bg-blue-100 hover:ring-2 hover:ring-blue-200 transition duration-300"
-            onClick={toggleMenu}
-          >
-            <Bars3Icon className="h-7 w-7 text-gray-700 hover:text-blue-500 transition" />
-          </button>
+          <div className="lg:hidden">
+            <MiniMenuCenter menu={menuItems} />
+          </div>
+
           <LinkTo namepage="messages">
-            <div className="bg-gray-100 p-2 rounded-full hover:bg-blue-100 hover:ring-2 hover:ring-blue-200 transition duration-300">
-              <ChatBubbleLeftIcon className="h-7 w-7 text-gray-700 hover:text-blue-500 transition" />
+            {/* <div className="bg-gray-50 rounded-full shadow-md hover:shadow-lg ring-1 ring-gray-300 hover:ring-blue-300 active:scale-95 transition-all duration-300 ease-out">
+              <ChatBubbleLeftIcon className=" h-10 w-10 p-2 text-gray-700 hover:text-blue-500 transition-transform duration-300 hover:scale-110" />
+            </div> */}
+            <div className="h-11 w-11">
+              <WaterBubbleButton>
+                <ChatBubbleLeftIcon className="h-full w-full" />
+              </WaterBubbleButton>
             </div>
           </LinkTo>
-          <LinkTo
-            namepage="notification"
-            css="bg-gray-100 p-2 rounded-full hover:bg-blue-100 hover:ring-2 hover:ring-blue-200 transition duration-300"
-          >
-            <BellIcon className="h-7 w-7 text-gray-700 hover:text-blue-500 transition" />
-          </LinkTo>
+          <LinkTo namepage="">
+            {/* <div className="bg-gray-50 rounded-full shadow-md hover:shadow-lg ring-1 ring-gray-300 hover:ring-blue-300 active:scale-95 transition-all duration-300 ease-out">
+              <ChatBubbleLeftIcon className=" h-10 w-10 p-2 text-gray-700 hover:text-blue-500 transition-transform duration-300 hover:scale-110" />
+            </div> */}
+            <div className="h-11 w-11">
+              <WaterBubbleButton>
+                <BellIcon className="h-full w-full" />
+              </WaterBubbleButton>
+            </div>
+          </LinkTo> 
           {isLoadingProfile ? (
             <ArrowPathIcon className="h-12 w-12 text-gray-400 animate-spin" />
           ) : profile === undefined ? (
             <div className="h-12 w-12 bg-gray-300 rounded-full animate-pulse"></div> // Skeleton UI khi chưa có profile
           ) : profile ? (
-            // <button
-            //   onClick={() => setShowLogin(true)}
-            //   className="h-12 w-12 border-2 border-gray-300 rounded-full overflow-hidden hover:ring-2 hover:ring-blue-200 transition duration-300"
-            // >
-            //   <img
-            //     src={avt}
-            //     alt="Profile"
-            //     className="w-full h-full object-cover"
-            //   />
-            // </button>
             <UserDropDow avt={avt} />
           ) : (
             <div className="h-full flex py-2">
-              {/* <button
-                onClick={() => setShowLogin(true)}
-                className="px-4 border rounded-md bg-violet-50 border-none  hover:bg-violet-200 transition text-nowrap"
-              >
-                Đăng nhập
-              </button> */}
               <a
                 href="/login"
                 className="px-4 border rounded-md bg-violet-50 border-none  hover:bg-violet-200 transition text-nowrap flex text-center items-center"
@@ -254,6 +251,7 @@ const NavBar = () => {
       {isDropdownVisible && !isSearchVisible && (
         <div
           ref={dropdownRef}
+          onClick={() => toggleMenu()}
           className="absolute top-12 right-0 w-48 bg-white shadow-md p-4 rounded-md transition-opacity duration-200"
         >
           <ul className="flex flex-col gap-1">

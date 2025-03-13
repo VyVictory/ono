@@ -69,7 +69,9 @@ const UserDropDow = ({ avt }) => {
             className="absolute min-w-60 right-4 mt-14 z-10 divide-y bg-white rounded-lg shadow-lg shadow-zinc-500"
           >
             <button
-              onClick={() => navigate("/profile")}
+              onClick={() => {
+                navigate("/profile"), setIsOpen(false);
+              }}
               className="px-4  py-3 flex w-full flex-row justify-center items-center space-x-2 hover:scale-110 duration-700"
             >
               <div className="w-10 h-10 border-2 border-blue-100 rounded-full flex justify-center items-center ">
