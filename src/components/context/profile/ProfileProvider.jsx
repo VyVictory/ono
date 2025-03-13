@@ -39,7 +39,7 @@ export const ProfileProvider = ({ children }) => {
     idUser && fetchProfile();
   }, [idUser]);
   useEffect(() => {
-    if (currentUser != null && id != null) {
+    if (currentUser != null && id != null && currentUser._id != profile._id) {
       setProfileRender({ myprofile: false, profile: currentUser });
     } else {
       setProfileRender({ myprofile: true, profile: profile });
