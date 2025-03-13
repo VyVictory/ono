@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom"; // Nếu dùng React Router
 import { getCurrentUser } from "../../../service/user";
-
+import { useAuth } from "../AuthProvider";
 const ProfileContext = createContext();
 
 export const ProfileProvider = ({ children }) => {
@@ -11,6 +11,7 @@ export const ProfileProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [profileRender, setProfileRender] = useState(null);
+  const { isLoadingProfile, profile } = useAuth();
   const urlParams = new URLSearchParams(window.location.search);
   const id = urlParams.get("id");
   useEffect(() => {
@@ -24,6 +25,7 @@ export const ProfileProvider = ({ children }) => {
     const parts = location.pathname.split("/"); // Tách URL thành mảng
     setContent(parts.length > 2 ? parts[2] : null); // Gán content nếu có
   }, [location.pathname]); // Chạy lại khi URL thay đổi
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -35,7 +37,14 @@ export const ProfileProvider = ({ children }) => {
       }
     };
     idUser && fetchProfile();
-  }, [idUser]); 
+  }, [idUser]);
+  useEffect(() => {
+    if (currentUser != null && id != null) {
+      setProfileRender({ myprofile: false, profile: currentUser });
+    } else {
+      setProfileRender({ myprofile: true, profile: profile });
+    }
+  }, [currentUser, isLoadingProfile, id]);
   return (
     <ProfileContext.Provider
       value={{

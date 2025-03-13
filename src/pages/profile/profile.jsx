@@ -26,29 +26,24 @@ const Profile = () => {
     content,
     setContent,
   } = useProfile();
-  const urlParams = new URLSearchParams(window.location.search);
-  const id = urlParams.get("id");
-  useEffect(() => {
-    if (currentUser != null) {
-      setProfileRender({ myprofile: false, profile: currentUser });
-    } else if (!id && isLoadingProfile == false) {
-      setProfileRender({ myprofile: true, profile: profile });
-    }
-  }, [currentUser, isLoadingProfile]);
+  const [userRender, setUserRender] = useState(null);
+  useEffect(() => { 
+      setUserRender(profileRender); 
+  }, [profileRender]);
 
   const scrollRef = useRef(null);
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "auto" });
-  }, [profileRender]);
+  }, [userRender]);
 
   const followersInfo = (
     <div className="text-center">0 followers ❁ 9 following</div>
   );
 
-  if (profileRender == null) {
+  if (userRender?.profile == null) {
     return <div>Loading...</div>;
   }
-
+  console.log(userRender)
   return (
     <div className="NavbarUser ">
       <div className="w-full  flex-col relative min-h-screen ">
@@ -78,9 +73,9 @@ const Profile = () => {
                 </button>
                 <div className="flex flex-col items-center">
                   <strong className="text-3xl text-center md:text-start w-full ">
-                    {(profileRender?.profile?.firstName ?? "") +
+                    {(userRender?.profile?.firstName ?? "") +
                       " " +
-                      (profileRender?.profile?.lastName ?? "")}
+                      (userRender?.profile?.lastName ?? "")}
                   </strong>
 
                   {followersInfo}
@@ -102,7 +97,7 @@ const Profile = () => {
                 </div>
               </div>
               {/* lựa chọn  */}
-              {profileRender.myprofile ? (
+              {userRender.myprofile ? (
                 <div className="flex flex-row md:flex-col md:items-center mb-2 md:mb-0 items-center justify-center space-y-0 md:space-y-2 space-x-2 md:space-x-0">
                   <button className="bg-gray-50 hover:bg-violet-50 px-2 py-2 rounded-md flex items-center transition-transform duration-200 hover:scale-110">
                     <PencilIcon className="h-6 w-6 text-gray-500" />
@@ -115,7 +110,7 @@ const Profile = () => {
               ) : (
                 <div className="flex flex-row flex-wrap items-center justify-center space-x-4 py-2 sm:pb-4">
                   {/* Nút Add Friend */}
-                  <AddFriend profile={profileRender.profile} />
+                  <AddFriend profile={userRender.profile} />
                   {/* Nút Messenger */}
                   <button className="bg-gray-50 hover:bg-violet-50 min-w-16 justify-center px-2 py-1 rounded-md flex items-center transition-transform duration-200 hover:scale-110">
                     <ChatBubbleLeftEllipsisIcon className="w-8 h-8 text-gray-500 transition-transform duration-200 hover:scale-125 hover:text-violet-400" />
@@ -127,7 +122,7 @@ const Profile = () => {
           </div>
         </div>
 
-        <ContentProfile data={profileRender.profile} content={content} />
+        <ContentProfile data={userRender.profile} content={content} />
       </div>
     </div>
   );
