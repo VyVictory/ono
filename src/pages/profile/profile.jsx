@@ -13,18 +13,10 @@ import MenuProfile from "./MenuProfile";
 import { useProfile } from "../../components/context/profile/ProfileProvider";
 import AddFriend from "../../components/AddFriend";
 import PostLeft from "./post/PostLeft";
-const Profile = () => {
-  const { profile, isLoadingProfile } = useAuth();
-  const {
-    setIdUser,
-    setCurrentUser,
-    currentUser,
-    setLoading,
-    loading,
-    setProfileRender,
+const Profile = () => { 
+  const { 
     profileRender,
-    content,
-    setContent,
+    content, 
   } = useProfile();
   const [userRender, setUserRender] = useState(null);
   useEffect(() => { 
