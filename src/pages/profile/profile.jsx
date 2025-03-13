@@ -56,18 +56,25 @@ const Profile = () => {
       <div className="w-full  flex-col relative min-h-screen ">
         <div className="w-full  flex items-center flex-col bg-white shadow-sm  shadow-slate-300">
           <div className="profileW w-full z-10 px-4">
-            <button
-              // onClick={() => {}
-              className="relative h-[40vh] w-full rounded-b-xl profileW flex-shrink z-0"
-              style={{
-                backgroundImage: `url(${pictureBG})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
+            <a
+              href={pictureBG} // Link ảnh để PhotoSwipe nhận diện
+              data-pswp-width="1920" // Thay đổi theo kích thước thực tế của ảnh
+              data-pswp-height="1080" // Thay đổi theo kích thước thực tế của ảnh
+              className="relative block w-full h-[40vh] rounded-b-xl profileW flex-shrink z-0"
             >
-              <div ref={scrollRef}></div>
-              <span className="absolute inset-0 bg-black opacity-0 transition-opacity duration-200 hover:opacity-20 rounded-b-xl"></span>
-            </button>
+              <button
+                className="w-full h-full rounded-b-xl profileW flex-shrink z-0"
+                style={{
+                  backgroundImage: `url(${pictureBG})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              >
+                <div ref={scrollRef}></div>
+                <span className="absolute inset-0 bg-black opacity-0 transition-opacity duration-200 hover:opacity-20 rounded-b-xl"></span>
+              </button>
+            </a>
+
             <div className=" flex flex-col md:flex-row md:justify-between justify-center mx-10 md:py-2 border-b">
               <div className="flex md:flex-row items-center md:space-x-3 flex-col">
                 <button className="w-36 h-36 border-4 border-white rounded-full -mt-9 z-10">

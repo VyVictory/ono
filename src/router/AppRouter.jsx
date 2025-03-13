@@ -19,7 +19,7 @@ import Profile from "../pages/profile/profile.jsx";
 // import Test from "../pages/test.jsx";
 import { useEffect } from "react";
 import ProfileLayout from "../Layout/ProfileLayout.jsx";
-
+import { PhotoSwipeProvider } from "../components/context/PhotoSwipeProvider.jsx";
 const AppRouter = () => (
   <Routes>
     <Route element={<Layout />}>
@@ -38,11 +38,13 @@ const App = () => {
   const { showLogin, setShowLogin } = useAuth();
 
   return (
-    <Router>
-      {showLogin && <Auth />}
-      <AppRouter />
-      <ToastContainer position="top-left" autoClose={3000} limit={3} />
-    </Router>
+    <PhotoSwipeProvider>
+      <Router>
+        {showLogin && <Auth />}
+        <AppRouter />
+        <ToastContainer position="top-left" autoClose={3000} limit={3} />
+      </Router>
+    </PhotoSwipeProvider>
   );
 };
 
