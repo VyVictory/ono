@@ -1,0 +1,2 @@
+profileRender : {myprofile , profile}
+data = profileRender
