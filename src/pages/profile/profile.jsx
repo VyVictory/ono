@@ -50,7 +50,7 @@ const Profile = () => {
       </div>
     );
   }
-  console.log(userRender);
+  // console.log(userRender);
   return (
     <div className="NavbarUser ">
       <div className="w-full  flex-col relative min-h-screen ">

@@ -1,3 +1,4 @@
+import { Button } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -17,7 +18,7 @@ const LinkTo = ({ namepage, children, css }) => {
   const navigate = useNavigate();
 
   return (
-    <button
+    <Button
       onClick={() => {
         if (namepage) {
           navigate(pathMapping[namepage]);
@@ -26,7 +27,7 @@ const LinkTo = ({ namepage, children, css }) => {
       className={css}
     >
       {children}
-    </button>
+    </Button>
   );
 };
 

@@ -7,6 +7,7 @@ import {
   MagnifyingGlassIcon,
   Bars3Icon,
   XMarkIcon,
+  UserGroupIcon,
 } from "@heroicons/react/24/solid";
 import {
   ArrowLeftIcon,
@@ -22,6 +23,7 @@ import { useAuth } from "../context/AuthProvider";
 import SearchList from "../searchUser";
 import MiniMenuCenter from "./miniMenuCenter";
 import WaterBubbleButton from "../button/WaterBubbleButton";
+import { Button } from "@mui/material";
 const NavBar = () => {
   const { showLogin, setShowLogin, profile, isLoadingProfile } = useAuth();
   const [isSearchVisible, setIsSearchVisible] = useState(false);
@@ -81,7 +83,7 @@ const NavBar = () => {
   const menuItems = [
     { icon: HomeIcon, label: "Home", namepage: "home" },
     { icon: VideoCameraIcon, label: "Videos", namepage: "videos" },
-    { icon: UsersIcon, label: "Friends", namepage: "groups" },
+    { icon: UserGroupIcon, label: "Friends", namepage: "groups" },
     { icon: ShoppingBagIcon, label: "Marketplace", namepage: "store" },
   ];
   const [width, setWidth] = useState(234.913); // State to hold the current width
@@ -205,7 +207,7 @@ const NavBar = () => {
                 <BellIcon className="h-full w-full" />
               </WaterBubbleButton>
             </div>
-          </LinkTo> 
+          </LinkTo>
           {isLoadingProfile ? (
             <ArrowPathIcon className="h-12 w-12 text-gray-400 animate-spin" />
           ) : profile === undefined ? (
