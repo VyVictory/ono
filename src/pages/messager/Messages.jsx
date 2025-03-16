@@ -10,10 +10,14 @@ import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline"; // 
 import { FriendIcon, GroupIcon, NewsIcon } from "../../css/icon";
 import { motion, AnimatePresence } from "framer-motion";
 import ChatMessages from "./ChatMessages";
+import { useNavigate } from "react-router-dom";
+import LoadingAnimation from "../../components/LoadingAnimation";
 const Messages = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [isSend, setIsSend] = useState(true);
   const [isRightbarOpen, setRightbarOpen] = useState(false);
   const [isRightbarOpen1, setRightbarOpen1] = useState(true);
+  const navigate = useNavigate();
   const MessMenuLeft = useRef(null);
   const MessMenuRight = useRef(null);
 
@@ -34,7 +38,20 @@ const Messages = () => {
       </React.Fragment>
     );
   }
-
+  const HandleLinkToMess = (chane, id) => {
+    let chaneInbox = null;
+    switch (chane) {
+      case "group":
+        chaneInbox = "group?idGroup";
+        break;
+      case "inbox":
+        chaneInbox = "inbox?idUser";
+        break;
+      default:
+        break;
+    }
+    navigate(`/messages/${chaneInbox}=${id}`);
+  };
   const [message, setMessage] = useState(" ");
 
   const handleChange = (e) => {
@@ -55,6 +72,10 @@ const Messages = () => {
     } else {
       textarea.style.overflowY = "hidden"; // Hide scrollbar if within 3 lines
     }
+  };
+  const handleSendMessage = () => {
+    setIsSend(false);
+    
   };
 
   // Use the custom hook to close sidebar and rightbar when clicked outside
@@ -134,7 +155,12 @@ const Messages = () => {
 
             {/* Menu */}
             <div className="p-2 flex space-x-2 bg-white shadow-sm rounded-lg overflow-x-auto pb-3 mx-1">
-              <button className="flex items-center space-x-2 bg-gray-100 text-gray-700 rounded-3xl px-4 py-2 shadow-sm hover:bg-violet-100 hover:scale-105 active:bg-violet-200 active:scale-105 transition-all duration-300 ease-in-out">
+              <button
+                onClick={() =>
+                  HandleLinkToMess("inbox", "67bc224939191ad2524d6867")
+                }
+                className="flex items-center space-x-2 bg-gray-100 text-gray-700 rounded-3xl px-4 py-2 shadow-sm hover:bg-violet-100 hover:scale-105 active:bg-violet-200 active:scale-105 transition-all duration-300 ease-in-out"
+              >
                 <FriendIcon />
                 <span className="text-sm font-medium text-nowrap">Bạn bè</span>
               </button>
@@ -291,15 +317,22 @@ const Messages = () => {
                 />
               </div>
             </div>
-            <button className="group relative">
-              <PaperAirplaneIcon
-                title="Gửi tin nhắn"
-                className="h-10 w-10 p-1 rounded-full text-blue-400 hover:scale-110 hover:shadow-sm hover:shadow-blue-400/50 transition-all duration-300 hover:bg-blue-100 hover:text-blue-700 active:scale-95 active:transition-all"
-              />
-              <span className="absolute z-30 right-0 bottom-full w-max p-2 bg-gray-500 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                Gửi tin nhắn
-              </span>
-            </button>
+            {isSend ? (
+              <button
+                onClick={() => handleSendMessage()}
+                className="group relative"
+              >
+                <PaperAirplaneIcon
+                  title="Gửi tin nhắn"
+                  className="h-10 w-10 p-1 rounded-full text-blue-400 hover:scale-110 hover:shadow-sm hover:shadow-blue-400/50 transition-all duration-300 hover:bg-blue-100 hover:text-blue-700 active:scale-95 active:transition-all"
+                />
+                <span className="absolute z-30 right-0 bottom-full w-max p-2 bg-gray-500 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  Gửi tin nhắn
+                </span>
+              </button>
+            ) : (
+              <LoadingAnimation />
+            )}
           </div>
         </div>
       </div>

@@ -6,16 +6,12 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   TrashIcon,
-  CheckCircleIcon,
-  CircleStackIcon,
-  StopCircleIcon,
+  CheckCircleIcon, 
 } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  UserPlusIcon,
+import { 
   VideoCameraIcon,
-  PhotoIcon,
-  UserGroupIcon,
+  PhotoIcon, 
 } from "@heroicons/react/24/outline";
 import { useConfirm } from "./context/ConfirmProvider";
 import { toast } from "react-toastify";
@@ -134,7 +130,7 @@ export default function PostForm({ children }) {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 px-4 lg:px-0"
           onClick={() => setIsOpen(false)} // Khi bấm vào nền đen, đóng modal
         >
           <div
@@ -250,11 +246,11 @@ export default function PostForm({ children }) {
             {post.video && (
               <div className="relative mt-3 border">
                 <video
-                  key={post.video.url}
+                  key={post?.video?.url}
                   controls
                   className="w-full rounded-md max-h-[30vh]"
                 >
-                  <source src={post.video.url} type="video/mp4" />
+                  <source src={post?.video?.url} type="video/mp4" />
                   Trình duyệt của bạn không hỗ trợ video.
                 </video>
                 <button
@@ -371,7 +367,7 @@ export default function PostForm({ children }) {
             // animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             onClick={() => setShowGallery(false)} // Khi bấm vào nền đen, đóng modal
-            className="fixed inset-0 flex items-center justify-center bg-black h-screen p-4 bg-opacity-50"
+            className="fixed inset-0 flex items-center justify-center bg-black h-screen p-4 bg-opacity-20"
           >
             <div
               onClick={(e) => e.stopPropagation()} // Ngăn chặn đóng modal khi click vào bên trong
@@ -427,7 +423,7 @@ export default function PostForm({ children }) {
                       } relative shadow-lg shadow-violet-200  flex items-center justify-center border  hover:scale-105 duration-500 `}
                     >
                       <img
-                        src={img.url}
+                        src={img?.url}
                         alt="gallery-img"
                         className={`h-32  object-cover cursor-pointer  `}
                         onClick={() => setCurrentIndex(index)}
@@ -446,7 +442,7 @@ export default function PostForm({ children }) {
                       </button>
                     </div>
                   ))}
-                </div>
+                </div> 
               </div>
             </div>
           </motion.div>

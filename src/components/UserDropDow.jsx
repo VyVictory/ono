@@ -7,6 +7,7 @@ import {
   SunIcon,
   MoonIcon,
   Cog6ToothIcon,
+  LockClosedIcon,
 } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
 import { useModule } from "./context/Module";
@@ -43,7 +44,20 @@ const UserDropDow = ({ avt }) => {
     window.location.reload(); // 🟢 Reload lại trang sau 500ms để đảm bảo UI cập nhật
     console.log("Đã đăng xuất!");
   };
-
+  const [menu, setMenu] = useState([
+    {
+      label: "Bảo mật",
+      icon: LockClosedIcon,
+      event: () => {
+        setUsecase("Privacy");
+        setIsOpen(false);
+      },
+    },
+    {
+      label: "Cài đặt",
+      icon: Cog6ToothIcon,
+    },
+  ]);
   return (
     <div
       className="relative w-full h-full flex justify-center"
@@ -89,25 +103,29 @@ const UserDropDow = ({ avt }) => {
             </button>
             <ul className="py-2 text-base px-2 ">
               <li>
-                <a
+                <Button
                   href="#"
-                  className="block px-4 py-2 hover:bg-gray-100 rounded-md"
+                  className="block px-4 py-2 hover:bg-gray-100 rounded-md w-full"
                 >
                   Dashboard
-                </a>
+                </Button>
               </li>
-              <li>
-                <a
-                  href="#"
-                  className="flex flex-row items-center px-4 py-2 h  rounded-md hover:scale-105 hover:bg-violet-100"
-                  onClick={() => {
-                    setUsecase("Privacy"), setIsOpen(false);
-                  }}
-                >
-                  <Cog6ToothIcon className="h-8 w-8 p-1 bg-gray-50  rounded-full text-gray-800" />
-                  <span className="pl-4">Settings</span>
-                </a>
-              </li>
+              {menu.map((e, index) => (
+                <li key={index}>
+                  <Button
+                    href="#"
+                    className="flex flex-row items-center px-4 py-2 h w-full rounded-md hover:scale-105 hover:bg-violet-100"
+                    onClick={() => {
+                      e?.event?.(); // Gọi hàm thay vì chỉ tham chiếu
+                    }}
+                  >
+                    <button className="p-2 w-full flex items-center transition-all">
+                      <e.icon className="h-8 w-8 p-1 bg-gray-50 rounded-full text-gray-800" />
+                      <span className="pl-4">{e?.label}</span>
+                    </button>
+                  </Button>
+                </li>
+              ))}
               <li>
                 <Button
                   href="#"
@@ -180,5 +198,5 @@ const UserDropDow = ({ avt }) => {
     </div>
   );
 };
-
+const MenuList = () => {};
 export default UserDropDow;

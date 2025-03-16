@@ -24,7 +24,7 @@ const AppRouter = () => (
   <Routes>
     <Route element={<Layout />}>
       <Route path="/" element={<UserPage />} />
-      <Route path="/messages" element={<Messages />} />
+      <Route path="/messages/*" element={<Messages />} />
       <Route path="/profile/*" element={<ProfileLayout />} />
       {/* <Route path="/profile1" element={<Profile1 />} /> */}
       {/* Các route khác */}

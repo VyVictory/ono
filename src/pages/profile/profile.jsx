@@ -13,7 +13,10 @@ import MenuProfile from "./MenuProfile";
 import { useProfile } from "../../components/context/profile/ProfileProvider";
 import AddFriend from "../../components/AddFriend";
 import PostLeft from "./post/PostLeft";
+import { useModule } from "../../components/context/Module";
+
 const Profile = () => {
+  const { setUsecase } = useModule();
   const { profileRender, content } = useProfile();
   const [userRender, setUserRender] = useState(null);
   useEffect(() => {
@@ -113,7 +116,12 @@ const Profile = () => {
               {/* lựa chọn  */}
               {userRender.myprofile ? (
                 <div className="flex flex-row md:flex-col md:items-center mb-2 md:mb-0 items-center justify-center space-y-0 md:space-y-2 space-x-2 md:space-x-0">
-                  <button className="bg-gray-50 hover:bg-violet-50 px-2 py-2 rounded-md flex items-center transition-transform duration-200 hover:scale-110">
+                  <button
+                    onClick={() => {
+                      setUsecase("EditProfile");
+                    }}
+                    className="bg-gray-50 hover:bg-violet-50 px-2 py-2 rounded-md flex items-center transition-transform duration-200 hover:scale-110"
+                  >
                     <PencilIcon className="h-6 w-6 text-gray-500" />
                     Edit
                   </button>

@@ -14,7 +14,7 @@ const MenuPost = () => {
     { name: "Videos", link: "/profile/videos" },
     { name: "Nhóm", link: "/profile/groups" },
   ];
-
+console.log(location.pathname.startsWith('/profile'))
   return (
     <div className="w-full shadow-gray-400 z-10 flex justify-between items-center">
       <div className="w-full flex justify-between">
