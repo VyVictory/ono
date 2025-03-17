@@ -8,12 +8,12 @@ import { nextLogin, nextError } from "./components/nextLogin";
 export const getProfile = async () => {
   try {
     if (!authToken.getToken()) {
-      nextLogin();
+      // nextLogin();
       return null;
     }
     const response = await api.get("user/profile");
     return response.data;
-  } catch (error) { 
+  } catch (error) {
     nextError(error);
     return null;
   }
@@ -24,6 +24,7 @@ export const getCurrentUser = async (id) => {
     // console.log(response)
     return response.data;
   } catch (error) {
+    nextError(error);
     return null;
   }
 };
