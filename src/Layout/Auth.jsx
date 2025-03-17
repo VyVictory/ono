@@ -3,11 +3,11 @@ import { useAuth } from "../components/context/AuthProvider";
 import { useLocation } from "react-router-dom";
 import Login from "../components/Auth/Login";
 import Register from "../components/Auth/Register";
-import bgVideo1 from "../img/login/bg1.mp4"; 
-import bgVideo2 from "../img/login/bg2.mp4"; 
-import bgVideo3 from "../img/login/bg3.mp4"; 
-import bgVideo4 from "../img/login/bg4.mp4"; 
-import bgVideoMobile from "../img/login/bgMobile.mp4"; 
+import bgVideo1 from "../img/login/bg1.mp4";
+import bgVideo2 from "../img/login/bg2.mp4";
+import bgVideo3 from "../img/login/bg3.mp4";
+import bgVideo4 from "../img/login/bg4.mp4";
+import bgVideoMobile from "../img/login/bgMobile.mp4";
 
 export default function Auth() {
   const { showLogin, setShowLogin } = useAuth();
@@ -28,7 +28,9 @@ export default function Auth() {
       if (window.innerWidth < 768) {
         setCurrentVideo(bgVideoMobile); // Mobile
       } else {
-        setCurrentVideo(desktopVideos[Math.floor(Math.random() * desktopVideos.length)]); // Desktop random
+        setCurrentVideo(
+          desktopVideos[Math.floor(Math.random() * desktopVideos.length)]
+        ); // Desktop random
       }
     };
 

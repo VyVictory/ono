@@ -20,6 +20,7 @@ const Messages = () => {
   const navigate = useNavigate();
   const MessMenuLeft = useRef(null);
   const MessMenuRight = useRef(null);
+  const [message, setMessage] = useState("");
 
   const divs = [];
   for (let i = 0; i < 30; i++) {
@@ -52,7 +53,6 @@ const Messages = () => {
     }
     navigate(`/messages/${chaneInbox}=${id}`);
   };
-  const [message, setMessage] = useState(" ");
 
   const handleChange = (e) => {
     const newValue = e.target.value;
@@ -75,7 +75,7 @@ const Messages = () => {
   };
   const handleSendMessage = () => {
     setIsSend(false);
-    
+    console.log(message);
   };
 
   // Use the custom hook to close sidebar and rightbar when clicked outside
@@ -157,7 +157,7 @@ const Messages = () => {
             <div className="p-2 flex space-x-2 bg-white shadow-sm rounded-lg overflow-x-auto pb-3 mx-1">
               <button
                 onClick={() =>
-                  HandleLinkToMess("inbox", "67bc224939191ad2524d6867")
+                  HandleLinkToMess("inbox", "67d7da299ef20e261a3911f2")
                 }
                 className="flex items-center space-x-2 bg-gray-100 text-gray-700 rounded-3xl px-4 py-2 shadow-sm hover:bg-violet-100 hover:scale-105 active:bg-violet-200 active:scale-105 transition-all duration-300 ease-in-out"
               >
