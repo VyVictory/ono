@@ -13,7 +13,7 @@ import axios from "axios";
 export default function Login({ chaneform }) {
   const { setShowLogin } = useAuth();
   const [formData, setFormData] = useState({
-    identifier: "1@a.com",
+    identifier: "lhphuc@gmail.com",
     password: "adad",
   });
   const [errors, setErrors] = useState({});

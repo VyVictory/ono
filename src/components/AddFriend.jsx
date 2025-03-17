@@ -139,10 +139,10 @@ const AddFriend = ({ profile }) => {
       text: "Đồng ý kết bạn",
       color: "text-green-500",
     },
-    accepted: { icon: UserMinusIcon, text: "Unfriend", color: "text-gray-500" },
+    accepted: { icon: UserMinusIcon, text: "Xóa bạn bè", color: "text-gray-500" },
     noFriend: {
       icon: UserPlusIcon,
-      text: "Add Friend",
+      text: "Thêm bạn bè",
       color: "text-green-500",
     },
     blocked: { icon: UserPlusIcon, text: "Bị block", color: "text-gray-500" },

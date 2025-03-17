@@ -32,7 +32,7 @@ const Profile = () => {
     <div className="text-center">0 followers ❁ 9 following</div>
   );
 
-  if (userRender?.profile == null) {
+  if (userRender?.profile == null ) {
     return (
       <div className="w-screen h-screen NavbarUser flex justify-center items-center">
         <svg className="animate-spin h-6 w-6 text-gray-500" viewBox="0 0 24 24">

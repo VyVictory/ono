@@ -14,9 +14,10 @@ export default function Auth() {
   const [formType, setFormType] = useState("login");
   const location = useLocation();
   const videoRef = useRef(null);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false); // Trạng thái kiểm tra video đã tải xong chưa
 
   // Danh sách video nền desktop
-  const desktopVideos = [bgVideo1, bgVideo2]//bgVideo3,,  bgVideo4]
+  const desktopVideos = [bgVideo1, bgVideo2];
 
   // State để lưu video phù hợp với thiết bị
   const [currentVideo, setCurrentVideo] = useState(null);
@@ -44,6 +45,11 @@ export default function Auth() {
     }
   }, [currentVideo]);
 
+  // Khi video tải xong, cập nhật trạng thái isVideoLoaded
+  const handleVideoLoaded = () => {
+    setIsVideoLoaded(true);
+  };
+
   const chaneform = (form) => {
     setFormType(form);
   };
@@ -63,17 +69,30 @@ export default function Auth() {
     <div className="w-full min-h-screen fixed z-50 flex items-center justify-center">
       {/* Nếu đang ở trang login, hiển thị video nền */}
       {location.pathname === "/login" && currentVideo && (
-        <video
-          ref={videoRef}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute top-0 left-0 w-full h-full object-cover"
-        >
-          <source src={currentVideo} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        <>
+          {/* Video nền */}
+          <video
+            ref={videoRef}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 ${
+              isVideoLoaded ? "opacity-100" : "opacity-0"
+            }`}
+            onLoadedData={handleVideoLoaded}
+          >
+            <source src={currentVideo} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+
+          {/* Màn hình loading xoay xoay */}
+          {!isVideoLoaded && (
+            <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-black">
+              <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          )}
+        </>
       )}
 
       {/* Overlay làm mờ nếu không phải trang login */}
@@ -82,9 +101,11 @@ export default function Auth() {
       )}
 
       {/* Nội dung form login / register */}
-      <div className="relative overflow-hidden h-screen w-full px-4 max-w-md">
-        {renderForm()}
-      </div>
+      {isVideoLoaded && (
+        <div className="relative overflow-hidden h-screen w-full px-4 max-w-md">
+          {renderForm()}
+        </div>
+      )}
     </div>
   );
 }
