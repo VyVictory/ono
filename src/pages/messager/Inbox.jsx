@@ -5,9 +5,11 @@ import { getMessageInbox } from "../../service/message";
 import { CloudDownloadIcon } from "@heroicons/react/solid";
 import { useAuth } from "../../components/context/AuthProvider";
 import LoadingAnimation from "../../components/LoadingAnimation";
+import { ArrowDownIcon } from "@heroicons/react/24/solid";
 import { format } from "date-fns";
-import { vi } from "date-fns/locale"; // Import locale tiếng Việt (nếu cần)
+import { vi } from "date-fns/locale";
 import { useSocketContext } from "../../components/context/socketProvider";
+
 const Inbox = ({ newmess }) => {
   const { profile, isLoadingProfile } = useAuth();
   const { newMessInbox } = useSocketContext();
@@ -15,96 +17,200 @@ const Inbox = ({ newmess }) => {
   const containerRefMess = useRef(null);
   const { id } = UseMessageInfo();
   const [messagesByDay, setMessagesByDay] = useState([]);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  const [isScroll, setIsScroll] = useState(false);
+
   const messagesByDayMemo = useMemo(() => messagesByDay, [messagesByDay]);
-  const fetchMessages = async () => {
-    try {
-      const data = await getMessageInbox(id, 0, 20);
-      if (data) {
-        setMessagesByDay((prev) => [...prev, ...data]); // Load dần
+
+  const fetchMessages = useCallback(
+    async (newPage = 0) => {
+      if (!containerRefMess.current) return;
+
+      const previousScrollHeight = containerRefMess.current.scrollHeight;
+      const previousScrollTop = containerRefMess.current.scrollTop;
+
+      try {
+        const data = await getMessageInbox(id, newPage * 20, 20);
+        if (data?.length) {
+          setMessagesByDay((prev) => {
+            const mergedMessages = [...data, ...prev].reduce((acc, curr) => {
+              const existing = acc.find(
+                (item) => item.daytime === curr.daytime
+              );
+              if (existing) {
+                existing.mess = [...existing.mess, ...curr.mess];
+              } else {
+                acc.push({ ...curr });
+              }
+              return acc;
+            }, []);
+
+            mergedMessages.sort(
+              (a, b) => new Date(b.daytime) - new Date(a.daytime)
+            );
+
+            mergedMessages.forEach((group) => {
+              group.mess.sort((a, b) => new Date(a.time) - new Date(b.time));
+            });
+
+            return mergedMessages;
+          });
+
+          setPage(newPage);
+        } else {
+          setHasMore(false);
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy tin nhắn:", error);
       }
-    } catch (error) {
-      console.error("Lỗi khi lấy tin nhắn:", error);
-    }
-  };
+
+      setTimeout(() => {
+        if (containerRefMess.current) {
+          containerRefMess.current.scrollTop =
+            containerRefMess.current.scrollHeight -
+            previousScrollHeight +
+            previousScrollTop;
+        }
+      }, 50);
+    },
+    [id]
+  );
+
   useEffect(() => {
     if (id) {
-      fetchMessages();
+      fetchMessages(0);
     }
-  }, [id]); // Chỉ gọi lại khi `id` thay đổi.
-  const addMessages = async (message) => {
-    // Kiểm tra nếu message là object có _id hợp lệ
-    if (message && message._id) {
-      setMessagesByDay((prevMessages) => {
-        const updatedMessages = [...prevMessages];
+  }, [id, fetchMessages, isLoadingProfile]);
 
-        const newMessage = {
-          _id: message._id,
-          sender: message.sender._id,
-          isRecalled: message.isRecalled,
-          senderName: `${message.sender.firstName} ${message.sender.lastName}`,
-          avatar: message.sender.avatar,
-          content: message.content,
-          file: message.file,
-          createdAt: message.createdAt,
-        };
-        const messageDate = format(new Date(message.createdAt), "yyyy-MM-dd");
+  const addMessages = useCallback((message) => {
+    if (!message || !message._id) return;
 
-        // Tìm nhóm tin nhắn theo ngày
-        const existingGroup = updatedMessages.find(
-          (group) =>
-            format(new Date(group.daytime), "yyyy-MM-dd") === messageDate
-        );
+    setMessagesByDay((prevMessages) => {
+      const updatedMessages = [...prevMessages];
+      const messageDate = format(new Date(message.createdAt), "yyyy-MM-dd");
+      const existingGroup = updatedMessages.find(
+        (group) => format(new Date(group.daytime), "yyyy-MM-dd") === messageDate
+      );
 
-        if (existingGroup) {
-          // Thêm tin nhắn mới vào nhóm hiện tại
-          existingGroup.mess.push(newMessage);
-        } else {
-          // Tạo nhóm mới
-          updatedMessages.push({
-            daytime: message.createdAt,
-            mess: [newMessage],
-          });
+      if (existingGroup) {
+        if (!existingGroup.mess.some((msg) => msg._id === message._id)) {
+          existingGroup.mess.push(message);
         }
+      } else {
+        updatedMessages.push({
+          daytime: message.createdAt,
+          mess: [message],
+        });
+      }
+      return updatedMessages;
+    });
 
-        return updatedMessages;
-      });
-    }
-  };
+    setIsScroll(false);
+  }, []);
 
   useEffect(() => {
-    addMessages(newmess);
-  }, [newmess]);
+    if (newmess?.length) {
+      newmess.forEach((msg) => addMessages(msg));
+    }
+  }, [newmess, addMessages]);
+
   useEffect(() => {
     addMessages(newMessInbox?.message);
-  }, [newMessInbox]);
+  }, [newMessInbox, addMessages]);
+
   useEffect(() => {
-    if (!isLoadingProfile && lastMessageRef.current) {
-      lastMessageRef.current.scrollIntoView({ behavior: "auto" });
+    if (!isLoadingProfile && lastMessageRef.current && !isScroll) {
+      scroll();
+      setIsScroll(true);
     }
   }, [messagesByDay, isLoadingProfile]);
-  console.log(messagesByDayMemo);
-  if (isLoadingProfile == true) {
-    return <LoadingAnimation />;
-  }
+
+  useEffect(() => {
+    if (!containerRefMess.current) return;
+
+    let timeoutId; // Biến để lưu `setTimeout`
+
+    const handleScroll = async () => {
+      const { scrollTop, scrollHeight, clientHeight } =
+        containerRefMess.current;
+
+      // Kiểm tra có cần hiển thị nút cuộn xuống không
+      setShowScrollButton(scrollTop < scrollHeight - clientHeight - 150);
+
+      // Hủy timeout trước đó nếu người dùng cuộn tiếp tục
+      clearTimeout(timeoutId);
+
+      // Tạo một timeout mới với delay 500ms
+      timeoutId = setTimeout(async () => {
+        if (
+          containerRefMess.current.scrollTop <= 10 &&
+          hasMore &&
+          !isLoadingMore
+        ) {
+          setIsLoadingMore(true);
+
+          const previousHeight = containerRefMess.current.scrollHeight; // Lưu lại chiều cao trước khi tải thêm
+          await fetchMessages(page + 1);
+
+          setIsLoadingMore(false);
+
+          // Giữ vị trí cuộn để không bị "nhảy"
+          containerRefMess.current.scrollTop +=
+            containerRefMess.current.scrollHeight - previousHeight;
+        }
+      }, 100); // Delay 500ms
+    };
+
+    containerRefMess.current.addEventListener("scroll", handleScroll);
+
+    return () => {
+      containerRefMess.current.removeEventListener("scroll", handleScroll);
+      clearTimeout(timeoutId); // Hủy timeout khi component unmount
+    };
+  }, [hasMore, isLoadingMore, fetchMessages, page, isLoadingProfile]);
+
+  const scroll = () => {
+    lastMessageRef.current?.scrollIntoView({ behavior: "auto" });
+  };
+  if (isLoadingProfile) return <LoadingAnimation />;
 
   return (
-    <div className="flex flex-col h-full bg-gray-100 ">
+    <div className="flex flex-col h-full bg-gray-100">
       <div ref={containerRefMess} className="flex-1 overflow-y-auto p-4">
+        {/* <button
+            onClick={async () => {
+              setIsLoadingMore(true);
+              await fetchMessages(page + 1);
+              setIsLoadingMore(false);
+            }}
+            className="w-full text-center py-2 mb-4 text-gray-100 hover:underline"
+            disabled={isLoadingMore}
+          > */}
+        {hasMore && isLoadingMore ? (
+          <div className="w-full flex justify-center">
+            <LoadingAnimation />
+          </div>
+        ) : (
+          ""
+        )}
+
+        {/* </button> */}
+
         {messagesByDayMemo.map((group, dayIndex) => (
           <div key={dayIndex}>
-            {/* Hiển thị ngày */}
             <div className="text-center text-gray-500 text-sm mb-2">
               {format(new Date(group.daytime), "dd, MMMM, yyyy", {
                 locale: vi,
               })}
             </div>
-
-            {/* Hiển thị tin nhắn trong ngày */}
             {group.mess.map((msg, index) => {
               const isMe = msg.sender === profile._id;
               return (
                 <div
-                  key={msg._id || index}
+                  key={index}
                   ref={
                     dayIndex === messagesByDayMemo.length - 1 &&
                     index === group.mess.length - 1
@@ -116,24 +222,14 @@ const Inbox = ({ newmess }) => {
                   } mb-2`}
                 >
                   <div
-                    className={`p-3 rounded-lg shadow-md  min-w-20  max-w-xs ${
+                    className={`p-3 rounded-lg shadow-md min-w-20 max-w-xs ${
                       isMe && "bg-blue-100"
                     }`}
                   >
-                    {msg.content && <p>{msg.content}</p>}
-
-                    {msg.file?.url && (
-                      <div className="mt-2 flex items-center space-x-2">
-                        <a
-                          href={msg.file.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-300 hover:underline flex items-center"
-                        >
-                          <CloudDownloadIcon className="w-5 h-5 mr-1" />
-                          {msg.file.type || "Tệp đính kèm"}
-                        </a>
-                      </div>
+                    {msg.content && (
+                      <p className="break-words whitespace-pre-wrap">
+                        {msg.content}
+                      </p>
                     )}
                     <div className="text-xs text-gray-500 mt-1">
                       {format(new Date(msg.createdAt), "HH:mm")}
@@ -144,6 +240,15 @@ const Inbox = ({ newmess }) => {
             })}
           </div>
         ))}
+
+        {showScrollButton && (
+          <button
+            onClick={scroll}
+            className="sticky bottom-0 right-0 bg-blue-200 p-2 rounded-full shadow-lg"
+          >
+            <ArrowDownIcon className="h-6 w-6" />
+          </button>
+        )}
       </div>
     </div>
   );
