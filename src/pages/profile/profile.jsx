@@ -14,11 +14,13 @@ import { useProfile } from "../../components/context/profile/ProfileProvider";
 import AddFriend from "../../components/AddFriend";
 import PostLeft from "./post/PostLeft";
 import { useModule } from "../../components/context/Module";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const { setUsecase } = useModule();
   const { profileRender, content } = useProfile();
   const [userRender, setUserRender] = useState(null);
+  const navigate = useNavigate();
   useEffect(() => {
     setUserRender(profileRender);
   }, [profileRender]);
@@ -32,7 +34,7 @@ const Profile = () => {
     <div className="text-center">0 followers ❁ 9 following</div>
   );
 
-  if (userRender?.profile == null ) {
+  if (userRender?.profile == null) {
     return (
       <div className="w-screen h-screen NavbarUser flex justify-center items-center">
         <svg className="animate-spin h-6 w-6 text-gray-500" viewBox="0 0 24 24">
@@ -134,7 +136,14 @@ const Profile = () => {
                   {/* Nút Add Friend */}
                   <AddFriend profile={userRender.profile} />
                   {/* Nút Messenger */}
-                  <button className="bg-gray-50 hover:bg-violet-50 min-w-16 justify-center px-2 py-1 rounded-md flex items-center transition-transform duration-200 hover:scale-110">
+                  <button
+                    onClick={() => {
+                      navigate(
+                        `/messages/inbox?idUser=${userRender.profile._id}`
+                      );
+                    }}
+                    className="bg-gray-50 hover:bg-violet-50 min-w-16 justify-center px-2 py-1 rounded-md flex items-center transition-transform duration-200 hover:scale-110"
+                  >
                     <ChatBubbleLeftEllipsisIcon className="w-8 h-8 text-gray-500 transition-transform duration-200 hover:scale-125 hover:text-violet-400" />
                   </button>
                 </div>

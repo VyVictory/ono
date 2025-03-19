@@ -6,15 +6,15 @@ import { CloudDownloadIcon } from "@heroicons/react/solid";
 import { useAuth } from "../../components/context/AuthProvider";
 import LoadingAnimation from "../../components/LoadingAnimation";
 import { format } from "date-fns";
-import { vi } from "date-fns/locale"; // Import locale tiếng Việt (nếu cần)
-const Inbox = ({ newmess }) => {
+import { FixedSizeList } from "react-window";
+const Inbox = () => {
   const { profile, isLoadingProfile } = useAuth();
   const lastMessageRef = useRef(null);
   const containerRefMess = useRef(null);
   const { id } = UseMessageInfo();
   const [messagesByDay, setMessagesByDay] = useState([]);
   const messagesByDayMemo = useMemo(() => messagesByDay, [messagesByDay]);
-  console.log(newmess)
+
   const fetchMessages = async () => {
     try {
       const data = await getMessageInbox(id, 0, 100);
@@ -29,68 +29,24 @@ const Inbox = ({ newmess }) => {
     if (id) {
       fetchMessages();
     }
-  }, [id]); // Chỉ gọi lại khi `id` thay đổi. 
+  }, [id]); // Chỉ gọi lại khi `id` thay đổi.
+
   useEffect(() => {
-    if (Array.isArray(newmess) && newmess.length > 0) {
-      setMessagesByDay((prevMessages) => {
-        const updatedMessages = [...prevMessages];
-
-        newmess.forEach((message) => {
-          const newMessage = {
-            _id: message._id,
-            sender: message.sender._id,
-            isRecalled:message.isRecalled,
-            senderName: `${message.sender.firstName} ${message.sender.lastName}`,
-            avatar: message.sender.avatar,
-            content: message.content,
-            file: message.file,
-            createdAt: message.createdAt,
-          };
-
-          const messageDate = format(new Date(message.createdAt), "yyyy-MM-dd");
-
-          // Tìm nhóm tin nhắn theo ngày
-          const existingGroup = updatedMessages.find(
-            (group) =>
-              format(new Date(group.daytime), "yyyy-MM-dd") === messageDate
-          );
-
-          if (existingGroup) {
-            // Thêm tin nhắn mới vào nhóm hiện tại
-            existingGroup.mess.push(newMessage);
-          } else {
-            // Tạo nhóm mới
-            updatedMessages.push({
-              daytime: message.createdAt,
-              mess: [newMessage],
-            });
-          }
-        });
-
-        return updatedMessages;
-      });
-    }
-  }, [newmess]);
-  useEffect(() => {
-    if (!isLoadingProfile && lastMessageRef.current) {
+    if (lastMessageRef.current) {
       lastMessageRef.current.scrollIntoView({ behavior: "auto" });
     }
-  }, [messagesByDay, isLoadingProfile]);
-
+  }, [messagesByDayMemo]);
   if (isLoadingProfile == true) {
     return <LoadingAnimation />;
   }
-  console.log(messagesByDayMemo)
   return (
-    <div className="flex flex-col h-full bg-gray-100 ">
+    <div className="flex flex-col h-full bg-gray-100 p-4">
       <div ref={containerRefMess} className="flex-1 overflow-y-auto p-4">
         {messagesByDayMemo.map((group, dayIndex) => (
           <div key={dayIndex}>
             {/* Hiển thị ngày */}
             <div className="text-center text-gray-500 text-sm mb-2">
-              {format(new Date(group.daytime), "dd, MMMM, yyyy", {
-                locale: vi,
-              })}
+              {group.daytime}
             </div>
 
             {/* Hiển thị tin nhắn trong ngày */}
@@ -111,7 +67,7 @@ const Inbox = ({ newmess }) => {
                 >
                   <div
                     className={`p-3 rounded-lg shadow-md max-w-xs ${
-                      isMe && "bg-blue-100"
+                      isMe ? "bg-blue-500 text-white" : "bg-white text-gray-800"
                     }`}
                   >
                     {msg.content && <p>{msg.content}</p>}
@@ -129,9 +85,6 @@ const Inbox = ({ newmess }) => {
                         </a>
                       </div>
                     )}
-                    <div className="text-xs text-gray-500 mt-1">
-                      {format(new Date(msg.createdAt), "HH:mm")}
-                    </div>
                   </div>
                 </div>
               );

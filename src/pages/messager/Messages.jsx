@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import {
   Bars3Icon,
   ExclamationCircleIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/solid";
-import UseClickOutside from "../../components/UseClickOutside"; 
+import UseClickOutside from "../../components/UseClickOutside";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline"; // Import icon
 import { FriendIcon, GroupIcon, NewsIcon } from "../../css/icon";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,15 +15,21 @@ import UseMessageInfo from "./UseMessageInfo";
 import InputMessage from "./InputMessage";
 
 const Messages = () => {
-  const [isSidebarOpen, setSidebarOpen] = useState(false); 
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isRightbarOpen, setRightbarOpen] = useState(false);
   const [isRightbarOpen1, setRightbarOpen1] = useState(true);
   const navigate = useNavigate();
   const MessMenuLeft = useRef(null);
   const MessMenuRight = useRef(null);
   const { type, id } = UseMessageInfo();
+  const [messages, setMessages] = useState([]);
+
+  const handleNewMessage = (newMessage) => {
+    setMessages([newMessage]); // ✅ Cập nhật tin nhắn mới, xoá danh sách cũ
+  };
+
   // console.log("Loại tin nhắn:", type);
-  // console.log("ID:", id); 
+  // console.log("ID:", id);
   const HandleLinkToMess = (chane, id) => {
     let chaneInbox = null;
     switch (chane) {
@@ -43,19 +49,17 @@ const Messages = () => {
   UseClickOutside(MessMenuRight, () => setRightbarOpen(false));
 
   const [searchText, setSearchText] = useState(false);
-  const Centter = () => {
+  const Centter = useMemo(() => {
     switch (type) {
       case "inbox":
-        return (
-          <Inbox
-            messages={["Xin chào!", "Bạn khỏe không?", "Hôm nay bạn làm gì?"]}
-          />
-        );
+        return <Inbox newmess={messages} />;
       default:
-        break;
+        return null;
     }
-  };
-
+  }, [type, messages]); // ✅ Cập nhật khi messages thay đổi
+  {
+    type ? Centter : <p>Đang tải...</p>;
+  }
   return (
     <div className="flex ">
       {/* Sidebar className={sidebarClass} */}
@@ -195,12 +199,10 @@ const Messages = () => {
           </div>
         </div>
         {/* center */}
-        <div className="flex-grow overflow-y-auto">
-          <Centter />
-        </div>
+        <div className="flex-grow overflow-y-auto">{Centter}</div>
         {/* Chat input */}
         <div className="shadow-sm border-t flex items-center p-2 bg-white">
-          <InputMessage />
+          <InputMessage newmess={handleNewMessage} />
         </div>
       </div>
       {/* Rightbar */}

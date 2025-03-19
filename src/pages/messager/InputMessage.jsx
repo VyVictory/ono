@@ -4,19 +4,20 @@ import { PaperAirplaneIcon } from "@heroicons/react/24/outline"; // Import icon
 import UseMessageInfo from "./UseMessageInfo";
 import { SendToUser } from "../../service/message";
 import LoadingAnimation from "../../components/LoadingAnimation";
-const InputMessage = () => {
+const InputMessage = ({ newmess }) => {
   const [isSend, setIsSend] = useState(true);
-  const { type, id } = UseMessageInfo(); 
+  const { type, id } = UseMessageInfo();
   const [message, setMessage] = useState("");
   const handleSendMessage = () => {
     setIsSend(false);
 
     if (!id || !message) {
-      console.log("Missing idUser or message content.");
+      setIsSend(true);
       return;
-    } 
+    }
     SendToUser(id, message)
       .then((response) => {
+        newmess(response.data);
         console.log("Message sent successfully:", response);
       })
       .catch((error) => {
@@ -24,6 +25,7 @@ const InputMessage = () => {
       })
       .finally(() => {
         setIsSend(true);
+        setMessage("");
       });
   };
   const handleChange = (e) => {
@@ -45,6 +47,13 @@ const InputMessage = () => {
       textarea.style.overflowY = "hidden"; // Hide scrollbar if within 3 lines
     }
   };
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); // Ngăn xuống dòng
+      handleSendMessage();
+    }
+  };
+
   return (
     <>
       <div className="flex items-center flex-row space-x-1 pr-2">
@@ -119,6 +128,7 @@ const InputMessage = () => {
               placeholder="Nhập tin nhắn..."
               value={message}
               onChange={handleChange}
+              onKeyDown={handleKeyDown} // Thêm sự kiện này
               className=" text-gray-700 pt-1 text-sm w-full h-full shadow-inner focus:outline-none focus:ring-0 focus:ring-none 
                   resize-none focus:ring-none "
               rows="1"
