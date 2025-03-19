@@ -77,6 +77,15 @@ const Messages = () => {
   {
     type && profileUser?._id ? Centter : <p>Đang tải...</p>;
   }
+  const [screenHeight, setScreenHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    const updateHeight = () => setScreenHeight(window.innerHeight);
+    window.addEventListener("resize", updateHeight);
+
+    return () => window.removeEventListener("resize", updateHeight);
+  }, []);
+
   return (
     <div className="flex ">
       {/* Sidebar className={sidebarClass} */}
@@ -173,7 +182,7 @@ const Messages = () => {
 
       {/* Z-INDEX Chat Section */}
 
-      <div className="w-full h-screen NavbarUser flex flew-grow flex-col justify-end">
+      <div className="w-full NavbarUser flex flew-grow flex-col justify-end"  style={{ height: screenHeight }}>
         {/* top nav */}
 
         <div className="shadow-sm border-b px-3 z-10  flex items-center bg-white  ">
@@ -241,6 +250,7 @@ const Messages = () => {
           <InputMessage newmess={handleNewMessage} />
         </div>
       </div>
+      {/* right */}
       <div className="">
         <div
           ref={MessMenuRight}
