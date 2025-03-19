@@ -15,6 +15,7 @@ const InputMessage = ({ newmess }) => {
       setIsSend(true);
       return;
     }
+
     SendToUser(id, message)
       .then((response) => {
         newmess(response.data);
@@ -26,8 +27,15 @@ const InputMessage = ({ newmess }) => {
       .finally(() => {
         setIsSend(true);
         setMessage("");
+
+        // Reset textarea height
+        const textarea = document.querySelector("textarea");
+        if (textarea) {
+          textarea.style.height = "auto";
+        }
       });
   };
+
   const handleChange = (e) => {
     const newValue = e.target.value;
     setMessage(newValue);
@@ -138,8 +146,9 @@ const InputMessage = ({ newmess }) => {
         </div>
         {isSend ? (
           <button
-            onClick={() => handleSendMessage()}
+            onClick={handleSendMessage}
             className="group relative"
+            aria-label="Send message"
           >
             <PaperAirplaneIcon
               title="Gửi tin nhắn"

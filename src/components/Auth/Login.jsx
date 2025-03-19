@@ -35,7 +35,7 @@ export default function Login({ chaneform }) {
     if (!formData.password)
       validationErrors.password = "Vui lòng nhập mật khẩu.";
     return validationErrors;
-  };
+  }; 
 
   const handleSubmit = async () => {
     const validationErrors = validateForm();
@@ -157,6 +157,9 @@ export default function Login({ chaneform }) {
                 type="text"
                 name="identifier"
                 value={formData.identifier}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSubmit();
+                }}
                 onChange={handleChange}
                 className="mt-2 block w-full px-4 py-3 text-gray-700 bg-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none  shadow-inner shadow-gray-200"
                 placeholder="Nhập email hoặc số điện thoại"
@@ -177,6 +180,9 @@ export default function Login({ chaneform }) {
                 type="password"
                 name="password"
                 value={formData.password}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSubmit();
+                }}
                 onChange={handleChange}
                 className="mt-2 block w-full px-4 py-3 text-gray-700 bg-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none  shadow-inner shadow-gray-200"
                 placeholder="Nhập mật khẩu"
@@ -203,7 +209,7 @@ export default function Login({ chaneform }) {
           </button> */}
             <button
               type="button"
-              onClick={handleSubmit}
+              onClick={handleSubmit} 
               disabled={loading}
               class="text-white w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 text-center me-2 mb-2"
             >

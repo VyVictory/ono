@@ -84,7 +84,7 @@ const Inbox = ({ newmess }) => {
     <div className="flex flex-col h-full bg-gray-100 ">
       <div ref={containerRefMess} className="flex-1 overflow-y-auto p-4">
         {messagesByDayMemo.map((group, dayIndex) => (
-          <div key={dayIndex}>
+          <div key={dayIndex} >
             {/* Hiển thị ngày */}
             <div className="text-center text-gray-500 text-sm mb-2">
               {format(new Date(group.daytime), "dd, MMMM, yyyy", {
@@ -109,7 +109,7 @@ const Inbox = ({ newmess }) => {
                   } mb-2`}
                 >
                   <div
-                    className={`p-3 rounded-lg shadow-md max-w-xs ${
+                    className={`p-3 rounded-lg shadow-md  min-w-20  max-w-xs ${
                       isMe && "bg-blue-100"
                     }`}
                   >
