@@ -1,14 +1,17 @@
 import api from "./components/api";
 import authToken from "./storage/authToken";
 import { nextLogin, nextError } from "./components/nextLogin";
+import { useSocket } from "./socket/socket";
+import { useAuth } from "../components/context/AuthProvider";
 const token = authToken.getToken();
-export const SendToUser = async (id, message, file) => {
+
+export const SendToUser = async (id, message, file) => { 
   try {
     if (!token) {
       nextLogin();
     }
     const formData = new FormData();
-    formData.append("content", message); 
+    formData.append("content", message);
     const response = await api.post(
       `/message/send/${encodeURIComponent(id)}`,
       formData,
@@ -26,9 +29,9 @@ export const SendToUser = async (id, message, file) => {
 };
 export const getMessageInbox = async (id, start, limit) => {
   try {
-    const response = await api.get( 
+    const response = await api.get(
       `/message/inbox/rage/${id}?start=${start}&limit=${limit}`
-    ); 
+    );
     return response.data;
   } catch (error) {
     nextError(error);

@@ -14,16 +14,16 @@ export const useSocket = (userId) => {
 
     newSocket.on("connect", () => {
       console.log("Connected to socket:", newSocket.id);
-      isConnectRef.current = true;
       sessionStorage.setItem("isConnect", "true"); // 🔹 Lưu vào sessionStorage
       newSocket.emit("authenticate", userId); // 🔹 Gửi userId lên server
     });
-    
+
     setSocket(newSocket);
 
     return () => {
       newSocket.disconnect();
-       // 🔹 Reset trạng thái khi unmount
+      sessionStorage.setItem("isConnect", "false"); // 🔹 Lưu vào sessionStorage
+      // 🔹 Reset trạng thái khi unmount
     };
   }, [userId]);
 

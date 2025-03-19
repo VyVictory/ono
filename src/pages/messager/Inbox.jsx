@@ -18,7 +18,7 @@ const Inbox = ({ newmess }) => {
   const messagesByDayMemo = useMemo(() => messagesByDay, [messagesByDay]);
   const fetchMessages = async () => {
     try {
-      const data = await getMessageInbox(id, 0, 100);
+      const data = await getMessageInbox(id, 0, 20);
       if (data) {
         setMessagesByDay((prev) => [...prev, ...data]); // Load dần
       }
@@ -31,9 +31,9 @@ const Inbox = ({ newmess }) => {
       fetchMessages();
     }
   }, [id]); // Chỉ gọi lại khi `id` thay đổi.
-  const addMessages = async (message) => { 
+  const addMessages = async (message) => {
     // Kiểm tra nếu message là object có _id hợp lệ
-    if (message && message._id) { 
+    if (message && message._id) {
       setMessagesByDay((prevMessages) => {
         const updatedMessages = [...prevMessages];
 
@@ -47,8 +47,6 @@ const Inbox = ({ newmess }) => {
           file: message.file,
           createdAt: message.createdAt,
         };
-
-        console.log("22222");
         const messageDate = format(new Date(message.createdAt), "yyyy-MM-dd");
 
         // Tìm nhóm tin nhắn theo ngày
@@ -76,19 +74,19 @@ const Inbox = ({ newmess }) => {
   useEffect(() => {
     addMessages(newmess);
   }, [newmess]);
-  useEffect(() => { 
+  useEffect(() => {
     addMessages(newMessInbox?.message);
-   
   }, [newMessInbox]);
   useEffect(() => {
     if (!isLoadingProfile && lastMessageRef.current) {
       lastMessageRef.current.scrollIntoView({ behavior: "auto" });
     }
   }, [messagesByDay, isLoadingProfile]);
-
+  console.log(messagesByDayMemo);
   if (isLoadingProfile == true) {
     return <LoadingAnimation />;
-  } 
+  }
+
   return (
     <div className="flex flex-col h-full bg-gray-100 ">
       <div ref={containerRefMess} className="flex-1 overflow-y-auto p-4">

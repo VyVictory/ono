@@ -23,6 +23,9 @@ const InputMessage = ({ newmess }) => {
 
     SendToUser(id, message)
       .then((response) => {
+        socket.emit("sendMessage", {
+          text: response.data.content,
+        });
         newmess(response.data);
         console.log("Message sent successfully:", response);
       })
@@ -39,9 +42,6 @@ const InputMessage = ({ newmess }) => {
           textarea.style.height = "auto";
         }
       });
-    socket.emit("sendMessage", {
-      text: message,
-    });
   };
 
   const handleChange = (e) => {
