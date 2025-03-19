@@ -182,10 +182,10 @@ const Messages = () => {
 
       {/* Z-INDEX Chat Section */}
 
-      <div className="w-full h-screen NavbarUser flex flew-grow flex-col justify-end">
+      <div className="w-full h-screen  flex flew-grow flex-col justify-end">
         {/* top nav */}
-
-        <div className="shadow-sm border-b px-3 z-10  flex items-center sticky top-0 bg-white  ">
+        <div className="NavbarUser"></div>
+        <div className="shadow-sm border-b px-3 z-10  flex items-center bg-white  ">
           <button
             className="lg:hidden"
             onClick={() => setSidebarOpen((prevState) => !prevState)}
