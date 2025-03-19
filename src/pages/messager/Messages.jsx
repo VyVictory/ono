@@ -249,7 +249,7 @@ const Messages = () => {
         {/* center */}
         <div className="flex-grow overflow-y-auto">{Centter}</div>
         {/* Chat input */}
-        <div className="shadow-sm border-t flex items-center p-2 bg-white">
+        <div className="shadow-sm border-t sticky bottom-0 flex items-center p-2 bg-white">
           <InputMessage newmess={handleNewMessage} />
         </div>
       </div>
