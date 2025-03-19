@@ -35,7 +35,7 @@ export default function Login({ chaneform }) {
     if (!formData.password)
       validationErrors.password = "Vui lòng nhập mật khẩu.";
     return validationErrors;
-  }; 
+  };
 
   const handleSubmit = async () => {
     const validationErrors = validateForm();
@@ -132,7 +132,7 @@ export default function Login({ chaneform }) {
 
   return (
     <div className="flex justify-center items-center h-screen w-full">
-      <div className="relative bg-gradient-to-br to-purple-200 from-pink-200 p-0.5 rounded-2xl w-full my-4 max-w-sm">
+      <div className="relative bg-gradient-to-br to-purple-100 from-pink-100 p-0.5  shadow-lg shadow-black  rounded-2xl w-full my-4 max-w-sm">
         <div className="bg-white  rounded-xl p-4">
           <div className="p-8 px-8">
             <div className="flex justify-between items-center">
@@ -209,7 +209,7 @@ export default function Login({ chaneform }) {
           </button> */}
             <button
               type="button"
-              onClick={handleSubmit} 
+              onClick={handleSubmit}
               disabled={loading}
               class="text-white w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 text-center me-2 mb-2"
             >

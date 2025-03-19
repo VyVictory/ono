@@ -4,10 +4,15 @@ import { PaperAirplaneIcon } from "@heroicons/react/24/outline"; // Import icon
 import UseMessageInfo from "./UseMessageInfo";
 import { SendToUser } from "../../service/message";
 import LoadingAnimation from "../../components/LoadingAnimation";
+import { useSocket } from "../../service/socket/socket";
+import { useAuth } from "../../components/context/AuthProvider";
 const InputMessage = ({ newmess }) => {
+  const { profile } = useAuth();
   const [isSend, setIsSend] = useState(true);
   const { type, id } = UseMessageInfo();
+  const socket = useSocket(profile?._id);
   const [message, setMessage] = useState("");
+
   const handleSendMessage = () => {
     setIsSend(false);
 
@@ -34,6 +39,9 @@ const InputMessage = ({ newmess }) => {
           textarea.style.height = "auto";
         }
       });
+    socket.emit("sendMessage", {
+      text: message,
+    });
   };
 
   const handleChange = (e) => {

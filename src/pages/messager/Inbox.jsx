@@ -7,13 +7,15 @@ import { useAuth } from "../../components/context/AuthProvider";
 import LoadingAnimation from "../../components/LoadingAnimation";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale"; // Import locale tiếng Việt (nếu cần)
+import { useSocketContext } from "../../components/context/socketProvider";
 const Inbox = ({ newmess }) => {
   const { profile, isLoadingProfile } = useAuth();
+  const { newMessInbox } = useSocketContext();
   const lastMessageRef = useRef(null);
   const containerRefMess = useRef(null);
   const { id } = UseMessageInfo();
   const [messagesByDay, setMessagesByDay] = useState([]);
-  const messagesByDayMemo = useMemo(() => messagesByDay, [messagesByDay]); 
+  const messagesByDayMemo = useMemo(() => messagesByDay, [messagesByDay]);
   const fetchMessages = async () => {
     try {
       const data = await getMessageInbox(id, 0, 100);
@@ -28,48 +30,56 @@ const Inbox = ({ newmess }) => {
     if (id) {
       fetchMessages();
     }
-  }, [id]); // Chỉ gọi lại khi `id` thay đổi. 
-  useEffect(() => {
-    if (Array.isArray(newmess) && newmess.length > 0) {
+  }, [id]); // Chỉ gọi lại khi `id` thay đổi.
+  const addMessages = async (message) => { 
+    // Kiểm tra nếu message là object có _id hợp lệ
+    if (message && message._id) { 
       setMessagesByDay((prevMessages) => {
         const updatedMessages = [...prevMessages];
 
-        newmess.forEach((message) => {
-          const newMessage = {
-            _id: message._id,
-            sender: message.sender._id,
-            isRecalled:message.isRecalled,
-            senderName: `${message.sender.firstName} ${message.sender.lastName}`,
-            avatar: message.sender.avatar,
-            content: message.content,
-            file: message.file,
-            createdAt: message.createdAt,
-          };
+        const newMessage = {
+          _id: message._id,
+          sender: message.sender._id,
+          isRecalled: message.isRecalled,
+          senderName: `${message.sender.firstName} ${message.sender.lastName}`,
+          avatar: message.sender.avatar,
+          content: message.content,
+          file: message.file,
+          createdAt: message.createdAt,
+        };
 
-          const messageDate = format(new Date(message.createdAt), "yyyy-MM-dd");
+        console.log("22222");
+        const messageDate = format(new Date(message.createdAt), "yyyy-MM-dd");
 
-          // Tìm nhóm tin nhắn theo ngày
-          const existingGroup = updatedMessages.find(
-            (group) =>
-              format(new Date(group.daytime), "yyyy-MM-dd") === messageDate
-          );
+        // Tìm nhóm tin nhắn theo ngày
+        const existingGroup = updatedMessages.find(
+          (group) =>
+            format(new Date(group.daytime), "yyyy-MM-dd") === messageDate
+        );
 
-          if (existingGroup) {
-            // Thêm tin nhắn mới vào nhóm hiện tại
-            existingGroup.mess.push(newMessage);
-          } else {
-            // Tạo nhóm mới
-            updatedMessages.push({
-              daytime: message.createdAt,
-              mess: [newMessage],
-            });
-          }
-        });
+        if (existingGroup) {
+          // Thêm tin nhắn mới vào nhóm hiện tại
+          existingGroup.mess.push(newMessage);
+        } else {
+          // Tạo nhóm mới
+          updatedMessages.push({
+            daytime: message.createdAt,
+            mess: [newMessage],
+          });
+        }
 
         return updatedMessages;
       });
     }
+  };
+
+  useEffect(() => {
+    addMessages(newmess);
   }, [newmess]);
+  useEffect(() => { 
+    addMessages(newMessInbox?.message);
+   
+  }, [newMessInbox]);
   useEffect(() => {
     if (!isLoadingProfile && lastMessageRef.current) {
       lastMessageRef.current.scrollIntoView({ behavior: "auto" });
@@ -78,13 +88,12 @@ const Inbox = ({ newmess }) => {
 
   if (isLoadingProfile == true) {
     return <LoadingAnimation />;
-  }
-  console.log(messagesByDayMemo)
+  } 
   return (
     <div className="flex flex-col h-full bg-gray-100 ">
       <div ref={containerRefMess} className="flex-1 overflow-y-auto p-4">
         {messagesByDayMemo.map((group, dayIndex) => (
-          <div key={dayIndex} >
+          <div key={dayIndex}>
             {/* Hiển thị ngày */}
             <div className="text-center text-gray-500 text-sm mb-2">
               {format(new Date(group.daytime), "dd, MMMM, yyyy", {

@@ -29,7 +29,7 @@ const Messages = () => {
   const [messages, setMessages] = useState([]);
 
   const handleNewMessage = (newMessage) => {
-    setMessages([newMessage]); // ✅ Cập nhật tin nhắn mới, xoá danh sách cũ
+    setMessages(newMessage); // ✅ Cập nhật tin nhắn mới, xoá danh sách cũ
   };
 
   // console.log("Loại tin nhắn:", type);
@@ -57,7 +57,7 @@ const Messages = () => {
         try {
           const response = await getCurrentUser(id);
           setProfileUser(response);
-          console.log(response);
+          // console.log(response);
         } catch (error) {
           console.error("Get Profile Error:", error);
         }
@@ -172,19 +172,21 @@ const Messages = () => {
       </motion.div>
 
       {/* Z-INDEX Chat Section */}
-      {profileUser ? (
-        <>
-          <div className="w-full h-screen NavbarUser flex flew-grow flex-col justify-end">
-            {/* top nav */}
 
-            <div className="shadow-sm border-b px-3 z-10  flex items-center bg-white  ">
-              <button
-                className="lg:hidden"
-                onClick={() => setSidebarOpen((prevState) => !prevState)}
-              >
-                <Bars3Icon className="h-6 w-6 " />
-              </button>
-              <div className="flex flex-row justify-start items-center py-1 w-full space-x-1 max-h-32">
+      <div className="w-full h-screen NavbarUser flex flew-grow flex-col justify-end">
+        {/* top nav */}
+
+        <div className="shadow-sm border-b px-3 z-10  flex items-center bg-white  ">
+          <button
+            className="lg:hidden"
+            onClick={() => setSidebarOpen((prevState) => !prevState)}
+          >
+            <Bars3Icon className="h-6 w-6 " />
+          </button>
+
+          <div className="flex flex-row min-h-14 justify-start items-center py-1 w-full space-x-1 max-h-32">
+            {profileUser && (
+              <>
                 <button className="max-h-12 aspect-square border-4 border-white rounded-full ">
                   <img
                     className="w-full rounded-full"
@@ -197,49 +199,52 @@ const Messages = () => {
                   {profileUser?.firstName + " " + profileUser?.lastName}
                 </h2>
                 <p className="">Trạng thái</p>
-              </div>
-              {/* lớn thì hiện */}
-              <div className="flex items-center justify-center">
-                <button className="xl:hidden">
-                  <ExclamationCircleIcon
-                    onClick={() => {
-                      setRightbarOpen1(true);
-                      if (!isRightbarOpen1) {
-                        setTimeout(() => {
-                          setRightbarOpen((prevState) => !prevState);
-                        }, 1);
-                      } else {
-                        setRightbarOpen((prevState) => !prevState);
-                      }
-                    }}
-                    className="h-8 w-8 p-1 hover:bg-gray-200 hover:text-blue-700 rounded-full text-blue-500"
-                  />
-                </button>
-              </div>
-              {/* nhỏ thì hiện */}
-              <div className="flex items-center justify-center">
-                {!isRightbarOpen && (
-                  <button className="xl:block hidden">
-                    <ExclamationCircleIcon
-                      onClick={() => setRightbarOpen1(!isRightbarOpen1)}
-                      className="h-8 w-8 p-1 hover:bg-gray-200 hover:text-blue-700 rounded-full text-blue-500"
-                    />
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* center */}
-            <div className="flex-grow overflow-y-auto">{Centter}</div>
-            {/* Chat input */}
-            <div className="shadow-sm border-t flex items-center p-2 bg-white">
-              <InputMessage newmess={handleNewMessage} />
-            </div>
+              </>
+            )}
           </div>
-          <div className="">
-            <div
-              ref={MessMenuRight}
-              className={`NavbarUser
+
+          {/* lớn thì hiện */}
+          <div className="flex items-center justify-center">
+            <button className="xl:hidden">
+              <ExclamationCircleIcon
+                onClick={() => {
+                  setRightbarOpen1(true);
+                  if (!isRightbarOpen1) {
+                    setTimeout(() => {
+                      setRightbarOpen((prevState) => !prevState);
+                    }, 1);
+                  } else {
+                    setRightbarOpen((prevState) => !prevState);
+                  }
+                }}
+                className="h-8 w-8 p-1 hover:bg-gray-200 hover:text-blue-700 rounded-full text-blue-500"
+              />
+            </button>
+          </div>
+          {/* nhỏ thì hiện */}
+          <div className="flex items-center justify-center">
+            {!isRightbarOpen && (
+              <button className="xl:block hidden">
+                <ExclamationCircleIcon
+                  onClick={() => setRightbarOpen1(!isRightbarOpen1)}
+                  className="h-8 w-8 p-1 hover:bg-gray-200 hover:text-blue-700 rounded-full text-blue-500"
+                />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* center */}
+        <div className="flex-grow overflow-y-auto">{Centter}</div>
+        {/* Chat input */}
+        <div className="shadow-sm border-t flex items-center p-2 bg-white">
+          <InputMessage newmess={handleNewMessage} />
+        </div>
+      </div>
+      <div className="">
+        <div
+          ref={MessMenuRight}
+          className={`NavbarUser
          fixed  right-0 top-0  h-full w-[360px] border-l shadow-lg shadow-gray-300 bg-white z-30
          transition-transform duration-300  ease-in-out
          ${isRightbarOpen ? "translate-x-0 " : "translate-x-[100%]"}
@@ -249,24 +254,21 @@ const Messages = () => {
              : "xl:duration-0"
          } 
        `}
-            >
-              <div className="p-2 flex justify-between items-center">
-                <div className="flex z-10 h-8 absolute">
-                  <ArrowRightIcon
-                    onClick={() => setRightbarOpen((prevState) => !prevState)}
-                    className="h-8 xl:hidden hover:scale-125 text-blue-500 bg-violet-200 active:bg-violet-400 hover:bg-violet-300 rounded-3xl p-1 cursor-pointer"
-                  />
-                </div>
-                <h2 className="w-full text-center text-2xl font-semibold">
-                  Thông tin
-                </h2>
-              </div>
+        >
+          <div className="p-2 flex justify-between items-center">
+            <div className="flex z-10 h-8 absolute">
+              <ArrowRightIcon
+                onClick={() => setRightbarOpen((prevState) => !prevState)}
+                className="h-8 xl:hidden hover:scale-125 text-blue-500 bg-violet-200 active:bg-violet-400 hover:bg-violet-300 rounded-3xl p-1 cursor-pointer"
+              />
             </div>
+            <h2 className="w-full text-center text-2xl font-semibold">
+              Thông tin
+            </h2>
           </div>
-        </>
-      ) : (
-        <div className="w-full h-screen NavbarUser flex flew-grow justify-end text-center"></div>
-      )}
+        </div>
+      </div>
+
       {/* Rightbar */}
     </div>
   );
