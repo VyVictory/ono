@@ -97,7 +97,7 @@ const NavBar = () => {
   return (
     <nav
       className="HighNavbar bg-white shadow-md fixed w-screen flex justify-items-center z-40 "
-      style={{ minWidth: "screen" }}
+      style={{ minWidth: "100%" }}
     >
       <div className="flex w-[100%] ">
         {/* Left: Logo and Search bg */}
@@ -239,10 +239,10 @@ const NavBar = () => {
               <LinkTo
                 namepage={namepage}
                 css="group flex items-center hover:bg-gray-200 w-24 h-full justify-center rounded-md transition-colors duration-200"
-              > 
-                  <Button className="flex items-center justify-center h-full w-full aspect-square">
-                    <Icon className="h-6 w-6 text-gray-600 transition-colors duration-200 group-hover:text-blue-500 stroke-[1.5]" />
-                  </Button> 
+              >
+                <Button className="flex items-center justify-center h-full w-full aspect-square">
+                  <Icon className="h-6 w-6 text-gray-600 transition-colors duration-200 group-hover:text-blue-500 stroke-[1.5]" />
+                </Button>
               </LinkTo>
             </div>
           ))}
