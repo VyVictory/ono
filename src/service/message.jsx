@@ -8,8 +8,7 @@ export const SendToUser = async (id, message, file) => {
       nextLogin();
     }
     const formData = new FormData();
-    formData.append("content", message);
-    console.log(formData);
+    formData.append("content", message); 
     const response = await api.post(
       `/message/send/${encodeURIComponent(id)}`,
       formData,

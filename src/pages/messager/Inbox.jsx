@@ -13,8 +13,7 @@ const Inbox = ({ newmess }) => {
   const containerRefMess = useRef(null);
   const { id } = UseMessageInfo();
   const [messagesByDay, setMessagesByDay] = useState([]);
-  const messagesByDayMemo = useMemo(() => messagesByDay, [messagesByDay]);
-  console.log(newmess)
+  const messagesByDayMemo = useMemo(() => messagesByDay, [messagesByDay]); 
   const fetchMessages = async () => {
     try {
       const data = await getMessageInbox(id, 0, 100);
