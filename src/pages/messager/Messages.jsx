@@ -172,8 +172,8 @@ const Messages = () => {
       </motion.div>
 
       {/* Z-INDEX Chat Section */}
-      {profileUser ? (
-        <>
+      
+       
           <div className="w-full h-screen NavbarUser flex flew-grow flex-col justify-end">
             {/* top nav */}
 
@@ -185,7 +185,7 @@ const Messages = () => {
                 <Bars3Icon className="h-6 w-6 " />
               </button>
               <div className="flex flex-row justify-start items-center py-1 w-full space-x-1 max-h-32">
-                <button className="max-h-12 aspect-square border-4 border-white rounded-full ">
+                {profileUser && <><button className="max-h-12 aspect-square border-4 border-white rounded-full ">
                   <img
                     className="w-full rounded-full"
                     src={avt}
@@ -196,7 +196,7 @@ const Messages = () => {
                 <h2 className="text-lg font-semibold">
                   {profileUser?.firstName + " " + profileUser?.lastName}
                 </h2>
-                <p className="">Trạng thái</p>
+                <p className="">Trạng thái</p></>}
               </div>
               {/* lớn thì hiện */}
               <div className="flex items-center justify-center">
@@ -263,10 +263,7 @@ const Messages = () => {
               </div>
             </div>
           </div>
-        </>
-      ) : (
-        <div className="w-full h-screen NavbarUser flex flew-grow justify-end text-center"></div>
-      )}
+        
       {/* Rightbar */}
     </div>
   );
