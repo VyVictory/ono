@@ -185,7 +185,7 @@ const Messages = () => {
       <div className="w-full NavbarUser flex flew-grow flex-col justify-end"  style={{ height: screenHeight }}>
         {/* top nav */}
 
-        <div className="shadow-sm border-b px-3 z-10  flex items-center bg-white  ">
+        <div className="shadow-sm border-b px-3 z-10  flex items-center sticky top-0 bg-white  ">
           <button
             className="lg:hidden"
             onClick={() => setSidebarOpen((prevState) => !prevState)}
@@ -246,7 +246,7 @@ const Messages = () => {
         {/* center */}
         <div className="flex-grow overflow-y-auto">{Centter}</div>
         {/* Chat input */}
-        <div className="shadow-sm border-t flex items-center p-2 bg-white">
+        <div className="shadow-sm border-t flex items-center p-2 sticky bottom-0 bg-white">
           <InputMessage newmess={handleNewMessage} />
         </div>
       </div>
