@@ -27,7 +27,7 @@ const InputMessage = ({ newmess }) => {
           text: response.data.content,
         });
         newmess(response.data);
-        console.log("Message sent successfully:", response);
+        
       })
       .catch((error) => {
         console.error("Error sending message:", error);

@@ -112,9 +112,8 @@ const Inbox = ({ newmess }) => {
   }, []);
 
   useEffect(() => {
-    if (newmess?.length) {
-      newmess.forEach((msg) => addMessages(msg));
-    }
+    addMessages(newmess);
+    console.log("add", newmess);
   }, [newmess, addMessages]);
 
   useEffect(() => {
@@ -177,6 +176,7 @@ const Inbox = ({ newmess }) => {
   const scroll = () => {
     lastMessageRef.current?.scrollIntoView({ behavior: "auto" });
   };
+  console.log(messagesByDayMemo);
   if (isLoadingProfile) return <LoadingAnimation />;
 
   return (
@@ -209,7 +209,7 @@ const Inbox = ({ newmess }) => {
               })}
             </div>
             {group.mess.map((msg, index) => {
-              const isMe = msg.sender === profile._id;
+              const isMe = msg.sender === profile._id||  msg.sender?._id === profile._id
               return (
                 <div
                   key={index}
