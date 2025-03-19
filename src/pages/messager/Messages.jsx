@@ -184,7 +184,7 @@ const Messages = () => {
             <Bars3Icon className="h-6 w-6 " />
           </button>
 
-          <div className="flex flex-row min-h-14 justify-start items-center py-1 w-full space-x-1 max-h-32">
+          <div className="flex flex-row min-h-16 justify-start items-center py-1 w-full space-x-1 max-h-32">
             {profileUser && (
               <>
                 <button className="max-h-12 aspect-square border-4 border-white rounded-full ">
