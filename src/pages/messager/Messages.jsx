@@ -182,9 +182,12 @@ const Messages = () => {
 
       {/* Z-INDEX Chat Section */}
 
-      <div className="w-full h-screen  flex flew-grow flex-col justify-end">
+      <div
+        className="w-full h-screen NavbarUser flex flew-grow flex-col justify-end overflow-y-hidden"
+        style={{ minHeight: `${screenHeight - 1}px` }}
+      >
         {/* top nav */}
-        <div className="NavbarUser"></div>
+
         <div className="shadow-sm border-b px-3 z-10  flex items-center bg-white  ">
           <button
             className="lg:hidden"
@@ -246,11 +249,11 @@ const Messages = () => {
         {/* center */}
         <div className="flex-grow overflow-y-auto">{Centter}</div>
         {/* Chat input */}
-        <div className="shadow-sm border-t flex items-center p-2 sticky bottom-0 bg-white">
+        <div className="shadow-sm border-t flex items-center p-2 bg-white">
           <InputMessage newmess={handleNewMessage} />
         </div>
       </div>
-      {/* right */}
+      {/*  */}
       <div className="">
         <div
           ref={MessMenuRight}
