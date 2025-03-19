@@ -167,7 +167,9 @@ const Inbox = ({ newmess }) => {
     containerRefMess.current.addEventListener("scroll", handleScroll);
 
     return () => {
-      containerRefMess.current.removeEventListener("scroll", handleScroll);
+      if (containerRefMess.current) {
+        containerRefMess.current.removeEventListener("scroll", handleScroll);
+      }
       clearTimeout(timeoutId); // Hủy timeout khi component unmount
     };
   }, [hasMore, isLoadingMore, fetchMessages, page, isLoadingProfile]);
