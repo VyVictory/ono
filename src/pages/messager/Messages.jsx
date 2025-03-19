@@ -13,10 +13,14 @@ import { useNavigate } from "react-router-dom";
 
 import UseMessageInfo from "./UseMessageInfo";
 import InputMessage from "./InputMessage";
+import { getCurrentUser } from "../../service/user";
+import avt from "../../img/DefaultAvatar.jpg";
+import LoadingAnimation from "../../components/LoadingAnimation";
 
 const Messages = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isRightbarOpen, setRightbarOpen] = useState(false);
+  const [profileUser, setProfileUser] = useState(null);
   const [isRightbarOpen1, setRightbarOpen1] = useState(true);
   const navigate = useNavigate();
   const MessMenuLeft = useRef(null);
@@ -47,7 +51,20 @@ const Messages = () => {
 
   UseClickOutside(MessMenuLeft, () => setSidebarOpen(false));
   UseClickOutside(MessMenuRight, () => setRightbarOpen(false));
-
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (type == "inbox") {
+        try {
+          const response = await getCurrentUser(id);
+          setProfileUser(response);
+          console.log(response);
+        } catch (error) {
+          console.error("Get Profile Error:", error);
+        }
+      }
+    };
+    id && fetchProfile();
+  }, [id]);
   const [searchText, setSearchText] = useState(false);
   const Centter = useMemo(() => {
     switch (type) {
@@ -58,7 +75,11 @@ const Messages = () => {
     }
   }, [type, messages]); // ✅ Cập nhật khi messages thay đổi
   {
-    type ? Centter : <p>Đang tải...</p>;
+    type && profileUser?._id ? Centter : <p>Đang tải...</p>;
+  }
+  if (!profileUser) {
+    console.log();
+    return <LoadingAnimation />;
   }
   return (
     <div className="flex ">
@@ -164,8 +185,18 @@ const Messages = () => {
           >
             <Bars3Icon className="h-6 w-6 " />
           </button>
-          <div className="flex flex-row justify-center items-center p-4 w-full">
-            <h2 className="text-lg font-semibold">Tên người dùng</h2>
+          <div className="flex flex-row justify-start items-center py-1 w-full space-x-1 max-h-32">
+            <button className="max-h-12 aspect-square border-4 border-white rounded-full ">
+              <img
+                className="w-full rounded-full"
+                src={avt}
+                alt="Profile"
+                loading="lazy"
+              />
+            </button>
+            <h2 className="text-lg font-semibold">
+              {profileUser?.firstName + " " + profileUser?.lastName}
+            </h2>
             <p className="">Trạng thái</p>
           </div>
           {/* lớn thì hiện */}
