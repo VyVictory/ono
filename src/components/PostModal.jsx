@@ -1,18 +1,17 @@
 import { useState } from "react";
-import { Modal, TextField } from "@mui/material";
+import { IconButton, Modal, TextField } from "@mui/material";
 import {
   XCircleIcon,
   PlusCircleIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   TrashIcon,
-  CheckCircleIcon, 
+  CheckCircleIcon,
 } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
-import { 
-  VideoCameraIcon,
-  PhotoIcon, 
-} from "@heroicons/react/24/outline";
+import { VideoCameraIcon, PhotoIcon } from "@heroicons/react/24/outline";
+import { Delete } from "@mui/icons-material";
+import { IconsManifest } from "react-icons/lib";
 import { useConfirm } from "./context/ConfirmProvider";
 import { toast } from "react-toastify";
 export default function PostForm({ children }) {
@@ -323,11 +322,14 @@ export default function PostForm({ children }) {
               </div>
               <div className="flex flex-row space-x-4">
                 {selectedImages.length > 0 && (
-                  <button
-                    onClick={removeSelectedImages}
-                    className=" shadow-sm shadow-violet-200 hover:bg-red-100 rounded-lg"
-                  >
-                    <TrashIcon className="w-10 h-10 text-red-400 hover:scale-110 hover:text-red-500 duration-300" />
+                  // <button
+                  //   onClick={removeSelectedImages}
+                  //   className=" shadow-sm shadow-violet-200 hover:bg-red-100 rounded-lg"
+                  // >
+                  //   <TrashIcon className="w-10 h-10 text-red-400 hover:scale-110 hover:text-red-500 duration-300" />
+                  // </button>
+                  <button onClick={removeSelectedImages} aria-label="delete">
+                    <Delete />
                   </button>
                 )}
                 {post.images.length > 0 && (
@@ -442,7 +444,7 @@ export default function PostForm({ children }) {
                       </button>
                     </div>
                   ))}
-                </div> 
+                </div>
               </div>
             </div>
           </motion.div>

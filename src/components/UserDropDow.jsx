@@ -211,6 +211,5 @@ const UserDropDow = ({ avt }) => {
       </AnimatePresence>
     </div>
   );
-};
-const MenuList = () => {};
+}; 
 export default UserDropDow;

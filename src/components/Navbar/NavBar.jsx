@@ -24,8 +24,11 @@ import SearchList from "../searchUser";
 import MiniMenuCenter from "./miniMenuCenter";
 import WaterBubbleButton from "../button/WaterBubbleButton";
 import { Button } from "@mui/material";
+import { useModule } from "../context/Module";
+import NotificationDropDow from "../NotificationDropDow";
 const NavBar = () => {
   const { showLogin, setShowLogin, profile, isLoadingProfile } = useAuth();
+  const { setUsecase, usecase } = useModule();
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -188,20 +191,16 @@ const NavBar = () => {
             <MiniMenuCenter menu={menuItems} />
           </div>
 
-          <LinkTo namepage="messages">
-            <div className="h-11 w-11 shadow-lg rounded-full border">
-              <WaterBubbleButton>
-                <ChatBubbleLeftIcon className="h-full w-full" />
-              </WaterBubbleButton>
-            </div>
-          </LinkTo>
-          <LinkTo namepage="">
-            <div className="h-11 w-11 shadow-lg rounded-full border">
-              <WaterBubbleButton>
-                <BellIcon className="h-full w-full " />
-              </WaterBubbleButton>
-            </div>
-          </LinkTo>
+          <button>
+            <LinkTo namepage="messages">
+              <div className="h-11 w-11 shadow-lg rounded-full border">
+                <WaterBubbleButton>
+                  <ChatBubbleLeftIcon className="h-full w-full" />
+                </WaterBubbleButton>
+              </div>
+            </LinkTo>
+          </button>
+          <NotificationDropDow />
           {isLoadingProfile ? (
             <ArrowPathIcon className="h-12 w-12 text-gray-400 animate-spin" />
           ) : profile === undefined ? (

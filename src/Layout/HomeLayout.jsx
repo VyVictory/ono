@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import SiderBar from "../components/siderbar/SiderBar";
+import FixedBottomNavigation from "../components/FixedBottomNavigation";
 
 const HomeLayout = () => {
   return (
@@ -11,6 +12,7 @@ const HomeLayout = () => {
       {/* Header */}
       {/* Main content - React Router sẽ hiển thị nội dung tại đây */}
       <main className="flex-1 flex flex-col">
+        {/* <FixedBottomNavigation /> */}
         <Outlet />
       </main>
     </div>

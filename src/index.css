@@ -16,16 +16,19 @@
             background-position: 0% 50%;
         }
     }
+ 
 
     .backgoundWave {
         background: linear-gradient(270deg, red, orange, yellow, green, cyan, blue, violet);
         background-size: 400% 400%;
-        animation: rainbow 10s ease infinite; 
+        animation: rainbow 10s ease infinite;
         filter: blur(10px);
     }
+
     .backgoundWeb {
-        background: linear-gradient(to right, rgba(0, 0, 255, 0.02) , rgba(255, 181, 255, 0.02)); 
+        background: linear-gradient(to right, rgba(0, 0, 255, 0.02), rgba(255, 181, 255, 0.02));
     }
+
     select option[value=""] {
         color: gray;
     }

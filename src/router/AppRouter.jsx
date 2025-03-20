@@ -17,6 +17,7 @@ import "react-toastify/dist/ReactToastify.css";
 // import Profile from "../pages/profile/profile.jsx";
 import Profile from "../pages/profile/profile.jsx";
 // import Test from "../pages/test.jsx";
+
 import { useEffect } from "react";
 import ProfileLayout from "../Layout/ProfileLayout.jsx";
 import { PhotoSwipeProvider } from "../components/context/PhotoSwipeProvider.jsx";
@@ -44,7 +45,7 @@ const App = () => {
     <PhotoSwipeProvider>
       <Router>
         {showLogin && <Auth />}
-        <AppRouter />
+        <AppRouter />{" "}
         <ToastContainer position="top-left" autoClose={3000} limit={3} />
       </Router>
     </PhotoSwipeProvider>

@@ -19,7 +19,7 @@ const WaterBubbleButton = ({ children, onClick }) => {
   };
 
   return (
-    <button
+    <div
       onClick={(e) => {
         createRipple(e);
         if (onClick) onClick();
@@ -39,7 +39,7 @@ const WaterBubbleButton = ({ children, onClick }) => {
           }}
         />
       ))}
-    </button>
+    </div>
   );
 };
 
