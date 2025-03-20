@@ -16,8 +16,8 @@ export default function Auth() {
   const videoRef = useRef(null);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false); // Trạng thái kiểm tra video đã tải xong chưa
 
-  // Danh sách video nền desktop
-  const desktopVideos = [bgVideo1, bgVideo2];
+  // Danh sách video nền desktop bgVideo1,
+  const desktopVideos = [bgVideo2];
 
   // State để lưu video phù hợp với thiết bị
   const [currentVideo, setCurrentVideo] = useState(null);
@@ -26,7 +26,7 @@ export default function Auth() {
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        setCurrentVideo(bgVideoMobile); // Mobile
+        setCurrentVideo(bgVideoMobile); // Mobile  bgVideoMobile
       } else {
         setCurrentVideo(
           desktopVideos[Math.floor(Math.random() * desktopVideos.length)]
