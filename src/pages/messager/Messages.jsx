@@ -14,11 +14,7 @@ import { useNavigate } from "react-router-dom";
 import UseMessageInfo from "./UseMessageInfo";
 import InputMessage from "./InputMessage";
 import { getCurrentUser } from "../../service/user";
-import avt from "../../img/DefaultAvatar.jpg";
-import LoadingAnimation from "../../components/LoadingAnimation";
-import { Avatar } from "@mui/material";
-import AvatarUser from "../../components/AvatarUser";
-import StyledBadge from "@mui/material/Badge"; // Ensure you have StyledBadge defined or imported
+
 import socketConfig from "../../service/socket/socketConfig";
 import UserStatusIndicator from "../../components/UserStatusIndicator";
 const Messages = () => {
@@ -57,6 +53,7 @@ const Messages = () => {
   UseClickOutside(MessMenuLeft, () => setSidebarOpen(false));
   UseClickOutside(MessMenuRight, () => setRightbarOpen(false));
   useEffect(() => {
+    setProfileUser(null)
     const fetchProfile = async () => {
       if (type == "inbox") {
         try {
@@ -114,6 +111,7 @@ const Messages = () => {
     fixed left-0 top-0 h-screen w-[360px] shadow-lg shadow-gray-300  border-x-gray-300 bg-white z-30  transition-transform duration-300 ease-in-out   ${
       isSidebarOpen ? "translate-x-0" : "translate-x-[-100%]"
     }   lg:w-[350px] lg:relative lg:block lg:translate-x-0  `}
+        style={{ maxWidth: "100%" }}
       >
         {/* Nội dung bên trong */}
         <AnimatePresence>
@@ -213,25 +211,23 @@ const Messages = () => {
             <Bars3Icon className="h-6 w-6 " />
           </button>
 
-          <div className="flex flex-row min-h-16 justify-start items-center py-1 w-full space-x-1 max-h-32 pl-3">
+          <div className="flex flex-row min-h-16 justify-start items-center py-1 w-full space-x-3 max-h-32 pl-3 ">
             {profileUser && (
               <>
-                <StyledBadge
-                  overlap="circular"
-                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                  badgeContent={
-                    <UserStatusIndicator
-                      userId={profileUser?._id}
-                      onlineUsers={onlineUsers}
-                    />
-                  }
-                >
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-                </StyledBadge>
+                <UserStatusIndicator
+                  userId={profileUser?._id}
+                  onlineUsers={onlineUsers}
+                />
 
-                <h2 className="text-lg font-semibold">
-                  {profileUser?.firstName + " " + profileUser?.lastName}
+                <h2 className="text-lg font-semibold text-gray-600">
+                  {`${profileUser?.firstName
+                    .charAt(0)
+                    .toUpperCase()}${profileUser.firstName.slice(1)} 
+                    ${profileUser?.lastName
+                      .charAt(0)
+                      .toUpperCase()}${profileUser.lastName.slice(1)}`}
                 </h2>
+
                 {/* <p className="">
                   Trạng thái:{" "} 
                 </p> */}
@@ -291,6 +287,7 @@ const Messages = () => {
              : "xl:duration-0"
          } 
        `}
+          style={{ maxWidth: "100%" }}
         >
           <div className="p-2 flex justify-between items-center">
             <div className="flex z-10 h-8 absolute">
