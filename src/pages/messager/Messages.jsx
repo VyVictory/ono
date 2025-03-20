@@ -84,7 +84,7 @@ const Messages = () => {
   }
   const [screenHeight, setScreenHeight] = useState(window.innerHeight);
   useEffect(() => {
-    if (!socketConfig || !profileUser?._id) return; 
+    if (!socketConfig || !profileUser?._id) return;
     socketConfig.emit("requestUserStatus", [profileUser._id]);
     const handleUserStatusUpdate = (data) => {
       // console.log("🟢 StatusUser:", data);
@@ -213,7 +213,7 @@ const Messages = () => {
             <Bars3Icon className="h-6 w-6 " />
           </button>
 
-          <div className="flex flex-row min-h-16 justify-start items-center py-1 w-full space-x-1 max-h-32">
+          <div className="flex flex-row min-h-16 justify-start items-center py-1 w-full space-x-1 max-h-32 pl-3">
             {profileUser && (
               <>
                 <StyledBadge
@@ -232,10 +232,9 @@ const Messages = () => {
                 <h2 className="text-lg font-semibold">
                   {profileUser?.firstName + " " + profileUser?.lastName}
                 </h2>
-                <p className="">
-                  Trạng thái:{" "}
-                  {/* <span className={`${isOnline?'text-green-500':'text-gray-500'}`}>{isOnline ? "Trực tuyến" : "Ngoại tuyến"}</span> */}
-                </p>
+                {/* <p className="">
+                  Trạng thái:{" "} 
+                </p> */}
               </>
             )}
           </div>
