@@ -79,7 +79,7 @@ export default function Auth() {
             loop
             muted
             playsInline
-            className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 ${
+            className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-300 ${
               isVideoLoaded ? "opacity-100" : "opacity-0"
             }`}
             onLoadedData={handleVideoLoaded}
