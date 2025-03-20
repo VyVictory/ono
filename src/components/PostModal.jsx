@@ -283,8 +283,8 @@ export default function PostForm({ children }) {
                   alt="thumbnail"
                   className={`w-16 h-16 object-cover rounded-md cursor-pointer border-2 hover:scale-105 duration-500 ${
                     selectedImages.includes(index)
-                      ? "border-red-500 border-4  hover:border-violet-500 hover:border"
-                      : "hover:border-violet-500"
+                      ? "border-red-500 border-4  "
+                      : ""
                   }`}
                   onClick={() => toggleSelectImage(index)}
                 />
@@ -322,14 +322,8 @@ export default function PostForm({ children }) {
               </div>
               <div className="flex flex-row space-x-4">
                 {selectedImages.length > 0 && (
-                  // <button
-                  //   onClick={removeSelectedImages}
-                  //   className=" shadow-sm shadow-violet-200 hover:bg-red-100 rounded-lg"
-                  // >
-                  //   <TrashIcon className="w-10 h-10 text-red-400 hover:scale-110 hover:text-red-500 duration-300" />
-                  // </button>
-                  <button onClick={removeSelectedImages} aria-label="delete">
-                    <Delete />
+                  <button onClick={removeSelectedImages} className=" ">
+                    <TrashIcon className="w-10 h-10 text-red-400 hover:scale-110  hover:text-red-500  shadow-violet-200 duration-300" />
                   </button>
                 )}
                 {post.images.length > 0 && (
@@ -340,13 +334,12 @@ export default function PostForm({ children }) {
                       } else {
                         setSelectedImages(post.images.map((_, index) => index)); // Chọn tất cả
                       }
-                    }}
-                    className=" w-10 h-10 shadow-sm shadow-violet-200 flex items-center justify-center  hover:bg-blue-50 text-blue-600 font-semibold rounded-lg transition-all "
+                    }} 
                   >
                     {selectedImages.length === post.images.length ? (
-                      <XCircleIcon className="w-8 h-10 hover:scale-110 duration-300" />
+                      <XCircleIcon className="w-10 h-10 hover:scale-110 text-red-400 duration-300" />
                     ) : (
-                      <CheckCircleIcon className="w-8 h-10 hover:scale-110 duration-300" />
+                      <CheckCircleIcon className="w-10 h-10 hover:scale-110 duration-300 text-green-500" />
                     )}
                   </button>
                 )}
@@ -389,21 +382,21 @@ export default function PostForm({ children }) {
                           ); // Chọn tất cả
                         }
                       }}
-                      className=" w-10 h-10 shadow-sm shadow-violet-300 flex items-center justify-center    hover:scale-105 duration-500 text-blue-600 font-semibold rounded-full transition-all "
+                      className=" w-10 h-10   "
                     >
                       {selectedImages.length === post.images.length ? (
-                        <XCircleIcon className="w-10 h-10" />
+                        <XCircleIcon className="w-10 h-10 text-red-500" />
                       ) : (
-                        <CheckCircleIcon className="w-10 h-10" />
+                        <CheckCircleIcon className="w-10 h-10 text-green-500" />
                       )}
                     </button>
                   )}
                   {selectedImages.length > 0 && (
                     <button
                       onClick={removeSelectedImages}
-                      className="  hover:bg-red-100 rounded-lg  shadow-sm shadow-red-200"
+                      className=" "
                     >
-                      <TrashIcon className="w-10 h-10 text-red-300 hover:scale-110 duration-300 hover:text-red-400" />
+                      <TrashIcon className="w-10 h-10 text-red-500 hover:scale-110 duration-300 hover:text-red-600" />
                     </button>
                   )}
                 </div>
@@ -420,7 +413,7 @@ export default function PostForm({ children }) {
                       key={index}
                       className={` ${
                         selectedImages.includes(index)
-                          ? "border-red-500 border hover:border-none"
+                          ? "border-red-500 border-2"
                           : ""
                       } relative shadow-lg shadow-violet-200  flex items-center justify-center border  hover:scale-105 duration-500 `}
                     >
