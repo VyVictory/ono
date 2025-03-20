@@ -183,26 +183,20 @@ const NavBar = () => {
 
         <div className="flex-grow"></div>
         {/* Right: Profile and Menu */}
-        <div className="flex items-center sm:space-x-2 space-x-1 pr-4 ">
+        <div className="flex items-center space-x-3 pr-4 ">
           <div className="lg:hidden">
             <MiniMenuCenter menu={menuItems} />
           </div>
 
           <LinkTo namepage="messages">
-            {/* <div className="bg-gray-50 rounded-full shadow-md hover:shadow-lg ring-1 ring-gray-300 hover:ring-blue-300 active:scale-95 transition-all duration-300 ease-out">
-              <ChatBubbleLeftIcon className=" h-10 w-10 p-2 text-gray-700 hover:text-blue-500 transition-transform duration-300 hover:scale-110" />
-            </div> */}
-            <div className="h-11 w-11 shadow-lg rounded-full">
+            <div className="h-11 w-11 shadow-lg rounded-full border">
               <WaterBubbleButton>
                 <ChatBubbleLeftIcon className="h-full w-full" />
               </WaterBubbleButton>
             </div>
           </LinkTo>
           <LinkTo namepage="">
-            {/* <div className="bg-gray-50 rounded-full shadow-md hover:shadow-lg ring-1 ring-gray-300 hover:ring-blue-300 active:scale-95 transition-all duration-300 ease-out">
-              <ChatBubbleLeftIcon className=" h-10 w-10 p-2 text-gray-700 hover:text-blue-500 transition-transform duration-300 hover:scale-110" />
-            </div> */}
-            <div className="h-11 w-11 shadow-lg rounded-full">
+            <div className="h-11 w-11 shadow-lg rounded-full border">
               <WaterBubbleButton>
                 <BellIcon className="h-full w-full " />
               </WaterBubbleButton>
@@ -215,15 +209,12 @@ const NavBar = () => {
           ) : profile ? (
             <UserDropDow avt={avt} />
           ) : (
-            <div className="h-full flex py-2">
-              <a
-                href="/login"
-                className="px-4 border rounded-md bg-violet-50 border-none  hover:bg-violet-200 transition text-nowrap flex text-center items-center"
-              >
+            <LinkTo namepage="login">
+              <Button className="px-4 border rounded-md bg-violet-50 border-none  hover:bg-violet-200 transition text-nowrap flex text-center items-center">
                 {" "}
                 Đăng nhập
-              </a>
-            </div>
+              </Button>
+            </LinkTo>
           )}
         </div>
 

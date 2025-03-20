@@ -16,10 +16,15 @@ import InputMessage from "./InputMessage";
 import { getCurrentUser } from "../../service/user";
 import avt from "../../img/DefaultAvatar.jpg";
 import LoadingAnimation from "../../components/LoadingAnimation";
-
+import { Avatar } from "@mui/material";
+import AvatarUser from "../../components/AvatarUser";
+import StyledBadge from "@mui/material/Badge"; // Ensure you have StyledBadge defined or imported
+import socketConfig from "../../service/socket/socketConfig";
+import UserStatusIndicator from "../../components/UserStatusIndicator";
 const Messages = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isRightbarOpen, setRightbarOpen] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState(null);
   const [profileUser, setProfileUser] = useState(null);
   const [isRightbarOpen1, setRightbarOpen1] = useState(true);
   const navigate = useNavigate();
@@ -78,6 +83,18 @@ const Messages = () => {
     type && profileUser?._id ? Centter : <p>Đang tải...</p>;
   }
   const [screenHeight, setScreenHeight] = useState(window.innerHeight);
+  useEffect(() => {
+    if (!socketConfig || !profileUser?._id) return; 
+    socketConfig.emit("requestUserStatus", [profileUser._id]);
+    const handleUserStatusUpdate = (data) => {
+      // console.log("🟢 StatusUser:", data);
+      setOnlineUsers(data);
+    };
+    socketConfig.on("updateUserStatus", handleUserStatusUpdate);
+    return () => {
+      socketConfig.off("updateUserStatus", handleUserStatusUpdate);
+    };
+  }, [socketConfig, profileUser]);
 
   useEffect(() => {
     const updateHeight = () => setScreenHeight(window.innerHeight);
@@ -199,18 +216,26 @@ const Messages = () => {
           <div className="flex flex-row min-h-16 justify-start items-center py-1 w-full space-x-1 max-h-32">
             {profileUser && (
               <>
-                <button className="max-h-12 aspect-square border-4 border-white rounded-full ">
-                  <img
-                    className="w-full rounded-full"
-                    src={avt}
-                    alt="Profile"
-                    loading="lazy"
-                  />
-                </button>
+                <StyledBadge
+                  overlap="circular"
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                  badgeContent={
+                    <UserStatusIndicator
+                      userId={profileUser?._id}
+                      onlineUsers={onlineUsers}
+                    />
+                  }
+                >
+                  <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                </StyledBadge>
+
                 <h2 className="text-lg font-semibold">
                   {profileUser?.firstName + " " + profileUser?.lastName}
                 </h2>
-                <p className="">Trạng thái</p>
+                <p className="">
+                  Trạng thái:{" "}
+                  {/* <span className={`${isOnline?'text-green-500':'text-gray-500'}`}>{isOnline ? "Trực tuyến" : "Ngoại tuyến"}</span> */}
+                </p>
               </>
             )}
           </div>

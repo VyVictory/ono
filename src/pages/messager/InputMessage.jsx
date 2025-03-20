@@ -4,13 +4,12 @@ import { PaperAirplaneIcon } from "@heroicons/react/24/outline"; // Import icon
 import UseMessageInfo from "./UseMessageInfo";
 import { SendToUser } from "../../service/message";
 import LoadingAnimation from "../../components/LoadingAnimation";
-import { useSocket } from "../../service/socket/socket";
 import { useAuth } from "../../components/context/AuthProvider";
+import socketConfig from "../../service/socket/socketConfig";
 const InputMessage = ({ newmess }) => {
   const { profile } = useAuth();
   const [isSend, setIsSend] = useState(true);
   const { type, id } = UseMessageInfo();
-  const socket = useSocket(profile?._id);
   const [message, setMessage] = useState("");
 
   const handleSendMessage = () => {
@@ -23,11 +22,10 @@ const InputMessage = ({ newmess }) => {
 
     SendToUser(id, message)
       .then((response) => {
-        socket.emit("sendMessage", {
+        socketConfig.emit("sendMessage", {
           text: response.data.content,
         });
         newmess(response.data);
-        
       })
       .catch((error) => {
         console.error("Error sending message:", error);

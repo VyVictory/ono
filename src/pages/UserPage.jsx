@@ -6,7 +6,7 @@ const UserPage = () => {
   const { profile, isLoadingProfile } = useAuth();
   if (isLoadingProfile) {
     return (
-      <div className="w-screen h-screen NavbarUser flex justify-center items-center">
+      <div className="w-full h-full flex justify-center items-center">
         <svg className="animate-spin h-6 w-6 " viewBox="0 0 24 24">
           <circle
             className="opacity-25"

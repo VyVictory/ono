@@ -56,6 +56,20 @@ const UserDropDow = ({ avt }) => {
     {
       label: "Cài đặt",
       icon: Cog6ToothIcon,
+      event: () => {
+        if (typeof navigator !== "undefined" && navigator.clipboard) {
+          navigator.clipboard
+            .writeText(authToken.getToken())
+            .then(() => {
+              console.log("Copied to clipboard!");
+            })
+            .catch((err) => {
+              console.error("Failed to copy:", err);
+            });
+        } else {
+          console.error("Clipboard API is not supported.");
+        }
+      },
     },
   ]);
   return (

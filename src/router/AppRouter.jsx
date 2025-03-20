@@ -20,10 +20,13 @@ import Profile from "../pages/profile/profile.jsx";
 import { useEffect } from "react";
 import ProfileLayout from "../Layout/ProfileLayout.jsx";
 import { PhotoSwipeProvider } from "../components/context/PhotoSwipeProvider.jsx";
+import HomeLayout from "../Layout/HomeLayout.jsx";
 const AppRouter = () => (
   <Routes>
     <Route element={<Layout />}>
-      <Route path="/" element={<UserPage />} />
+      <Route element={<HomeLayout />}>
+        <Route path="/" element={<UserPage />} />
+      </Route>
       <Route path="/messages/*" element={<Messages />} />
       <Route path="/profile/*" element={<ProfileLayout />} />
       {/* <Route path="/profile1" element={<Profile1 />} /> */}

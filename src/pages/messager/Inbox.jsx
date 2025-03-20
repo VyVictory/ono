@@ -49,7 +49,7 @@ const Inbox = ({ newmess }) => {
             }, []);
 
             mergedMessages.sort(
-              (a, b) => new Date(b.daytime) - new Date(a.daytime)
+              (a, b) => new Date(a.daytime) - new Date(b.daytime)
             );
 
             mergedMessages.forEach((group) => {
@@ -113,7 +113,7 @@ const Inbox = ({ newmess }) => {
 
   useEffect(() => {
     addMessages(newmess);
-    console.log("add", newmess);
+    // console.log("add", newmess);
   }, [newmess, addMessages]);
 
   useEffect(() => {
@@ -176,21 +176,12 @@ const Inbox = ({ newmess }) => {
   const scroll = () => {
     lastMessageRef.current?.scrollIntoView({ behavior: "auto" });
   };
-  console.log(messagesByDayMemo);
+  // console.log(messagesByDayMemo);
   if (isLoadingProfile) return <LoadingAnimation />;
 
   return (
     <div className="flex flex-col h-full bg-gray-100">
       <div ref={containerRefMess} className="flex-1 overflow-y-auto p-4">
-        {/* <button
-            onClick={async () => {
-              setIsLoadingMore(true);
-              await fetchMessages(page + 1);
-              setIsLoadingMore(false);
-            }}
-            className="w-full text-center py-2 mb-4 text-gray-100 hover:underline"
-            disabled={isLoadingMore}
-          > */}
         {hasMore && isLoadingMore ? (
           <div className="w-full flex justify-center">
             <LoadingAnimation />
@@ -198,9 +189,6 @@ const Inbox = ({ newmess }) => {
         ) : (
           ""
         )}
-
-        {/* </button> */}
-
         {messagesByDayMemo.map((group, dayIndex) => (
           <div key={dayIndex}>
             <div className="text-center text-gray-500 text-sm mb-2">
@@ -209,7 +197,8 @@ const Inbox = ({ newmess }) => {
               })}
             </div>
             {group.mess.map((msg, index) => {
-              const isMe = msg.sender === profile._id||  msg.sender?._id === profile._id
+              const isMe =
+                msg.sender === profile._id || msg.sender?._id === profile._id;
               return (
                 <div
                   key={index}
