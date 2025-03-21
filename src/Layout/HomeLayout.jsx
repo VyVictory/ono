@@ -6,12 +6,12 @@ const HomeLayout = () => {
   return (
     <div className="flex h-screen NavbarUser">
       {/* Sidebar (nếu có) */}
-      <SiderBar />
 
+      <SiderBar />
       {/* Nội dung chính */}
       {/* Header */}
       {/* Main content - React Router sẽ hiển thị nội dung tại đây */}
-      <main className="flex-1 flex flex-col">
+      <main className="flex-1 flex flex-col  lg:px-4 xl:px-0">
         {/* <FixedBottomNavigation /> */}
         <Outlet />
       </main>

@@ -9,53 +9,49 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { Link } from 'react-router-dom';
 
 const ContentSiderBar = () => {  
-  const menuCss = () => {  
-    return "text-gray-700 hover:bg-gray-200 rounded-xl block py-2 px-3 flex items-center";  
-  };  
+  const menuCss = () => "text-gray-700 hover:bg-gray-300 rounded-xl block py-3 px-4 flex items-center gap-3";  
 
   return (  
-    <>  
-      <ul className="">  
-        <li>  
-          <Link to="/" className={menuCss()}>  
-            <HomeIcon className="mr-2" /> Trang chủ  
-          </Link>  
-        </li>  
-        <li>  
-          <Link to="/messages" className={menuCss()}>  
-            <MailIcon className="mr-2" /> Tin nhắn  
-          </Link>  
-        </li>  
-        <li>  
-          <Link to="/profile" className={menuCss()}>  
-            <PersonIcon className="mr-2" /> Hồ sơ  
-          </Link>  
-        </li>  
-        <li>  
-          <Link to="/settings" className={menuCss()}>  
-            <SettingsIcon className="mr-2" /> Cài đặt  
-          </Link>  
-        </li>  
-        <li>  
-          <Link to="/notifications" className={menuCss()}>  
-            <NotificationsIcon className="mr-2" /> Thông báo  
-          </Link>  
-        </li>  
-        <li>  
-          <Link to="/help" className={menuCss()}>  
-            <HelpIcon className="mr-2" /> Trợ giúp  
-          </Link>  
-        </li>  
-        <li>  
-          <a  
-            href="/logout"  
-            className="block py-2 px-4 text-red-600 hover:bg-red-100 rounded flex items-center"  
-          >  
-            <LogoutIcon className="mr-2" /> Đăng xuất  
-          </a>  
-        </li>  
-      </ul>  
-    </>  
+    <ul className="space-y-2">  
+      <li>  
+        <Link to="/" className={menuCss()}>  
+          <HomeIcon fontSize="large" /> Trang chủ  
+        </Link>  
+      </li>  
+      <li>  
+        <Link to="/messages" className={menuCss()}>  
+          <MailIcon fontSize="large" /> Tin nhắn  
+        </Link>  
+      </li>  
+      <li>  
+        <Link to="/profile" className={menuCss()}>  
+          <PersonIcon fontSize="large" /> Hồ sơ  
+        </Link>  
+      </li>  
+      <li>  
+        <Link to="/settings" className={menuCss()}>  
+          <SettingsIcon fontSize="large" /> Cài đặt  
+        </Link>  
+      </li>  
+      <li>  
+        <Link to="/notifications" className={menuCss()}>  
+          <NotificationsIcon fontSize="large" /> Thông báo  
+        </Link>  
+      </li>  
+      <li>  
+        <Link to="/help" className={menuCss()}>  
+          <HelpIcon fontSize="large" /> Trợ giúp  
+        </Link>  
+      </li>  
+      <li>  
+        <a  
+          href="/logout"  
+          className="py-3 px-4 text-red-600 hover:bg-red-200 rounded-xl flex items-center gap-3"  
+        >  
+          <LogoutIcon fontSize="large" /> Đăng xuất  
+        </a>  
+      </li>  
+    </ul>  
   );  
 };  
 

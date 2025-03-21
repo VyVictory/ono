@@ -4,7 +4,7 @@ import ContentSiderBar from "./ContetentSiderBar";
 const SiderBar = () => {
   return (
     <>
-      <Paper elevation={2} className="w-64   hidden md:block bg-gray-100 p-4">
+      <Paper elevation={2} className="w-64 hidden lg:block bg-gray-100 p-4">
         <nav>
           <ContentSiderBar />
         </nav>

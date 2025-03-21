@@ -20,7 +20,7 @@ import UserStatusIndicator from "../../components/UserStatusIndicator";
 const Messages = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isRightbarOpen, setRightbarOpen] = useState(false);
-  const [onlineUsers, setOnlineUsers] = useState(null);
+
   const [profileUser, setProfileUser] = useState(null);
   const [isRightbarOpen1, setRightbarOpen1] = useState(true);
   const navigate = useNavigate();
@@ -53,7 +53,7 @@ const Messages = () => {
   UseClickOutside(MessMenuLeft, () => setSidebarOpen(false));
   UseClickOutside(MessMenuRight, () => setRightbarOpen(false));
   useEffect(() => {
-    setProfileUser(null)
+    setProfileUser(null);
     const fetchProfile = async () => {
       if (type == "inbox") {
         try {
@@ -80,18 +80,6 @@ const Messages = () => {
     type && profileUser?._id ? Centter : <p>Đang tải...</p>;
   }
   const [screenHeight, setScreenHeight] = useState(window.innerHeight);
-  useEffect(() => {
-    if (!socketConfig || !profileUser?._id) return;
-    socketConfig.emit("requestUserStatus", [profileUser._id]);
-    const handleUserStatusUpdate = (data) => {
-      // console.log("🟢 StatusUser:", data);
-      setOnlineUsers(data);
-    };
-    socketConfig.on("updateUserStatus", handleUserStatusUpdate);
-    return () => {
-      socketConfig.off("updateUserStatus", handleUserStatusUpdate);
-    };
-  }, [socketConfig, profileUser]);
 
   useEffect(() => {
     const updateHeight = () => setScreenHeight(window.innerHeight);
@@ -216,9 +204,8 @@ const Messages = () => {
               <>
                 <UserStatusIndicator
                   userId={profileUser?._id}
-                  onlineUsers={onlineUsers}
+                  // onlineUsers={onlineUsers}
                 />
-
                 <h2 className="text-lg font-semibold text-gray-600">
                   {`${profileUser?.firstName
                     .charAt(0)
