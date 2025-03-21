@@ -28,7 +28,7 @@ export const useSocket = () => {
     setSocket(newSocket);
     return () => {
       console.log("🛑 Cleaning up socket:", socket?.id);
-      socket.disconnect();
+      socket?.disconnect();
     };
   }, [profile]); // ✅ Chỉ chạy lại khi `userId` thay đổi
 

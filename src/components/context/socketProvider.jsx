@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "./AuthProvider";
 import { useSocket } from "../../service/socket/socket";
-
+import socketConfig from "../../service/socket/socketConfig";
 const SocketContext = createContext();
 
 export const SocketProvider = ({ children }) => {
@@ -9,28 +9,28 @@ export const SocketProvider = ({ children }) => {
   const socket = useSocket(profile?._id);
   const [newMessInbox, setNFewMessInbox] = useState(null);
   useEffect(() => {
-    if (!socket) return;
+    if (!socketConfig) return;
 
     // Lắng nghe sự kiện nhận tin nhắn mới
-    socket.on("newMessage", (data) => {
+    socketConfig.on("newMessage", (data) => {
       console.log("New message received:", data);
       setNFewMessInbox(data);
     });
 
     // Lắng nghe sự kiện tin nhắn được delivered
-    socket.on("messagesDelivered", (data) => {
+    socketConfig.on("messagesDelivered", (data) => {
       console.log("Messages delivered:", data.messages);
     });
 
     // Lắng nghe sự kiện tin nhắn được đọc
-    socket.on("messagesSeen", (data) => {
+    socketConfig.on("messagesSeen", (data) => {
       console.log("Messages seen:", data.messages);
     });
 
     return () => {
-      socket.off("newMessage");
-      socket.off("messagesDelivered");
-      socket.off("messagesSeen");
+      socketConfig.off("newMessage");
+      socketConfig.off("messagesDelivered");
+      socketConfig.off("messagesSeen");
     };
   }, [socket]);
 
