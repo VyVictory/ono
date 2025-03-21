@@ -1,13 +1,14 @@
+import { Paper } from "@mui/material";
 import ContentSiderBar from "./ContetentSiderBar";
 
 const SiderBar = () => {
   return (
     <>
-      <aside className="w-64 bg-gray-100 p-4 hidden md:block">
+      <Paper elevation={2} className="w-64   hidden md:block bg-gray-100 p-4">
         <nav>
           <ContentSiderBar />
         </nav>
-      </aside>
+      </Paper>
     </>
   );
 };

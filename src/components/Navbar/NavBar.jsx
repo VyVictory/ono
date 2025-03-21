@@ -23,7 +23,7 @@ import { useAuth } from "../context/AuthProvider";
 import SearchList from "../searchUser";
 import MiniMenuCenter from "./miniMenuCenter";
 import WaterBubbleButton from "../button/WaterBubbleButton";
-import { Button } from "@mui/material";
+import { Button, Paper } from "@mui/material";
 import { useModule } from "../context/Module";
 import NotificationDropDow from "../NotificationDropDow";
 const NavBar = () => {
@@ -99,7 +99,7 @@ const NavBar = () => {
   }, []);
   return (
     <nav
-      className="HighNavbar bg-white shadow-md fixed w-screen flex justify-items-center z-40 "
+      className="HighNavbar fixed bg-white shadow-sm shadow-gray-300 w-screen flex justify-items-center z-50 border-0"
       style={{ minWidth: "100%" }}
     >
       <div className="flex w-[100%] ">
@@ -107,8 +107,7 @@ const NavBar = () => {
         <div
           ref={searchRef}
           className={`z-10  left-0 top-0 flex flex-col w-full max-w-[300px]  ${
-            isSearchVisible &&
-            "border-r-2 absolute bg-white shadow-lg rounded-br-lg"
+            isSearchVisible && "border-r-2 absolute  "
           } `}
         >
           {/* Phần trên: Logo và ô tìm kiếm */}

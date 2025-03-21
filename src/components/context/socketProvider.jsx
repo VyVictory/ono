@@ -1,45 +1,73 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "./AuthProvider";
+import { io } from "socket.io-client"; // ✅ Ensure io is imported
 import { useSocket } from "../../service/socket/socket";
 
 const SocketContext = createContext();
 
 export const SocketProvider = ({ children }) => {
   const { profile } = useAuth();
-  const socket = useSocket(profile?._id);
-  const [newMessInbox, setNFewMessInbox] = useState(null);
+  const [socket, setSocket] = useState(null);
+  const [newMessInbox, setNewMessInbox] = useState(null); // ✅ Fixed typo
+
   useEffect(() => {
-    if (!socket) return;
-
-    // Lắng nghe sự kiện nhận tin nhắn mới
-    socket.on("newMessage", (data) => {
-      console.log("New message received:", data);
-      setNFewMessInbox(data);
+    if (!profile?._id) return;
+    if (socket) return;
+    console.log("ono");
+    const newSocket = io(process.env.REACT_APP_SOCKET_URL, {
+      withCredentials: true,
+      transports: ["websocket", "polling"],
     });
 
-    // Lắng nghe sự kiện tin nhắn được delivered
-    socket.on("messagesDelivered", (data) => {
-      console.log("Messages delivered:", data.messages);
+    newSocket.on("connect", () => {
+      console.log("✅ Connected to socket:", newSocket.id);
+      newSocket.emit("authenticate", profile._id);
     });
 
-    // Lắng nghe sự kiện tin nhắn được đọc
-    socket.on("messagesSeen", (data) => {
-      console.log("Messages seen:", data.messages);
+    newSocket.on("disconnect", () => {
+      console.log("❌ Socket disconnected");
     });
+
+    setSocket(newSocket);
 
     return () => {
-      socket.off("newMessage");
+      console.log("🛑 Cleaning up socket:", newSocket.id);
+      newSocket.disconnect();
+    };
+  }, [profile]); // ✅ Runs when `profile` changes
+
+  useEffect(() => {
+    if (!socket) return;
+    if (!profile?._id) {
+      return;
+    }
+    console.log("Listening for socket events...");
+
+    const handleNewMessage = (data) => {
+      console.log("New message received:", data);
+      setNewMessInbox(data);
+    };
+
+    socket.on("newMessage", handleNewMessage);
+    socket.on("messagesDelivered", (data) =>
+      console.log("Messages delivered:", data.messages)
+    );
+    socket.on("messagesSeen", (data) =>
+      console.log("Messages seen:", data.messages)
+    );
+
+    return () => {
+      socket.off("newMessage", handleNewMessage);
       socket.off("messagesDelivered");
       socket.off("messagesSeen");
     };
   }, [socket]);
 
   return (
-    <SocketContext.Provider value={{ newMessInbox }}>
+    <SocketContext.Provider value={{ socket, newMessInbox }}>
       {children}
     </SocketContext.Provider>
   );
 };
 
-// ✅ Sử dụng đúng context
 export const useSocketContext = () => useContext(SocketContext);
