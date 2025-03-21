@@ -21,7 +21,7 @@ const InputMessage = ({ newmess }) => {
     }
 
     SendToUser(id, message)
-      .then((response) => {
+      .then((response) => { 
         socketConfig.emit("sendMessage", {
           text: response.data.content,
         });
