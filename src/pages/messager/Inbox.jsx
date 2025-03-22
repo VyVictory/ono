@@ -180,7 +180,7 @@ const Inbox = ({ newmess }) => {
   if (isLoadingProfile) return <LoadingAnimation />;
 
   return (
-    <div className="flex flex-col h-full bg-gray-100">
+    <div className="flex flex-col h-full w-full bg-gray-100">
       <div ref={containerRefMess} className="flex-1 overflow-y-auto p-4">
         {hasMore && isLoadingMore ? (
           <div className="w-full flex justify-center">

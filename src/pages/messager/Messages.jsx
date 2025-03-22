@@ -31,7 +31,7 @@ const Messages = () => {
 
   const handleNewMessage = (newMessage) => {
     setMessages(newMessage); // ✅ Cập nhật tin nhắn mới, xoá danh sách cũ
-  }; 
+  };
   useEffect(() => {
     const updateHeight = () => setScreenHeight(window?.innerHeight);
     window?.addEventListener("resize", updateHeight);
@@ -85,11 +85,8 @@ const Messages = () => {
     type && profileUser?._id ? Centter : <p>Đang tải...</p>;
   }
 
-
-
-
   return (
-    <div className="flex ">
+    <div className="flex flex-row">
       {/* Sidebar className={sidebarClass} */}
       <motion.div
         ref={MessMenuLeft}
@@ -185,13 +182,13 @@ const Messages = () => {
 
       {/* Z-INDEX Chat Section */}
 
-      <div
-        className="w-full h-screen NavbarUser flex flew-grow flex-col justify-end overflow-y-hidden"
-        style={{ minHeight: `${screenHeight - 1}px` }}
+      <main
+        className="w-full h-screen flex flew-grow flex-col justify-end overflow-y-hidden"
+        // style={{ minHeight: `${screenHeight - 1}px` }}
       >
         {/* top nav */}
-
-        <div className="shadow-sm border-b px-3 z-10  flex items-center bg-white  ">
+        <div className="NavbarUser"></div>
+        <header className="shadow-sm border-b px-3 z-10  flex items-center bg-white  ">
           <button
             className="lg:hidden"
             onClick={() => setSidebarOpen((prevState) => !prevState)}
@@ -251,15 +248,17 @@ const Messages = () => {
               </button>
             )}
           </div>
-        </div>
+        </header>
 
         {/* center */}
-        <div className="flex-grow overflow-y-auto">{Centter}</div>
+        <div className="flex-1 overflow-auto flex items-center justify-center">
+          {Centter}
+        </div>
         {/* Chat input */}
         <div className="shadow-sm border-t sticky bottom-0 flex items-center p-2 bg-white">
           <InputMessage newmess={handleNewMessage} />
         </div>
-      </div>
+      </main>
       {/*  */}
       <div className="">
         <div
