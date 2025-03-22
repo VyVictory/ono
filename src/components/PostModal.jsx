@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { IconButton, Modal, TextField } from "@mui/material";
+import { ButtonBase, IconButton, Modal, TextField } from "@mui/material";
 import {
   XCircleIcon,
   PlusCircleIcon,
@@ -14,6 +14,7 @@ import { Delete } from "@mui/icons-material";
 import { IconsManifest } from "react-icons/lib";
 import { useConfirm } from "./context/ConfirmProvider";
 import { toast } from "react-toastify";
+import { Button } from "@headlessui/react";
 export default function PostForm({ children }) {
   const confirm = useConfirm();
   const [isOpen, setIsOpen] = useState(false);
@@ -277,23 +278,27 @@ export default function PostForm({ children }) {
                 </div>
               )}
               {post.images.map((img, index) => (
-                <img
+                <div
                   key={index}
-                  src={img.url}
-                  alt="thumbnail"
-                  className={`w-16 h-16 object-cover rounded-md cursor-pointer border-2 hover:scale-105 duration-500 ${
+                  className={`w-16 h-16 aspect-square flex items-center justify-center bg-gray-200 rounded-md border-2 hover:scale-105 duration-500 ${
                     selectedImages.includes(index)
-                      ? "border-red-500 border-4  "
+                      ? "border-red-500 border-4 p-4 h-20 w-20"
                       : ""
                   }`}
-                  onClick={() => toggleSelectImage(index)}
-                />
+                >
+                  <img
+                    src={img.url}
+                    alt="thumbnail"
+                    className="h-16 max-w-16 object-contain"
+                    onClick={() => toggleSelectImage(index)}
+                  />
+                </div>
               ))}
             </div>
             <div className="h-14 w-full border-t mt-2 flex justify-between items-center px-2 overflow-x-auto">
               <div className="flex flex-row space-x-2">
                 {post.video == null && (
-                  <button className="flex flex-row p-2  rounded-lg space-x-2 hover:bg-violet-200 shadow-sm shadow-gray-400 bg-violet-100">
+                  <button className="flex flex-row p-2  rounded-lg space-x-2 hover:bg-blue-50 shadow-sm shadow-gray-400  ">
                     <label className="flex items-center justify-center cursor-pointer">
                       <PhotoIcon className="h-6 w-6 text-blue-500 hover:scale-125" />
                       <input
@@ -307,7 +312,7 @@ export default function PostForm({ children }) {
                   </button>
                 )}
                 {post.images.length == 0 && (
-                  <button className="flex flex-row p-2  rounded-lg  hover:bg-red-200 shadow-sm shadow-gray-400 bg-red-100">
+                  <button className="flex flex-row p-2  rounded-lg  hover:bg-red-50 shadow-sm shadow-gray-400  ">
                     <label className="flex items-center justify-center cursor-pointer">
                       <VideoCameraIcon className="h-6 w-6 text-red-500 hover:scale-125" />
                       <input
@@ -334,7 +339,7 @@ export default function PostForm({ children }) {
                       } else {
                         setSelectedImages(post.images.map((_, index) => index)); // Chọn tất cả
                       }
-                    }} 
+                    }}
                   >
                     {selectedImages.length === post.images.length ? (
                       <XCircleIcon className="w-10 h-10 hover:scale-110 text-red-400 duration-300" />
@@ -345,12 +350,11 @@ export default function PostForm({ children }) {
                 )}
               </div>
             </div>
-            <button
-              onClick={handleSubmit}
-              className="w-full mt-4 bg-violet-500 text-white py-2 rounded-lg hover:bg-violet-600"
-            >
-              Đăng bài
-            </button>
+            <ButtonBase className="">
+              <div className="w-full py-2 text-white font-semibold rounded-lg bg-gradient-to-r from-purple-500 to-orange-500 hover:from-purple-600 hover:to-orange-600 transition-all duration-300">
+                Đăng bài
+              </div>
+            </ButtonBase>
           </div>
         </motion.div>
       </Modal>
@@ -392,10 +396,7 @@ export default function PostForm({ children }) {
                     </button>
                   )}
                   {selectedImages.length > 0 && (
-                    <button
-                      onClick={removeSelectedImages}
-                      className=" "
-                    >
+                    <button onClick={removeSelectedImages} className=" ">
                       <TrashIcon className="w-10 h-10 text-red-500 hover:scale-110 duration-300 hover:text-red-600" />
                     </button>
                   )}
@@ -406,33 +407,35 @@ export default function PostForm({ children }) {
                   onClick={() => setShowGallery(false)}
                 />
               </div>
-              <div className="   w-full h-[80vh] overflow-y-auto p-4">
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 mt-4 space-x-4 space-y-2">
+              <div className="w-full h-[80vh] overflow-y-auto p-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
                   {post.images.map((img, index) => (
                     <div
                       key={index}
-                      className={` ${
+                      className={`relative shadow-lg shadow-violet-200 flex items-center justify-center border rounded-md overflow-hidden hover:scale-105 duration-500 p-2 ${
                         selectedImages.includes(index)
-                          ? "border-red-500 border-2"
+                          ? "border-red-500 border-2 p-0"
                           : ""
-                      } relative shadow-lg shadow-violet-200  flex items-center justify-center border  hover:scale-105 duration-500 `}
+                      }`}
                     >
-                      <img
-                        src={img?.url}
-                        alt="gallery-img"
-                        className={`h-32  object-cover cursor-pointer  `}
-                        onClick={() => setCurrentIndex(index)}
-                      />
+                      <div className="w-32 h-32 bg-gray-100 flex items-center justify-center">
+                        <img
+                          src={img?.url}
+                          alt="gallery-img"
+                          className="h-32 max-w-32 object-contain cursor-pointer"
+                          onClick={() => setCurrentIndex(index)}
+                        />
+                      </div>
                       <button
                         onClick={() => toggleSelectImage(index)}
                         className={`absolute top-1 right-1 rounded-full p-1 ${
                           selectedImages.includes(index) ? "bg-green-500" : ""
-                        } text-white hover:`}
+                        } text-white`}
                       >
                         {selectedImages.includes(index) ? (
                           <CheckCircleIcon className="w-4 h-4" />
                         ) : (
-                          <div className="w-4 h-4 bg-none border-2 border-gray-500 opacity-60 hover:opacity-100 rounded-full"></div>
+                          <div className="w-4 h-4 border-2 border-gray-500 opacity-60 hover:opacity-100 rounded-full"></div>
                         )}
                       </button>
                     </div>

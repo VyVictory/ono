@@ -17,6 +17,7 @@ import { getCurrentUser } from "../../service/user";
 
 import socketConfig from "../../service/socket/socketConfig";
 import UserStatusIndicator from "../../components/UserStatusIndicator";
+import { Paper } from "@mui/material";
 const Messages = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isRightbarOpen, setRightbarOpen] = useState(false);
@@ -255,9 +256,9 @@ const Messages = () => {
           {Centter}
         </div>
         {/* Chat input */}
-        <div className="shadow-sm border-t flex items-center p-2 bg-white">
+        <Paper>
           <InputMessage newmess={handleNewMessage} />
-        </div>
+        </Paper>
       </main>
       {/*  */}
       <div className="">

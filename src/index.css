@@ -60,45 +60,30 @@
     body,
     .scrollable-container {
         overflow: overlay;
-    }
-
-    /* Thanh cuộn chính */
+    } 
     ::-webkit-scrollbar {
         width: 4px;
         height: 8px;
-    }
-
-    /* Thanh cuộn nền */
+    } 
     ::-webkit-scrollbar-track {
         border-radius: 10px;
-    }
-
-    /* Thanh cuộn trượt */
+    } 
     ::-webkit-scrollbar-thumb {
-        background: linear-gradient(45deg, #e1b7ff, rgb(255, 148, 148));
+        background: gray;
         border-radius: 10px;
         transition: background 0.3s ease-in-out;
-    }
-
-    /* Hover vào thanh cuộn */
+    } 
     ::-webkit-scrollbar-thumb:hover {
         background: linear-gradient(45deg, #c26dff, rgb(255, 95, 95));
-    }
-
-    /* Thanh cuộn ngang */
+    } 
     ::-webkit-scrollbar-horizontal {
         height: 6px;
-    }
-
-    /* Ẩn thanh cuộn nhưng vẫn có thể cuộn */
+    } 
     .hidden-scrollbar {
-        scrollbar-width: none;
-        /* Firefox */
+        scrollbar-width: none; 
     }
-
     .hidden-scrollbar::-webkit-scrollbar {
-        display: none;
-        /* Chrome, Safari */
+        display: none; 
     }
 
     body,

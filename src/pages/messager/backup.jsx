@@ -1,261 +1,221 @@
-import { useEffect, useRef, useState, useMemo } from "react";
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { PaperAirplaneIcon } from "@heroicons/react/24/outline"; // Import icon
+
 import UseMessageInfo from "./UseMessageInfo";
-import { getMessageInbox } from "../../service/message";
-import { CloudDownloadIcon } from "@heroicons/react/solid";
-import { useAuth } from "../../components/context/AuthProvider";
+import { SendToUser } from "../../service/message";
 import LoadingAnimation from "../../components/LoadingAnimation";
+import { useAuth } from "../../components/context/AuthProvider";
+import socketConfig from "../../service/socket/socketConfig";
+import { Paper } from "@mui/material";
+const InputMessage = ({ newmess }) => {
+  const { profile } = useAuth();
+  const [isSend, setIsSend] = useState(true);
+  const { type, id } = UseMessageInfo();
+  const [message, setMessage] = useState("");
+  const [images, setImages] = useState([]);
 
-import { ArrowDownIcon } from "@heroicons/react/24/solid";
-import { format } from "date-fns";
-import { vi } from "date-fns/locale";
-import { useSocketContext } from "../../components/context/socketProvider";
+  const handleSendMessage = () => {
+    setIsSend(false);
 
-const Inbox = ({ newmess }) => {
-  const { profile, isLoadingProfile } = useAuth();
-  const { newMessInbox } = useSocketContext();
-  const lastMessageRef = useRef(null);
-  const containerRefMess = useRef(null);
-  const { id } = UseMessageInfo();
-  const [messagesByDay, setMessagesByDay] = useState([]);
-  const [page, setPage] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [showScrollButton, setShowScrollButton] = useState(false);
-  const [isScroll, setIsScroll] = useState(false);
-  const messagesByDayMemo = useMemo(() => messagesByDay, [messagesByDay]); 
-  const fetchMessages = async (newPage = 0) => {
-    if (!containerRefMess.current) return;
-
-    const previousScrollHeight = containerRefMess.current.scrollHeight;
-    const previousScrollTop = containerRefMess.current.scrollTop;
-
-    try {
-      const data = await getMessageInbox(id, newPage * 20, 20);
-      if (data && data.length > 0) {
-        setMessagesByDay((prev) => {
-          // Gộp tin nhắn theo ngày
-          const mergedMessages = [...data, ...prev].reduce((acc, curr) => {
-            const existing = acc.find((item) => item.daytime === curr.daytime);
-            if (existing) {
-              existing.mess = [...existing.mess, ...curr.mess]; // Đảo lại: Thêm tin nhắn mới vào cuối
-            } else {
-              acc.push({ ...curr }); // Thêm vào danh sách theo thứ tự dữ liệu đến
-            }
-            return acc;
-          }, []);
-
-          // Sắp xếp nhóm ngày theo thời gian mới nhất trước
-          mergedMessages.sort(
-            (a, b) => new Date(b.daytime) - new Date(a.daytime)
-          );
-
-          // Sắp xếp tin nhắn bên trong mỗi ngày theo thời gian tăng dần
-          mergedMessages.forEach((group) => {
-            group.mess.sort((a, b) => new Date(a.time) - new Date(b.time));
-          });
-
-          return mergedMessages;
-        });
-
-        setPage(newPage);
-      } else {
-        setHasMore(false);
-      }
-    } catch (error) {
-      console.error("Lỗi khi lấy tin nhắn:", error);
-    }
-
-    setTimeout(() => {
-      if (containerRefMess.current) {
-        containerRefMess.current.scrollTop =
-          containerRefMess.current.scrollHeight -
-          previousScrollHeight +
-          previousScrollTop;
-      }
-    }, 100);
-  };
-  useEffect(() => {
-    if (id) {
-      fetchMessages(0);
-    }
-  }, [id, isLoadingProfile]);
-  const addMessages = (message) => {
-    if (message && message._id) {
-      setMessagesByDay((prevMessages) => {
-        const updatedMessages = [...prevMessages];
-        const newMessage = {
-          _id: message._id,
-          sender: message.sender._id,
-          isRecalled: message.isRecalled,
-          senderName: `${message.sender.firstName} ${message.sender.lastName}`,
-          avatar: message.sender.avatar,
-          content: message.content,
-          file: message.file,
-          createdAt: message.createdAt,
-        };
-        const messageDate = format(new Date(message.createdAt), "yyyy-MM-dd");
-        const existingGroup = updatedMessages.find(
-          (group) =>
-            format(new Date(group.daytime), "yyyy-MM-dd") === messageDate
-        );
-
-        if (existingGroup) {
-          existingGroup.mess.push(newMessage);
-        } else {
-          updatedMessages.push({
-            daytime: message.createdAt,
-            mess: [newMessage],
-          });
-        }
-        return updatedMessages;
-      });
-    }
-    setIsScroll(false);
-  };
-  const mergeMessages = (messages) => {
-    const uniqueMessages = new Map();
-
-    messages.forEach((day) => {
-      day.mess.forEach((msg) => {
-        uniqueMessages.set(msg._id, msg);
-      });
-    });
-
-    return Array.from(uniqueMessages.values());
-  };
-
-  useEffect(() => {
-    if (newmess?.length) {
-      setMessagesByDay((prev) => mergeMessages([...prev, ...newmess]));
-    }
-    addMessages(newmess);
-  }, [newmess]);
-
-  useEffect(() => {
-    addMessages(newMessInbox?.message);
-  }, [newMessInbox]);
-
-  useEffect(() => {
-    if (!isLoadingProfile && lastMessageRef.current && !isScroll) {
-      scroll();
-      setIsScroll(true);
-    }
-  }, [messagesByDay, isLoadingProfile]);
-  useEffect(() => {
-    if (!containerRefMess.current) {
-      console.warn("containerRefMess chưa được gán!");
+    if (!id || !message) {
+      setIsSend(true);
       return;
     }
-    const handleScroll = () => {
-      const scrollTop = containerRefMess.current.scrollTop;
-      const scrollHeight = containerRefMess.current.scrollHeight;
-      const clientHeight = containerRefMess.current.clientHeight;
-      setShowScrollButton(scrollTop < scrollHeight - clientHeight - 150);
-    };
-    containerRefMess.current.addEventListener("scroll", handleScroll);
 
-    return () => {
-      containerRefMess.current.removeEventListener("scroll", handleScroll);
-    };
-  }, [isLoadingProfile]);
+    SendToUser(id, message)
+      .then((response) => {
+        socketConfig.emit("sendMessage", {
+          text: response.data.content,
+        });
+        newmess(response.data);
+      })
+      .catch((error) => {
+        console.error("Error sending message:", error);
+      })
+      .finally(() => {
+        setIsSend(true);
+        setMessage("");
 
-  const scroll = () => {
-    lastMessageRef.current.scrollIntoView({ behavior: "auto" });
-  }; 
-  if (isLoadingProfile) {
-    return <LoadingAnimation />;
-  }
+        // Reset textarea height
+        const textarea = document.querySelector("textarea");
+        if (textarea) {
+          textarea.style.height = "auto";
+        }
+      });
+  };
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    const imagePreviews = files.map((file) => URL.createObjectURL(file));
+    setImages((prevImages) => [...prevImages, ...imagePreviews]);
+  };
+
+  const handleChange = (e) => {
+    const newValue = e.target.value;
+    setMessage(newValue);
+
+    // Automatically adjust the textarea height
+    const textarea = e.target;
+    textarea.style.height = "auto"; // Reset height to auto to shrink on content deletion
+    textarea.style.height = `${textarea.scrollHeight}px`; // Set height based on content
+
+    // Ensure textarea doesn't grow beyond 3 lines
+    const lineHeight = parseInt(getComputedStyle(textarea).lineHeight, 10);
+    const maxHeight = lineHeight * 3;
+    if (textarea.scrollHeight > maxHeight) {
+      textarea.style.height = `${maxHeight}px`;
+      textarea.style.overflowY = "auto"; // Show scrollbar when exceeding 3 lines
+    } else {
+      textarea.style.overflowY = "hidden"; // Hide scrollbar if within 3 lines
+    }
+  };
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); // Ngăn xuống dòng
+      handleSendMessage();
+    }
+  };
 
   return (
-    <div className="flex flex-col h-full bg-gray-100">
-      <div ref={containerRefMess} className="flex-1 overflow-y-auto p-4">
-        {hasMore && (
-          <button
-            onClick={async () => {
-              setIsLoadingMore(true); // Bật trạng thái loading
-              await fetchMessages(page + 1); // Chờ lấy tin nhắn xong
-              setIsLoadingMore(false); // Tắt trạng thái loading
-            }}
-            className="w-full text-center py-2 mb-4 text-blue-500 hover:underline"
-            disabled={isLoadingMore} // Chặn spam click khi đang load
-          >
-            {isLoadingMore ? (
-              <div className="w-full flex justify-center">
-                <LoadingAnimation />
-              </div>
-            ) : (
-              "Xem thêm tin nhắn"
-            )}
-          </button>
-        )}
+    <>
+      {images.length > 0 && (
+        <div className="flex space-x-2 p-2">
+          {images.map((img, index) => (
+            <Paper>
+              <img
+                key={index}
+                src={img}
+                alt="preview"
+                className="w-16 h-16 rounded-md object-cover border pointer-events-auto"
+              />
+            </Paper>
+          ))}
+        </div>
+      )}
 
-        {messagesByDayMemo.map((group, dayIndex) => (
-          <div key={dayIndex}>
-            <div className="text-center text-gray-500 text-sm mb-2">
-              {format(new Date(group.daytime), "dd, MMMM, yyyy", {
-                locale: vi,
-              })}
-            </div>
-            {group.mess.map((msg, index) => {
-              const isMe = msg.sender === profile._id;
-              return (
-                <div
-                  key={msg._id || index}
-                  ref={
-                    dayIndex === messagesByDayMemo.length - 1 &&
-                    index === group.mess.length - 1
-                      ? lastMessageRef
-                      : null
-                  }
-                  className={`flex ${
-                    isMe ? "justify-end" : "justify-start"
-                  } mb-2`}
+      <div className="border-t flex flex-1  pointer-events-auto p-2">
+        <div className="flex items-center flex-row space-x-1 pr-2">
+          <label htmlFor="imageUpload" className="cursor-pointer">
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleImageChange}
+              className="hidden"
+              id="imageUpload"
+            />
+            <svg
+              className="size-10"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="white"
+            >
+              <defs>
+                <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop
+                    offset="0%"
+                    style={{ stopColor: "#6ee7b7", stopOpacity: 1 }}
+                  />
+                  <stop
+                    offset="100%"
+                    style={{ stopColor: "#3b82f6", stopOpacity: 1 }}
+                  />
+                </linearGradient>
+                <filter
+                  id="shadow"
+                  x="-20%"
+                  y="-20%"
+                  width="140%"
+                  height="140%"
                 >
-                  <div
-                    className={`p-3 rounded-lg shadow-md min-w-20 max-w-xs ${
-                      isMe && "bg-blue-100"
-                    }`}
-                  >
-                    {msg.content && (
-                      <p className="break-words whitespace-pre-wrap">
-                        {msg.content}
-                      </p>
-                    )}
+                  <feDropShadow
+                    dx="2"
+                    dy="2"
+                    stdDeviation="2"
+                    floodOpacity="0.15"
+                  />
+                </filter>
+              </defs>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
+                fill="url(#grad1)"
+                stroke="white"
+                strokeWidth="2"
+                filter="url(#shadow)"
+              />
+            </svg>
+          </label>
 
-                    {msg.file?.url && (
-                      <div className="mt-2 flex items-center space-x-2">
-                        <a
-                          href={msg.file.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-300 hover:underline flex items-center"
-                        >
-                          <CloudDownloadIcon className="w-5 h-5 mr-1" />
-                          {msg.file.type || "Tệp đính kèm"}
-                        </a>
-                      </div>
-                    )}
-                    <div className="text-xs text-gray-500 mt-1">
-                      {format(new Date(msg.createdAt), "HH:mm")}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ))}
-        {showScrollButton && (
-          <button
-            onClick={scroll}
-            className="sticky bottom-0 right-0 bg-blue-200 opacity-25 text-white p-2 rounded-full shadow-lg hover:bg-blue-600 transition"
-          >
-            <ArrowDownIcon className="h-6 aspect-square" />
+          <button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              className="size-8"
+            >
+              <defs>
+                <style>{".b{fill:#864e20}"}</style>
+              </defs>
+              <rect
+                x="1"
+                y="1"
+                width="22"
+                height="22"
+                rx="7.656"
+                style={{ fill: "#f8de40" }}
+              />
+              <path
+                className="b"
+                d="M14 11.207a.32.32 0 0 0-.313.327 2.1 2.1 0 0 1-.5 1.33A1.593 1.593 0 0 1 12 13.3a1.6 1.6 0 0 1-1.187-.43 2.088 2.088 0 0 1-.5-1.334.32.32 0 1 0-.64-.012 2.712 2.712 0 0 0 .679 1.791 2.211 2.211 0 0 0 1.648.623 2.211 2.211 0 0 0 1.647-.626 2.718 2.718 0 0 0 .679-1.791.322.322 0 0 0-.326-.314z"
+              />
+              <path
+                d="M23 13.938a14.69 14.69 0 0 1-12.406 6.531c-5.542 0-6.563-1-9.142-2.529A7.66 7.66 0 0 0 8.656 23h6.688A7.656 7.656 0 0 0 23 15.344z"
+                style={{ fill: "#e7c930" }}
+              />
+              <path
+                className="b"
+                d="M9.6 8.833 9.021 8.6a22.797 22.797 0 0 0-2.138-.774 18.44 18.44 0 0 0-1.1-.3h-.012a.246.246 0 0 0-.186.448l.01.006c.325.2.656.392.991.573q.281.15.564.291a.245.245 0 0 1 0 .439q-.285.141-.564.292c-.335.18-.667.369-.992.573l-.016.01a.246.246 0 0 0 .187.447h.018c.374-.088.741-.19 1.105-.3s.723-.234 1.079-.362c.179-.064.355-.134.532-.2l.526-.213.573-.232a.246.246 0 0 0 .002-.465zM18.81 9.844a.182.182 0 0 1-.331.1 2.026 2.026 0 0 0-.568-.567 1.732 1.732 0 0 0-1.916 0 2.016 2.016 0 0 0-.571.569.182.182 0 0 1-.331-.1 1.632 1.632 0 0 1 .346-1.023 1.927 1.927 0 0 1 3.026 0 1.64 1.64 0 0 1 .345 1.021z"
+              />
+            </svg>
           </button>
-        )}
+        </div>
+        <div className="flex items-center flex-grow">
+          <div className=" flex-grow h-full flex items-center">
+            <div className="flex-grow h-full border border-gray-300 px-2 rounded-2xl shadow-inner shadow-slate-300 pt-1">
+              <textarea
+                placeholder="Nhập tin nhắn..."
+                value={message}
+                onChange={handleChange}
+                onKeyDown={handleKeyDown} // Thêm sự kiện này
+                className=" text-gray-700 pt-1 text-sm w-full h-full shadow-inner focus:outline-none focus:ring-0 focus:ring-none 
+                  resize-none focus:ring-none "
+                rows="1"
+                style={{ overflowY: "hidden" }}
+              />
+            </div>
+          </div>
+          {isSend ? (
+            <button
+              onClick={handleSendMessage}
+              className="group relative"
+              aria-label="Send message"
+            >
+              <PaperAirplaneIcon
+                title="Gửi tin nhắn"
+                className="h-10 w-10 p-1 rounded-full text-blue-400 hover:scale-110 hover:shadow-sm hover:shadow-blue-400/50 transition-all duration-300 hover:bg-blue-100 hover:text-blue-700 active:scale-95 active:transition-all"
+              />
+              <span className="absolute z-30 right-0 bottom-full w-max p-2 bg-gray-500 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                Gửi tin nhắn
+              </span>
+            </button>
+          ) : (
+            <LoadingAnimation />
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
-export default Inbox;
+export default InputMessage;
