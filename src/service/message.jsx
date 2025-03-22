@@ -5,13 +5,20 @@ import { useSocket } from "./socket/socket";
 import { useAuth } from "../components/context/AuthProvider";
 const token = authToken.getToken();
 
-export const SendToUser = async (id, message, file) => { 
+export const SendToUser = async (id, message, files) => {
   try {
     if (!token) {
       nextLogin();
     }
     const formData = new FormData();
     formData.append("content", message);
+    if (files && files.length > 0) {
+      files.forEach((file) => {
+        console.log("Adding file:", file.name); // Debug xem file có đúng không
+        formData.append("media", file); // Append từng file một
+      });
+    }
+
     const response = await api.post(
       `/message/send/${encodeURIComponent(id)}`,
       formData,

@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogActions,
   Button,
+  ButtonBase,
 } from "@mui/material";
 import UseMessageInfo from "./UseMessageInfo";
 import { SendToUser } from "../../service/message";
@@ -13,6 +14,7 @@ import LoadingAnimation from "../../components/LoadingAnimation";
 import { useAuth } from "../../components/context/AuthProvider";
 import socketConfig from "../../service/socket/socketConfig";
 import { Paper } from "@mui/material";
+import { XMarkIcon } from "@heroicons/react/24/solid";
 
 const InputMessage = ({ newmess }) => {
   const { profile } = useAuth();
@@ -20,6 +22,7 @@ const InputMessage = ({ newmess }) => {
   const { type, id } = UseMessageInfo();
   const [message, setMessage] = useState("");
   const [images, setImages] = useState([]);
+  const [imagesFull, setImagesFull] = useState([]);
   const [openModal, setOpenModal] = useState(false);
 
   const handleSendMessage = () => {
@@ -30,12 +33,15 @@ const InputMessage = ({ newmess }) => {
       return;
     }
 
-    SendToUser(id, message)
+    SendToUser(id, message, imagesFull)
       .then((response) => {
         socketConfig.emit("sendMessage", {
           text: response.data.content,
         });
         newmess(response.data);
+        // console.log(imagesFull);
+        setImages([]);
+        setImagesFull([]);
       })
       .catch((error) => {
         console.error("Error sending message:", error);
@@ -54,6 +60,7 @@ const InputMessage = ({ newmess }) => {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
+    setImagesFull((prevImages) => [...prevImages, ...files]);
     const imagePreviews = files.map((file) => URL.createObjectURL(file));
     setImages((prevImages) => [...prevImages, ...imagePreviews]);
   };
@@ -87,14 +94,22 @@ const InputMessage = ({ newmess }) => {
   return (
     <>
       {images.length > 0 && (
-        <div className="flex space-x-2 p-2 bg-gray-100" >
+        <div className="flex space-x-2 p-2 bg-gray-100">
           {images.slice(0, 3).map((img, index) => (
-            <Paper key={index}>
+            <Paper key={index} className="relative">
               <img
                 src={img}
                 alt="preview"
                 className="w-16 h-16 rounded-md object-cover border pointer-events-auto"
               />
+              <button
+                onClick={() =>
+                  setImages((prev) => prev.filter((_, i) => i !== index))
+                }
+                className="absolute top-0 right-0 bg-red-500 opacity-50 text-white p-1 rounded-full hover:opacity-100 hover:scale-110 transition"
+              >
+                <XMarkIcon className="h-4 w-4" />
+              </button>
             </Paper>
           ))}
           {images.length > 3 && (
@@ -108,25 +123,52 @@ const InputMessage = ({ newmess }) => {
         </div>
       )}
 
-      <Dialog open={openModal} onClose={() => setOpenModal(false)}>
+      <Dialog
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        className="relative"
+      >
+        <button
+          onClick={() => setOpenModal(false)}
+          className="absolute top-1 right-1 bg-red-500 opacity-50 text-white p-1 rounded-full hover:opacity-100  transition"
+        >
+          <XMarkIcon className="h-4 w-4" />
+        </button>
         <DialogTitle>Danh sách ảnh</DialogTitle>
         <DialogContent>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
             {images.map((img, index) => (
-              <img
+              <ButtonBase
+                onClick={() => console.log("ono")}
                 key={index}
-                src={img}
-                alt="preview"
-                className="w-full h-24 object-cover rounded-md"
-              />
+                className="relative p-1"
+              >
+                <Paper className="w-24 h-24 aspect-square flex justify-center items-center relative">
+                  <img
+                    key={index}
+                    src={img}
+                    alt="preview"
+                    className="w-auto h-24 object-cover rounded-md"
+                  />
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation(); // Ngăn chặn sự kiện lan ra ButtonBase
+                      setImages((prev) => prev.filter((_, i) => i !== index));
+                    }}
+                    className="absolute top-1 right-1 bg-red-500 opacity-50 text-white p-1 rounded-full hover:opacity-100 hover:scale-110 transition"
+                  >
+                    <XMarkIcon className="h-4 w-4" />
+                  </div>
+                </Paper>
+              </ButtonBase>
             ))}
           </div>
         </DialogContent>
-        <DialogActions>
+        {/* <DialogActions>
           <Button onClick={() => setOpenModal(false)} color="primary">
             Đóng
           </Button>
-        </DialogActions>
+        </DialogActions> */}
       </Dialog>
 
       <div className="border-t flex flex-1  pointer-events-auto p-2">

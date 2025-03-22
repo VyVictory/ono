@@ -79,7 +79,7 @@ const Inbox = ({ newmess }) => {
   );
 
   useEffect(() => {
-    if (id) { 
+    if (id) {
       setMessagesByDay([]);
       fetchMessages(0);
     }
@@ -118,7 +118,7 @@ const Inbox = ({ newmess }) => {
   useEffect(() => {
     if (newMessInbox?.message?.sender?._id === id) {
       addMessages(newMessInbox?.message);
-    } 
+    }
   }, [newMessInbox, addMessages]);
 
   useEffect(() => {
@@ -126,7 +126,7 @@ const Inbox = ({ newmess }) => {
       scroll();
       setIsScroll(true);
     }
-  }, [messagesByDay, isLoadingProfile]); 
+  }, [messagesByDay, isLoadingProfile]);
   useEffect(() => {
     if (!containerRefMess.current) return;
 
@@ -178,7 +178,7 @@ const Inbox = ({ newmess }) => {
   };
   // console.log(messagesByDayMemo);
   if (isLoadingProfile) return <LoadingAnimation />;
-
+  console.log(messagesByDayMemo);
   return (
     <div className="flex flex-col h-full w-full bg-gray-100">
       <div ref={containerRefMess} className="flex-1 overflow-y-auto p-4">
