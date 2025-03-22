@@ -183,7 +183,7 @@ const Messages = () => {
       {/* Z-INDEX Chat Section */}
 
       <main
-        className="w-full h-screen flex flew-grow flex-col justify-end overflow-y-hidden"
+        className="w-full flex h-[100dvh] flex-col justify-end"
         // style={{ minHeight: `${screenHeight - 1}px` }}
       >
         {/* top nav */}
@@ -255,7 +255,7 @@ const Messages = () => {
           {Centter}
         </div>
         {/* Chat input */}
-        <div className="shadow-sm border-t sticky bottom-0 flex items-center p-2 bg-white">
+        <div className="shadow-sm border-t flex items-center p-2 bg-white">
           <InputMessage newmess={handleNewMessage} />
         </div>
       </main>
