@@ -12,10 +12,7 @@ export const useSocket = () => {
     if (socket) {
       return;
     }
-    const newSocket = io(connectENV.socketUrl || "ws://localhost:3001/", {
-      withCredentials: true,
-      transports: ["websocket", "polling"],
-    });
+    const newSocket = socketConfig;
     console.log(profile?._id);
     newSocket.on("connect", () => {
       console.log("✅ Connected to socket:", newSocket.id);
