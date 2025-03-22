@@ -1,10 +1,9 @@
 import { io } from "socket.io-client";
-import connectENV from "../connectENV"; 
+import connectENV from "../connectENV";
 
-// Khởi tạo socket
-const socketConfig = io(connectENV.socketUrl || "ws://localhost:3001/", {
+const socketConfig = io(connectENV.socketUrl || "wss://localhost:3001/", {
   withCredentials: true,
-  transports: ["websocket", "polling"],
+  transports: ["websocket", "polling"], // Chỉ định các phương thức kết nối
 });
 
 export default socketConfig;
