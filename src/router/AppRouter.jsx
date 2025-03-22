@@ -48,7 +48,8 @@ const App = () => {
         <AppRouter />{" "}
         <ToastContainer
           position="top-left"
-          className="toast-container"
+          className="toast-container "
+          style={{ marginTop: "20px", paddingRight: "60px" }}
           autoClose={3000}
           limit={3}
         />

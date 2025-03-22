@@ -2,8 +2,8 @@
 .Toastify__toast {
     border-radius: 12px !important;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15) !important;
-    background: #1f2937 !important;
-    color: #ffffff !important;
+    background: #daeaff !important;
+    color: #000000 !important;
     display: flex !important;
     align-items: center !important;
 }
@@ -20,7 +20,7 @@
 }
 
 .Toastify__close-button {
-    color: #fff !important;
+    color: #000000 !important;
     opacity: 0.8 !important;
 }
 
@@ -28,7 +28,7 @@
 .Toastify__toast--success {
     background: linear-gradient(135deg, #4CAF50, #67ff6e);
     /* Màu xanh lá đẹp hơn */
-    color: white;
+    color: rgb(0, 0, 0);
     font-weight: bold;
     font-size: 16px;
     border-radius: 8px;
