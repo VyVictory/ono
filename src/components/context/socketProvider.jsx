@@ -44,7 +44,7 @@ const CustomToast = ({ message }) => {
 
 export const SocketProvider = ({ children }) => {
   const { profile } = useAuth();
-  const socket = useSocket(profile?._id);
+  const socket = useSocket();
   const [newMessInbox, setNewMessInbox] = useState(null);
   const [idUser, setIdUser] = useState(null);
   const location = useLocation();

@@ -12,19 +12,23 @@ export const useSocket = () => {
     if (socket) {
       return;
     }
-    const newSocket = socketConfig;
+    const newSocket = io(connectENV.socketUrl || "ws://localhost:3001/", {
+      withCredentials: true,
+      transports: ["websocket", "polling"],
+    });
+    console.log(profile?._id);
     newSocket.on("connect", () => {
       console.log("✅ Connected to socket:", newSocket.id);
       newSocket.emit("authenticate", profile?._id);
-    }); 
+    });
     newSocket.on("disconnect", () => {
       console.log("❌ Socket disconnected");
     });
 
     setSocket(newSocket);
     return () => {
-      console.log("🛑 Cleaning up socket:", socket?.id);
-      socket?.disconnect();
+      console.log("🛑 Cleaning up socket:", newSocket?.id);
+      newSocket?.disconnect();
     };
   }, [profile]); // ✅ Chỉ chạy lại khi `userId` thay đổi
 
