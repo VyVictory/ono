@@ -9,6 +9,7 @@ import { ArrowDownIcon } from "@heroicons/react/24/solid";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { useSocketContext } from "../../components/context/socketProvider";
+import FilePreview from "../../components/FilePreview";
 
 const Inbox = ({ newmess }) => {
   const { profile, isLoadingProfile } = useAuth();
@@ -213,16 +214,30 @@ const Inbox = ({ newmess }) => {
                   } mb-2`}
                 >
                   <div
-                    className={`p-3 rounded-lg shadow-md min-w-20 max-w-xs ${
+                    className={` rounded-lg shadow-md min-w-20 max-w-lg ${
                       isMe && "bg-blue-100"
                     }`}
                   >
+                    {msg?.media?.length > 0 && (
+                      <div
+                        className={`grid grid-cols-1 
+                          ${msg?.media?.length ==2 && "sm:grid-cols-2"}
+                         ${msg?.media?.length > 2 && "sm:grid-cols-3"} 
+                          gap-2`}
+                      >
+                        {msg.media.map((file, index) => (
+                          <FilePreview key={index} fileUrl={file.url} />
+                        ))}
+                      </div>
+                    )}
+
                     {msg.content && (
-                      <p className="break-words whitespace-pre-wrap">
+                      <p className="break-words whitespace-pre-wrap p-2 pb-0">
                         {msg.content}
                       </p>
                     )}
-                    <div className="text-xs text-gray-500 mt-1">
+
+                    <div className="text-xs text-gray-400 mt-1 p-2 pt-0">
                       {format(new Date(msg.createdAt), "HH:mm")}
                     </div>
                   </div>
