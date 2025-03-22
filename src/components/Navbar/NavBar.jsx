@@ -114,7 +114,7 @@ const NavBar = () => {
         {/* Left: Logo and Search bg */}
         <div
           ref={searchRef}
-          className={`z-10  left-0 top-0 flex flex-col w-full max-w-[300px]  ${
+          className={`z-10  left-0 top-0 flex flex-col w-full bg-white max-w-[300px]  ${
             isSearchVisible && "border-r-2 absolute  "
           } `}
         >
