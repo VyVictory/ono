@@ -4,7 +4,7 @@ import FixedBottomNavigation from "../components/FixedBottomNavigation";
 
 const HomeLayout = () => {
   return (
-    <div className="flex h-screen NavbarUser">
+    <div className="flex h-[100dvh] NavbarUser">
       {/* Sidebar (nếu có) */}
 
       <SiderBar />
