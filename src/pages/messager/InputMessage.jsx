@@ -87,7 +87,7 @@ const InputMessage = ({ newmess }) => {
   return (
     <>
       {images.length > 0 && (
-        <div className="flex space-x-2 p-2">
+        <div className="flex space-x-2 p-2 bg-gray-100" >
           {images.slice(0, 3).map((img, index) => (
             <Paper key={index}>
               <img
