@@ -32,10 +32,18 @@ const NavBar = () => {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-
   const dropdownRef = useRef(null);
   const searchRef = useRef(null);
   const inputSearchRef = useRef(null);
+  useEffect(() => {
+    let reloadCount = sessionStorage.getItem("reloadCount") || 0;
+
+    if (reloadCount == 2) {
+      sessionStorage.setItem("reloadCount", Number(reloadCount) + 1);
+      window.location.reload();
+    }
+  }, []);
+
   const toggleSearch = () => {
     setIsSearchVisible(!isSearchVisible);
     if (isDropdownVisible) {

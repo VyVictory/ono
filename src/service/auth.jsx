@@ -44,8 +44,7 @@ export const login = async (credentials) => {
 
     // Lưu token vào localStorage
     // saveToken(token);
-    authToken.setToken(token);
-
+    authToken.setToken(token); 
     return { token, user };
   } catch (error) {
     console.error("Login Error: ", error.response?.data || error.message);

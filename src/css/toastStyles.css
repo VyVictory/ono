@@ -1,0 +1,93 @@
+/* toastStyles.css */
+.Toastify__toast {
+    border-radius: 12px !important;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15) !important;
+    background: #1f2937 !important;
+    color: #ffffff !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.Toastify__toast-body {
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.Toastify__progress-bar {
+    background: linear-gradient(90deg, #4ade80, #38bdf8) !important;
+}
+
+.Toastify__close-button {
+    color: #fff !important;
+    opacity: 0.8 !important;
+}
+
+/* Tùy chỉnh thông báo thành công */
+.Toastify__toast--success {
+    background: linear-gradient(135deg, #4CAF50, #67ff6e);
+    /* Màu xanh lá đẹp hơn */
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    /* Đổ bóng mềm */
+    padding: 12px;
+}
+
+/* Tùy chỉnh icon thành công */
+.Toastify__toast--success .Toastify__toast-icon svg {
+    fill: #ffffff;
+    /* Chuyển icon thành màu trắng */
+}
+
+.Toastify__toast--error {
+    background: #ef4444 !important;
+    /* Màu đỏ cho thông báo lỗi */
+}
+
+.Toastify__toast--warning {
+    background: #facc15 !important;
+    /* Màu vàng cho cảnh báo */
+    color: #000 !important;
+}
+
+.Toastify__toast--info {
+    background: #3b82f6 !important;
+    /* Màu xanh dương cho thông tin */
+}
+
+@keyframes fadeInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeOutToLeft {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+}
+
+.Toastify__toast {
+    animation: fadeInFromLeft 0.3s ease-out, fadeOutToLeft 0.3s ease-in 2.7s forwards;
+}
+
+.Toastify__toast-container {
+    left: 10px !important;
+    right: auto !important;
+}

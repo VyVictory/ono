@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import connectENV from "../connectENV";
 import { useAuth } from "../../components/context/AuthProvider";
-const SOCKET_URL = connectENV.socketUrl;
+import socketConfig from "./socketConfig";
 
 export const useSocket = () => {
   const [socket, setSocket] = useState(null);
@@ -12,15 +12,11 @@ export const useSocket = () => {
     if (socket) {
       return;
     }
-    const newSocket = io(SOCKET_URL, {
-      withCredentials: true,
-      transports: ["websocket", "polling"],
-    });
+    const newSocket = socketConfig;
     newSocket.on("connect", () => {
       console.log("✅ Connected to socket:", newSocket.id);
       newSocket.emit("authenticate", profile?._id);
-    });
-
+    }); 
     newSocket.on("disconnect", () => {
       console.log("❌ Socket disconnected");
     });

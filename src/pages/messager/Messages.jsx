@@ -20,7 +20,7 @@ import UserStatusIndicator from "../../components/UserStatusIndicator";
 const Messages = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isRightbarOpen, setRightbarOpen] = useState(false);
-
+  const [screenHeight, setScreenHeight] = useState(window?.innerHeight);
   const [profileUser, setProfileUser] = useState(null);
   const [isRightbarOpen1, setRightbarOpen1] = useState(true);
   const navigate = useNavigate();
@@ -31,8 +31,13 @@ const Messages = () => {
 
   const handleNewMessage = (newMessage) => {
     setMessages(newMessage); // ✅ Cập nhật tin nhắn mới, xoá danh sách cũ
-  };
+  }; 
+  useEffect(() => {
+    const updateHeight = () => setScreenHeight(window?.innerHeight);
+    window?.addEventListener("resize", updateHeight);
 
+    return () => window?.removeEventListener("resize", updateHeight);
+  }, []);
   // console.log("Loại tin nhắn:", type);
   // console.log("ID:", id);
   const HandleLinkToMess = (chane, id) => {
@@ -79,14 +84,9 @@ const Messages = () => {
   {
     type && profileUser?._id ? Centter : <p>Đang tải...</p>;
   }
-  const [screenHeight, setScreenHeight] = useState(window.innerHeight);
 
-  useEffect(() => {
-    const updateHeight = () => setScreenHeight(window.innerHeight);
-    window.addEventListener("resize", updateHeight);
 
-    return () => window.removeEventListener("resize", updateHeight);
-  }, []);
+
 
   return (
     <div className="flex ">

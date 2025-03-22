@@ -29,8 +29,8 @@ const Inbox = ({ newmess }) => {
     async (newPage = 0) => {
       if (!containerRefMess.current) return;
 
-      const previousScrollHeight = containerRefMess.current.scrollHeight;
-      const previousScrollTop = containerRefMess.current.scrollTop;
+      const previousScrollHeight = containerRefMess?.current?.scrollHeight;
+      const previousScrollTop = containerRefMess?.current?.scrollTop;
 
       try {
         const data = await getMessageInbox(id, newPage * 20, 20);
@@ -58,7 +58,6 @@ const Inbox = ({ newmess }) => {
 
             return mergedMessages;
           });
-
           setPage(newPage);
         } else {
           setHasMore(false);
@@ -80,7 +79,8 @@ const Inbox = ({ newmess }) => {
   );
 
   useEffect(() => {
-    if (id) {
+    if (id) { 
+      setMessagesByDay([]);
       fetchMessages(0);
     }
   }, [id, fetchMessages, isLoadingProfile]);
@@ -113,11 +113,12 @@ const Inbox = ({ newmess }) => {
 
   useEffect(() => {
     addMessages(newmess);
-    // console.log("add", newmess);
   }, [newmess, addMessages]);
 
   useEffect(() => {
-    addMessages(newMessInbox?.message);
+    if (newMessInbox?.message?.sender?._id === id) {
+      addMessages(newMessInbox?.message);
+    } 
   }, [newMessInbox, addMessages]);
 
   useEffect(() => {
@@ -125,8 +126,7 @@ const Inbox = ({ newmess }) => {
       scroll();
       setIsScroll(true);
     }
-  }, [messagesByDay, isLoadingProfile]);
-
+  }, [messagesByDay, isLoadingProfile]); 
   useEffect(() => {
     if (!containerRefMess.current) return;
 
