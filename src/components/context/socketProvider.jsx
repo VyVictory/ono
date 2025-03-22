@@ -51,7 +51,7 @@ export const SocketProvider = ({ children }) => {
   const toastIdsRef = useRef([]);
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
-    const newIdUser = searchParams.get("idUser"); 
+    const newIdUser = searchParams.get("idUser");
     setIdUser(newIdUser);
   }, [location.search]);
 
@@ -88,17 +88,17 @@ export const SocketProvider = ({ children }) => {
     };
 
     socket.on("newMessage", handleNewMessage);
-    socket.on("messagesDelivered", (data) => {
-      console.log("Messages delivered:", data.messages);
-    });
-    socket.on("messagesSeen", (data) => {
-      console.log("Messages seen:", data.messages);
-    });
+    // socket.on("messagesDelivered", (data) => {
+    //   console.log("Messages delivered:", data.messages);
+    // });
+    // socket.on("messagesSeen", (data) => {
+    //   console.log("Messages seen:", data.messages);
+    // });
 
     return () => {
       socket.off("newMessage", handleNewMessage);
-      socket.off("messagesDelivered");
-      socket.off("messagesSeen");
+      // socket.off("messagesDelivered");
+      // socket.off("messagesSeen");
     };
   }, [socket, idUser]); // 🔹 Thêm idUser vào dependency để cập nhật đúng
 
