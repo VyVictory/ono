@@ -13,7 +13,9 @@ import FilePreview from "../../components/FilePreview";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import IconButton from "@mui/material/IconButton";
 import { Menu } from "@headlessui/react";
+import { useConfirm } from "../../components/context/ConfirmProvider";
 const Inbox = ({ newmess }) => {
+  const confirm = useConfirm();
   const { profile, isLoadingProfile } = useAuth();
   const { newMessInbox } = useSocketContext();
   const lastMessageRef = useRef(null);
@@ -179,8 +181,10 @@ const Inbox = ({ newmess }) => {
 
   const scroll = () => {
     lastMessageRef.current?.scrollIntoView({ behavior: "auto" });
-  }; 
+  };
   const handleRecallMessage = async (messageId) => {
+    const isConfirmed = await confirm("Bạn có chắc muốn thu hồi tin nhắn này?");
+    if (!isConfirmed) return;
     try {
       // Cập nhật UI trước khi gửi request (tùy vào server có yêu cầu chặn thu hồi không)
       setMessagesByDay((prev) =>
@@ -222,7 +226,11 @@ const Inbox = ({ newmess }) => {
     // Hiển thị input cho phép chỉnh sửa tin nhắn
   };
 
-  const handleDeleteMessage = (messageId) => {
+  const handleDeleteMessage = async (messageId) => {
+    const isConfirmed = await confirm(
+      "Bạn có chắc muốn xóa tin nhắn này? .. lưu ý chức năng này chỉ là ảo :)))"
+    );
+    if (!isConfirmed) return;
     if (!messageId) return;
     try {
       console.log(messageId);
