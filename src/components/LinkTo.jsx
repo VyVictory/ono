@@ -6,7 +6,7 @@ const LinkTo = ({ namepage, children, css }) => {
   const pathMapping = {
     admin: "/admin",
     home: "/",
-    messages: "/messages",
+    messages: "/messages/inbox?idUser=67d7da499ef20e261a3911f6",
     videos: "/videos",
     store: "/store",
     groups: "/groups",
