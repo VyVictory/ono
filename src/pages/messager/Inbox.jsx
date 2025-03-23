@@ -210,7 +210,9 @@ const Inbox = ({ newmess }) => {
                       : null
                   }
                   className={`flex ${
-                    isMe ? "justify-end" : "justify-start"
+                    isMe
+                      ? "justify-end pl-14 md:pl-0"
+                      : "justify-start pr-14 md:pr-0"
                   } mb-2`}
                 >
                   <div
@@ -228,7 +230,7 @@ const Inbox = ({ newmess }) => {
                           {msg?.media?.length > 0 && (
                             <div
                               className={`grid grid-cols-2 
-                                 ${msg.media.length ===1 && "grid-cols-1"} 
+                                 ${msg.media.length === 1 && "grid-cols-1"} 
                                ${msg.media.length % 3 === 0 && "grid-cols-3"} 
                                gap-1`}
                             >
