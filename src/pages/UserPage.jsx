@@ -9,7 +9,7 @@ import { getPostHome } from "../service/post";
 
 const UserPage = () => {
   const { profile, isLoadingProfile } = useAuth();
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Gọi API lấy danh sách bài viết
@@ -41,8 +41,8 @@ const UserPage = () => {
         <div className="space-y-4">
           {isLoading ? (
             <LoadingAnimation />
-          ) : posts.length > 0 ? (
-            posts.map((post) => <Post key={post._id} data={post} />)
+          ) : posts?.posts?.length > 0 ? (
+            <Post data={posts} />
           ) : (
             <p className="text-gray-500 text-center">Không có bài viết nào.</p>
           )}
