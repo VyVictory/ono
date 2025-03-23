@@ -46,6 +46,7 @@ export const SocketProvider = ({ children }) => {
   const { profile } = useAuth();
   const socket = useSocket();
   const [newMessInbox, setNewMessInbox] = useState(null);
+  const [recallMessId, setRecallMessId] = useState(null);
   const [idUser, setIdUser] = useState(null);
   const location = useLocation();
   const toastIdsRef = useRef([]);
@@ -86,7 +87,10 @@ export const SocketProvider = ({ children }) => {
       showToast(data?.message);
       setNewMessInbox(data);
     };
-
+    const handleRecallMessage = (data) => {
+      setRecallMessId(data.messageId);
+      console.log(data);
+    };
     socket.on("newMessage", handleNewMessage);
     // socket.on("messagesDelivered", (data) => {
     //   console.log("Messages delivered:", data.messages);
@@ -94,16 +98,19 @@ export const SocketProvider = ({ children }) => {
     // socket.on("messagesSeen", (data) => {
     //   console.log("Messages seen:", data.messages);
     // });
-
+    socket.on("messageRecalled", handleRecallMessage);
     return () => {
       socket.off("newMessage", handleNewMessage);
+      socket.off("messageRecalled", handleNewMessage);
       // socket.off("messagesDelivered");
       // socket.off("messagesSeen");
     };
   }, [socket, idUser]); // 🔹 Thêm idUser vào dependency để cập nhật đúng
 
   return (
-    <SocketContext.Provider value={{ newMessInbox }}>
+    <SocketContext.Provider
+      value={{ newMessInbox, recallMessId, setRecallMessId }}
+    >
       {children}
     </SocketContext.Provider>
   );

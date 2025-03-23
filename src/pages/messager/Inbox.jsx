@@ -17,7 +17,7 @@ import { useConfirm } from "../../components/context/ConfirmProvider";
 const Inbox = ({ newmess }) => {
   const confirm = useConfirm();
   const { profile, isLoadingProfile } = useAuth();
-  const { newMessInbox } = useSocketContext();
+  const { newMessInbox, recallMessId, setRecallMessId } = useSocketContext();
   const lastMessageRef = useRef(null);
   const containerRefMess = useRef(null);
   const { id } = UseMessageInfo();
@@ -116,7 +116,12 @@ const Inbox = ({ newmess }) => {
 
     setIsScroll(false);
   }, []);
-
+  const recallMessages = useCallback((idMessage) => {
+    console.log('recall trc return')
+    if (!idMessage) return;
+    console.log('recall')
+    recallMess(idMessage);
+  }, []);
   useEffect(() => {
     addMessages(newmess);
   }, [newmess, addMessages]);
@@ -126,6 +131,10 @@ const Inbox = ({ newmess }) => {
       addMessages(newMessInbox?.message);
     }
   }, [newMessInbox, addMessages]);
+  useEffect(() => { 
+      console.log(recallMessId);
+      recallMessages(recallMessId); 
+  }, [recallMessId]);
 
   useEffect(() => {
     if (!isLoadingProfile && lastMessageRef.current && !isScroll) {
@@ -187,16 +196,6 @@ const Inbox = ({ newmess }) => {
     if (!isConfirmed) return;
     try {
       // Cập nhật UI trước khi gửi request (tùy vào server có yêu cầu chặn thu hồi không)
-      setMessagesByDay((prev) =>
-        prev.map((group) => ({
-          ...group,
-          mess: group.mess.map((msg) =>
-            msg._id === messageId
-              ? { ...msg, isRecalled: true, content: "Tin nhắn đã bị thu hồi" }
-              : msg
-          ),
-        }))
-      );
 
       // Gửi request thu hồi lên server
       const response = await RecallMessage(messageId);
@@ -204,7 +203,7 @@ const Inbox = ({ newmess }) => {
       if (response.status !== 200) {
         throw new Error("Thu hồi tin nhắn thất bại");
       }
-
+      recallMess(messageId);
       console.log("Thu hồi thành công:", messageId);
     } catch (error) {
       console.error("Lỗi thu hồi tin nhắn:", error);
@@ -220,7 +219,18 @@ const Inbox = ({ newmess }) => {
       );
     }
   };
-
+  const recallMess = async (messageId) => {
+    setMessagesByDay((prev) =>
+      prev.map((group) => ({
+        ...group,
+        mess: group.mess.map((msg) =>
+          msg._id === messageId
+            ? { ...msg, isRecalled: true, content: "Tin nhắn đã bị thu hồi" }
+            : msg
+        ),
+      }))
+    );
+  };
   const handleEditMessage = async (messageId) => {
     console.log("Chỉnh sửa tin nhắn:", messageId);
     // Hiển thị input cho phép chỉnh sửa tin nhắn
@@ -253,8 +263,6 @@ const Inbox = ({ newmess }) => {
       console.error("Error deleting message:", error);
     }
   };
-
-  // console.log(messagesByDayMemo);
   if (isLoadingProfile) return <LoadingAnimation />;
   return (
     <div className="flex flex-col h-full w-full bg-gray-100">
@@ -295,15 +303,22 @@ const Inbox = ({ newmess }) => {
                       : "justify-start pr-14 md:pr-0"
                   } mb-2`}
                 >
-                  <Menu as="div" className="relative">
-                    {hoveredMessageId === msg._id && !msg?.isRecalled && (
-                      <Menu.Button
-                        as={IconButton}
-                        onClick={() => setOpenMenuId(msg._id)}
-                      >
-                        <MoreHorizIcon />
-                      </Menu.Button>
-                    )}
+                  <Menu
+                    as="div"
+                    className="relative "
+                    onMouseLeave={() => setHoveredMessageId(null)}
+                  >
+                    {hoveredMessageId === msg._id &&
+                      !msg?.isRecalled &&
+                      (msg?.sender?._id === profile?._id ||
+                        msg?.sender === profile?._id) && (
+                        <Menu.Button
+                          as={IconButton}
+                          onClick={() => setOpenMenuId(msg._id)}
+                        >
+                          <MoreHorizIcon />
+                        </Menu.Button>
+                      )}
                     {/* Dropdown Menu */}
                     {openMenuId === msg._id && (
                       <Menu.Items
