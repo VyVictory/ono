@@ -68,7 +68,7 @@ export default function Auth() {
   };
 
   return (
-    <div className="w-full min-h-screen fixed z-50 flex items-center justify-center">
+    <div className="w-full min-h-[100dvh] fixed z-50 flex items-center justify-center">
       {/* Nếu đang ở trang login, hiển thị video nền */}
       {location.pathname === "/login" && currentVideo && (
         <>
