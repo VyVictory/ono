@@ -34,6 +34,20 @@ export const SendToUser = async (id, message, files) => {
     return null;
   }
 };
+export const RecallMessage = async (id) => {
+  try {
+    if (!token) {
+      nextLogin();
+    }
+    const response = await api.post(
+      `/message/${encodeURIComponent(id)}/recall`
+    );
+    return response;
+  } catch (error) {
+    nextError(error);
+    return null;
+  }
+};
 export const getMessageInbox = async (id, start, limit) => {
   try {
     const response = await api.get(

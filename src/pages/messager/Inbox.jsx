@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import React from "react";
 import UseMessageInfo from "./UseMessageInfo";
-import { getMessageInbox } from "../../service/message";
+import { getMessageInbox, RecallMessage } from "../../service/message";
 import { CloudDownloadIcon } from "@heroicons/react/solid";
 import { useAuth } from "../../components/context/AuthProvider";
 import LoadingAnimation from "../../components/LoadingAnimation";
@@ -12,9 +12,8 @@ import { useSocketContext } from "../../components/context/socketProvider";
 import FilePreview from "../../components/FilePreview";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import IconButton from "@mui/material/IconButton";
-import { Menu } from "@headlessui/react"; 
+import { Menu } from "@headlessui/react";
 const Inbox = ({ newmess }) => {
-
   const { profile, isLoadingProfile } = useAuth();
   const { newMessInbox } = useSocketContext();
   const lastMessageRef = useRef(null);
@@ -180,10 +179,42 @@ const Inbox = ({ newmess }) => {
 
   const scroll = () => {
     lastMessageRef.current?.scrollIntoView({ behavior: "auto" });
-  };
-  const handleRecallMessage = (messageId) => {
-    console.log("Thu hồi tin nhắn:", messageId);
-    // Gọi API thu hồi tin nhắn
+  }; 
+  const handleRecallMessage = async (messageId) => {
+    try {
+      // Cập nhật UI trước khi gửi request (tùy vào server có yêu cầu chặn thu hồi không)
+      setMessagesByDay((prev) =>
+        prev.map((group) => ({
+          ...group,
+          mess: group.mess.map((msg) =>
+            msg._id === messageId
+              ? { ...msg, isRecalled: true, content: "Tin nhắn đã bị thu hồi" }
+              : msg
+          ),
+        }))
+      );
+
+      // Gửi request thu hồi lên server
+      const response = await RecallMessage(messageId);
+
+      if (response.status !== 200) {
+        throw new Error("Thu hồi tin nhắn thất bại");
+      }
+
+      console.log("Thu hồi thành công:", messageId);
+    } catch (error) {
+      console.error("Lỗi thu hồi tin nhắn:", error);
+
+      // Nếu API thất bại, khôi phục tin nhắn về trạng thái ban đầu
+      setMessagesByDay((prev) =>
+        prev.map((group) => ({
+          ...group,
+          mess: group.mess.map((msg) =>
+            msg._id === messageId ? { ...msg, isRecalled: false } : msg
+          ),
+        }))
+      );
+    }
   };
 
   const handleEditMessage = (messageId) => {
@@ -192,13 +223,26 @@ const Inbox = ({ newmess }) => {
   };
 
   const handleDeleteMessage = (messageId) => {
-    console.log("Xóa tin nhắn:", messageId);
-    // Gọi API xóa tin nhắn
+    if (!messageId) return;
+    try {
+      console.log(messageId);
+      console.log(messagesByDay);
+      setMessagesByDay(
+        (prev) =>
+          prev
+            .map((group) => ({
+              ...group,
+              mess: group.mess.filter((msg) => msg._id !== messageId),
+            }))
+            .filter((group) => group.mess.length > 0) // Xóa ngày nếu không còn tin nhắn nào
+      );
+    } catch (error) {
+      console.error("Error deleting message:", error);
+    }
   };
 
   // console.log(messagesByDayMemo);
   if (isLoadingProfile) return <LoadingAnimation />;
-  console.log(messagesByDayMemo);
   return (
     <div className="flex flex-col h-full w-full bg-gray-100">
       <div ref={containerRefMess} className="flex-1 overflow-y-auto p-4">
@@ -314,11 +358,7 @@ const Inbox = ({ newmess }) => {
                                gap-1`}
                             >
                               {msg.media.map((file, index) => (
-                                <FilePreview
-                                 
-                                  key={index}
-                                  fileUrl={file.url}
-                                />
+                                <FilePreview key={index} fileUrl={file.url} />
                               ))}
                             </div>
                           )}
