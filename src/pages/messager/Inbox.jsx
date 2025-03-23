@@ -229,8 +229,9 @@ const Inbox = ({ newmess }) => {
                         <>
                           {msg?.media?.length > 0 && (
                             <div
-                              className={`grid grid-cols-2 
+                              className={`grid  
                                  ${msg.media.length === 1 && "grid-cols-1"} 
+                                 ${msg.media.length % 2 === 0 && "grid-cols-2"} 
                                ${msg.media.length % 3 === 0 && "grid-cols-3"} 
                                gap-1`}
                             >
