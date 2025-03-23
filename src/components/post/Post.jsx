@@ -33,7 +33,10 @@ const Post = ({ data }) => {
     <>
       <div id="gallery" className="flex flex-col gap-4">
         {posts?.posts?.map((_, index) => (
-          <Paper key={index} className="border Post w-full ">
+          <Paper
+            key={index}
+            className="border border-gray-200 bg-white rounded-lg Post w-full ShadowContent"
+          >
             <div className="pb-4 mx-2 ">
               <div className="flex flex-row space-x-2 items-center border-b p-1">
                 <button>
@@ -64,19 +67,31 @@ const Post = ({ data }) => {
               <p className="p-2">{_?.content}</p>
             </div>
             <div id={`gallery-${index}`} className="w-full pb-6 border-b mb-2">
+              <a
+                href={pngTest}
+                data-pswp-width="800"
+                data-pswp-height="600" 
+              >
+                <img src={pngTest} className="w-full h-auto cursor-pointer" />
+                {_?.media.map((file, index) => (
+                    <FilePreview key={index} fileUrl={file.url} />
+                  ))}
+              </a>
+            </div>
+            {/* <div id={`gallery-${index}`} className="w-full pb-6 border-b mb-2">
               {_?.media?.length > 0 && (
                 <div
                   className={`grid  
                                                ${
-                                                _?.media.length === 1 &&
+                                                 _?.media.length === 1 &&
                                                  "grid-cols-1"
                                                } 
                                                ${
-                                                _?.media.length % 2 === 0 &&
+                                                 _?.media.length % 2 === 0 &&
                                                  "grid-cols-2"
                                                } 
                                              ${
-                                              _?.media.length % 3 === 0 &&
+                                               _?.media.length % 3 === 0 &&
                                                "grid-cols-3"
                                              } 
                                              gap-1`}
@@ -85,8 +100,8 @@ const Post = ({ data }) => {
                     <FilePreview key={index} fileUrl={file.url} />
                   ))}
                 </div>
-              )} 
-            </div>
+              )}
+            </div> */}
           </Paper>
         ))}
       </div>

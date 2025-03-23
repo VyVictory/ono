@@ -16,7 +16,7 @@ export default function FilePreview({ fileUrl, pop }) {
         <img
           src={fileUrl}
           alt="preview"
-          className={pop || `max-w-full h-auto rounded-md`}
+          className={pop || `max-w-full rounded-md w-full h-auto`}
         />
       </ButtonBase>
     );

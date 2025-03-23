@@ -9,6 +9,7 @@ import { useAuth } from "../../../components/context/AuthProvider";
 import "../../../css/post.css";
 import PostLeft from "./PostLeft";
 import PostRight from "./PostRigh";
+import Post from "../../../components/post/Post";
 const PostProfile = ({ data }) => {
   const scrollRef = useRef(null);
   const targetRef = useRef(null);
@@ -78,7 +79,7 @@ const PostProfile = ({ data }) => {
       {/* right */}
       <div
         ref={violetRef}
-        className="absolute  pb-2"
+        className="absolute  pb-2 "
         style={{ pointerEvents: "none" }}
       >
         <div className="  w-full flex profileW justify-center md:pl-6">
@@ -89,7 +90,7 @@ const PostProfile = ({ data }) => {
               className="flex flex-col space-y-3   md:w-3/5 md:px-0"
               style={{ pointerEvents: "auto" }}
             >
-              <PostRight data={data}/>
+              <PostRight data={data} />
             </div>
           </div>
         </div>
