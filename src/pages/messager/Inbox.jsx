@@ -230,7 +230,7 @@ const Inbox = ({ newmess }) => {
                               className={`grid grid-cols-2 
                                  ${msg.media.length ===1 && "grid-cols-1"} 
                                ${msg.media.length % 3 === 0 && "grid-cols-3"} 
-                               gap-2`}
+                               gap-1`}
                             >
                               {msg.media.map((file, index) => (
                                 <FilePreview key={index} fileUrl={file.url} />
