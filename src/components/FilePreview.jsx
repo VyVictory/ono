@@ -1,12 +1,20 @@
 import { ButtonBase } from "@mui/material";
 import React from "react";
-import ReactPlayer from "react-player"; 
-
+import ReactPlayer from "react-player";
+import { useModule } from "./context/Module";
 export default function FilePreview({ fileUrl }) {
   const fileType = fileUrl.split(".").pop().toLowerCase(); // Lấy phần mở rộng file
-
+  const { setZoomImg } = useModule();
   if (["jpg", "jpeg", "png", "gif", "webp"].includes(fileType)) {
-    return <ButtonBase><img src={fileUrl} alt="preview" className="max-w-full h-auto rounded-md" /></ButtonBase>;
+    return (
+      <ButtonBase onClick={() => setZoomImg(`${fileUrl}`)}>
+        <img
+          src={fileUrl}
+          alt="preview"
+          className="max-w-full h-auto rounded-md"
+        />
+      </ButtonBase>
+    );
   }
 
   if (["mp4", "webm", "ogg"].includes(fileType)) {
@@ -14,7 +22,11 @@ export default function FilePreview({ fileUrl }) {
   }
 
   if (["mp3", "wav", "ogg"].includes(fileType)) {
-    return <audio controls className="w-full"><source src={fileUrl} type={`audio/${fileType}`} /></audio>;
+    return (
+      <audio controls className="w-full">
+        <source src={fileUrl} type={`audio/${fileType}`} />
+      </audio>
+    );
   }
 
   if (["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx"].includes(fileType)) {

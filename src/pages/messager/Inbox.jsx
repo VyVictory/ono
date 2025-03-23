@@ -14,7 +14,9 @@ import { Bars3Icon } from "@heroicons/react/24/outline";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import IconButton from "@mui/material/IconButton";
 import { Menu } from "@headlessui/react";
+import { useModule } from "../../components/context/Module";
 const Inbox = ({ newmess }) => {
+
   const { profile, isLoadingProfile } = useAuth();
   const { newMessInbox } = useSocketContext();
   const lastMessageRef = useRef(null);
@@ -314,7 +316,11 @@ const Inbox = ({ newmess }) => {
                                gap-1`}
                             >
                               {msg.media.map((file, index) => (
-                                <FilePreview key={index} fileUrl={file.url} />
+                                <FilePreview
+                                 
+                                  key={index}
+                                  fileUrl={file.url}
+                                />
                               ))}
                             </div>
                           )}
