@@ -21,8 +21,17 @@ export default function Register({ chaneform }) {
 
   const validateForm = () => {
     const validationErrors = {};
-    if (!formData.firstName) validationErrors.firstName = "Vui lòng nhập họ.";
-    if (!formData.lastName) validationErrors.lastName = "Vui lòng nhập tên.";
+    if (!formData.firstName) {
+      validationErrors.firstName = "Vui lòng nhập họ.";
+    } else if (formData.firstName.length > 15) {
+      validationErrors.firstName = "Họ không được vượt quá 15 ký tự.";
+    }
+
+    if (!formData.lastName) {
+      validationErrors.lastName = "Vui lòng nhập tên.";
+    } else if (formData.lastName.length > 15) {
+      validationErrors.lastName = "Tên không được vượt quá 15 ký tự.";
+    }
     if (!formData.email) {
       validationErrors.email = "Vui lòng nhập email.";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -191,7 +200,7 @@ export default function Register({ chaneform }) {
                 Đăng ký
               </button>
             </div>
-          </div> 
+          </div>
         </div>
       </div>
     </div>
