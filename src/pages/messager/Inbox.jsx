@@ -221,9 +221,14 @@ const Inbox = ({ newmess }) => {
     }
   };
 
-  const handleEditMessage = (messageId) => {
+  const handleEditMessage = async (messageId) => {
     console.log("Chỉnh sửa tin nhắn:", messageId);
     // Hiển thị input cho phép chỉnh sửa tin nhắn
+    const isConfirmed = await confirm(
+      "ô nô chúng tôi không cho sửa chỉ có xóa ảo hoặc thu hồi thật :)))"
+    );
+    if (!isConfirmed) return;
+    return;
   };
 
   const handleDeleteMessage = async (messageId) => {
