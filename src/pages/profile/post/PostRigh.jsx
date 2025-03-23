@@ -9,7 +9,7 @@ const PostRight = ({ data }) => {
   return (
     <>
       {data?.myprofile && <HeadCreatePost />}
-      <Post />
+      <Post data={data} />
     </>
   );
 };

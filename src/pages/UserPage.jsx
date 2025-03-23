@@ -24,8 +24,7 @@ const UserPage = () => {
     };
 
     fetchPosts();
-  }, []);
-  console.log(posts);
+  }, []); 
   if (isLoadingProfile) {
     return (
       <div className="w-full h-full flex justify-center items-center">

@@ -15,12 +15,26 @@ import AddFriend from "../../components/AddFriend";
 import PostLeft from "./post/PostLeft";
 import { useModule } from "../../components/context/Module";
 import { useNavigate } from "react-router-dom";
+import { getPostHome } from "../../service/post";
 
 const Profile = () => {
   const { setUsecase } = useModule();
   const { profileRender, content } = useProfile();
   const [userRender, setUserRender] = useState(null);
   const navigate = useNavigate();
+  const [posts, setPosts] = useState(null);
+
+  // Gọi API lấy danh sách bài viết
+  useEffect(() => {
+    const fetchPosts = async () => { 
+      const data = await getPostHome(0, 10); // Lấy 10 bài viết đầu tiên
+      if (data) {
+        setPosts(data);
+      } 
+    };
+
+    fetchPosts();
+  }, []);
   useEffect(() => {
     setUserRender(profileRender);
   }, [profileRender]);
@@ -153,7 +167,7 @@ const Profile = () => {
           </div>
         </div>
 
-        <ContentProfile data={userRender} content={content} />
+        <ContentProfile data={posts} content={content} />
       </div>
     </div>
   );
