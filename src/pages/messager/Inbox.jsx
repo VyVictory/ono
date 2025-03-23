@@ -13,7 +13,7 @@ import FilePreview from "../../components/FilePreview";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import IconButton from "@mui/material/IconButton";
-
+import { Menu } from "@headlessui/react";
 const Inbox = ({ newmess }) => {
   const { profile, isLoadingProfile } = useAuth();
   const { newMessInbox } = useSocketContext();
@@ -26,8 +26,9 @@ const Inbox = ({ newmess }) => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [isScroll, setIsScroll] = useState(false);
-
+  const [hoveredMessageId, setHoveredMessageId] = useState(null);
   const messagesByDayMemo = useMemo(() => messagesByDay, [messagesByDay]);
+  const [openMenuId, setOpenMenuId] = useState(null);
 
   const fetchMessages = useCallback(
     async (newPage = 0) => {
@@ -180,6 +181,21 @@ const Inbox = ({ newmess }) => {
   const scroll = () => {
     lastMessageRef.current?.scrollIntoView({ behavior: "auto" });
   };
+  const handleRecallMessage = (messageId) => {
+    console.log("Thu hồi tin nhắn:", messageId);
+    // Gọi API thu hồi tin nhắn
+  };
+
+  const handleEditMessage = (messageId) => {
+    console.log("Chỉnh sửa tin nhắn:", messageId);
+    // Hiển thị input cho phép chỉnh sửa tin nhắn
+  };
+
+  const handleDeleteMessage = (messageId) => {
+    console.log("Xóa tin nhắn:", messageId);
+    // Gọi API xóa tin nhắn
+  };
+
   // console.log(messagesByDayMemo);
   if (isLoadingProfile) return <LoadingAnimation />;
   console.log(messagesByDayMemo);
@@ -203,9 +219,12 @@ const Inbox = ({ newmess }) => {
             {group.mess.map((msg, index) => {
               const isMe =
                 msg.sender === profile._id || msg.sender?._id === profile._id;
+              const isLastThree = index >= group.mess.length - 3;
               return (
                 <div
                   key={index}
+                  onMouseEnter={() => setHoveredMessageId(msg._id)}
+                  onMouseLeave={() => setHoveredMessageId(null)}
                   ref={
                     dayIndex === messagesByDayMemo.length - 1 &&
                     index === group.mess.length - 1
@@ -218,9 +237,61 @@ const Inbox = ({ newmess }) => {
                       : "justify-start pr-14 md:pr-0"
                   } mb-2`}
                 >
-                  <IconButton>
-                    <MoreHorizIcon />
-                  </IconButton>
+                  <Menu as="div" className="relative">
+                    {hoveredMessageId === msg._id && !msg?.isRecalled && (
+                      <Menu.Button
+                        as={IconButton}
+                        onClick={() => setOpenMenuId(msg._id)}
+                      >
+                        <MoreHorizIcon />
+                      </Menu.Button>
+                    )}
+                    {/* Dropdown Menu */}
+                    {openMenuId === msg._id && (
+                      <Menu.Items
+                        className={`absolute right-0 w-40 bg-white shadow-lg rounded-md border border-gray-200 p-1 z-50 origin-bottom-right transform 
+                        ${isLastThree ? "bottom-full mb-2" : "top-full mt-2"}`}
+                      >
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              onClick={() => handleRecallMessage(msg._id)}
+                              className={`block w-full text-left px-4 py-2 text-sm ${
+                                active ? "bg-gray-100" : ""
+                              }`}
+                            >
+                              Thu hồi
+                            </button>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              onClick={() => handleEditMessage(msg._id)}
+                              className={`block w-full text-left px-4 py-2 text-sm ${
+                                active ? "bg-gray-100" : ""
+                              }`}
+                            >
+                              Chỉnh sửa
+                            </button>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              onClick={() => handleDeleteMessage(msg._id)}
+                              className={`block w-full text-left px-4 py-2 text-sm text-red-500 ${
+                                active ? "bg-gray-100" : ""
+                              }`}
+                            >
+                              Xóa
+                            </button>
+                          )}
+                        </Menu.Item>
+                      </Menu.Items>
+                    )}
+                  </Menu>
+
                   <div
                     className={` rounded-lg shadow-md min-w-20 max-w-lg ${
                       isMe && "bg-blue-100"
