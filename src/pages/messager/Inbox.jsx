@@ -238,7 +238,7 @@ const Inbox = ({ newmess }) => {
                   } mb-2`}
                 >
                   <Menu as="div" className="relative">
-                    {hoveredMessageId === msg._id && !msg?.isRecalled && (
+                    {hoveredMessageId === msg._id && !msg?.isRecalled  && (
                       <Menu.Button
                         as={IconButton}
                         onClick={() => setOpenMenuId(msg._id)}
