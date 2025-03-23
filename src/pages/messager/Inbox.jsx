@@ -116,8 +116,8 @@ const Inbox = ({ newmess }) => {
 
     setIsScroll(false);
   }, []);
-  const recallMessages = useCallback((idMessage) => { 
-    if (!idMessage) return; 
+  const recallMessages = useCallback((idMessage) => {
+    if (!idMessage) return;
     recallMess(idMessage);
   }, []);
   useEffect(() => {
@@ -129,9 +129,8 @@ const Inbox = ({ newmess }) => {
       addMessages(newMessInbox?.message);
     }
   }, [newMessInbox, addMessages]);
-  useEffect(() => { 
-      console.log(recallMessId);
-      recallMessages(recallMessId); 
+  useEffect(() => {
+    recallMessages(recallMessId);
   }, [recallMessId]);
 
   useEffect(() => {
@@ -301,11 +300,7 @@ const Inbox = ({ newmess }) => {
                       : "justify-start pr-14 md:pr-0"
                   } mb-2`}
                 >
-                  <Menu
-                    as="div"
-                    className="relative "
-                 
-                  >
+                  <Menu as="div" className="relative ">
                     {hoveredMessageId === msg._id &&
                       !msg?.isRecalled &&
                       (msg?.sender?._id === profile?._id ||
@@ -320,7 +315,6 @@ const Inbox = ({ newmess }) => {
                     {/* Dropdown Menu */}
                     {openMenuId === msg._id && (
                       <Menu.Items
-                      
                         className={`absolute right-0 w-40 bg-white shadow-lg rounded-md border border-gray-200 p-1 z-50 origin-bottom-right transform 
                         ${isLastThree ? "bottom-full mb-2" : "top-full mt-2"}`}
                       >
