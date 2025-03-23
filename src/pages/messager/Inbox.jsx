@@ -218,23 +218,35 @@ const Inbox = ({ newmess }) => {
                       isMe && "bg-blue-100"
                     }`}
                   >
-                    {msg?.media?.length > 0 && (
-                      <div
-                        className={`grid grid-cols-1 
-                          ${msg?.media?.length ==2 && "sm:grid-cols-2"}
-                         ${msg?.media?.length > 2 && "sm:grid-cols-3"} 
-                          gap-2`}
-                      >
-                        {msg.media.map((file, index) => (
-                          <FilePreview key={index} fileUrl={file.url} />
-                        ))}
-                      </div>
-                    )}
-
-                    {msg.content && (
-                      <p className="break-words whitespace-pre-wrap p-2 pb-0">
-                        {msg.content}
+                    {msg?.isRecalled ? (
+                      <p className="break-words whitespace-pre-wrap p-2 pb-0 text-gray-400">
+                        Tin nhắn đã được thu hồi
                       </p>
+                    ) : (
+                      <>
+                        <>
+                          {msg?.media?.length > 0 && (
+                            <div
+                              className={`grid grid-cols-2 
+                                 ${msg.media.length ===1 && "grid-cols-1"} 
+                               ${msg.media.length % 3 === 0 && "grid-cols-3"} 
+                               gap-2`}
+                            >
+                              {msg.media.map((file, index) => (
+                                <FilePreview key={index} fileUrl={file.url} />
+                              ))}
+                            </div>
+                          )}
+                        </>
+
+                        <>
+                          {msg.content && (
+                            <p className="break-words whitespace-pre-wrap p-2 pb-0">
+                              {msg.content}
+                            </p>
+                          )}
+                        </>
+                      </>
                     )}
 
                     <div className="text-xs text-gray-400 mt-1 p-2 pt-0">
