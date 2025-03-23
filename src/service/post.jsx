@@ -1,0 +1,48 @@
+import api from "./components/api";
+import authToken from "./storage/authToken";
+import { nextLogin, nextError } from "./components/nextLogin";
+
+export const Post = async (content, files, video) => {
+  try {
+    const token = authToken.getToken();
+    if (!token) {
+      nextLogin();
+      return null; // Stop execution
+    }
+
+    if (!content && (!files || files.length === 0) && !video) return null;
+
+    const formData = new FormData();
+    
+    if (content) {
+      formData.append("content", content);
+    }
+
+    if (files?.length) {
+        console.log('co hinh',files)
+      files.forEach((file) => {
+        console.log("Adding file:", file.name);
+        formData.append("media", file);
+      });
+    }
+
+    if (video) {
+      formData.append("media", video);
+    }
+
+    console.log("FormData contents:",formData); 
+    const response = await api.post(
+        `/post`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+    return response;
+  } catch (error) {
+    nextError(error);
+    return null;
+  }
+};

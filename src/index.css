@@ -39,7 +39,7 @@
     }
 
     .NavbarUser {
-        padding-top: 64px;
+        padding-top: 56px;
         /* Chiều cao của NavBar */
     }
 
@@ -49,11 +49,11 @@
 
     /* 🛠️ Navbar luôn nằm trên cùng */
     .HighNavbar {
-        height: 64px;
+        height: 56px;
     }
 
     .MarginTopNavbar {
-        margin-top: 64px;
+        margin-top: 56px;
     }
 
     /* Áp dụng cho toàn bộ trang hoặc container cần thanh cuộn */

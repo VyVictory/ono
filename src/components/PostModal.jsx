@@ -15,6 +15,8 @@ import { IconsManifest } from "react-icons/lib";
 import { useConfirm } from "./context/ConfirmProvider";
 import { toast } from "react-toastify";
 import { Button } from "@headlessui/react";
+import { Post } from "../service/post";
+import LoadingAnimation from "./LoadingAnimation";
 export default function PostForm({ children }) {
   const confirm = useConfirm();
   const [isOpen, setIsOpen] = useState(false);
@@ -23,11 +25,25 @@ export default function PostForm({ children }) {
   const [showGallery, setShowGallery] = useState(false);
   const [selectedImages, setSelectedImages] = useState([]);
   const [direction, setDirection] = useState("next");
+  const [isLoadingPost, setIsLoadingPost] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Đăng bài viết:", post);
-    setIsOpen(false);
+  const handleSubmit = async () => {
+    setIsLoadingPost(true);
+    const imageFiles = post.images.map((img) => img.file);
+    const videoFile = post.video ? post.video.file : null; // Extract video file
+    console.log(post.video);
+    try {
+      const response = await Post(post.content, imageFiles, videoFile);
+      if (response?.status === 201) {
+        toast.success("Đăng bài viết thành công", { autoClose: 500 });
+        setPost({ content: "", images: [], video: null }); // Reset form
+      }
+      setIsOpen(false);
+      console.log("Post success:", response);
+    } catch (error) {
+      console.error("Error posting:", error);
+    }
+    setIsLoadingPost(false);
   };
 
   const handleImageUpload = (e) => {
@@ -280,7 +296,9 @@ export default function PostForm({ children }) {
               {post.images.map((img, index) => (
                 <div
                   key={index}
-                  className={`w-16 h-16 aspect-square flex items-center justify-center bg-gray-200 rounded-md border-2 hover:scale-105 duration-500 ${
+                  className={`w-16 h-16 aspect-square flex items-center justify-center ${
+                    currentIndex === index && " border-violet-500 border-t-4"
+                  } bg-gray-200 rounded-md  hover:scale-105 duration-500 ${
                     selectedImages.includes(index)
                       ? "border-red-500 border-4 p-4 h-20 w-20"
                       : ""
@@ -350,11 +368,22 @@ export default function PostForm({ children }) {
                 )}
               </div>
             </div>
-            <ButtonBase className="">
-              <div className="w-full py-2 text-white font-semibold rounded-lg bg-gradient-to-r from-purple-500 to-orange-500 hover:from-purple-600 hover:to-orange-600 transition-all duration-300">
-                Đăng bài
+            {!isLoadingPost ? (
+              <ButtonBase
+                onClick={() => {
+                  handleSubmit();
+                }}
+                className=""
+              >
+                <div className="w-full py-2 text-white font-semibold rounded-lg bg-gradient-to-r from-purple-500 to-orange-500 hover:from-purple-600 hover:to-orange-600 transition-all duration-300">
+                  Đăng bài
+                </div>
+              </ButtonBase>
+            ) : (
+              <div className="w-full flex justify-center items-center">
+                <LoadingAnimation />
               </div>
-            </ButtonBase>
+            )}
           </div>
         </motion.div>
       </Modal>

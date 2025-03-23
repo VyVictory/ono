@@ -78,10 +78,10 @@ const NotificationDropDow = () => {
     >
       {/* Nút Avatar */}
       <button onClick={() => setIsOpen(!isOpen)}>
-        <div className="h-11 w-11 shadow-lg rounded-full border">
+        <div className="h-10 w-10 shadow-lg rounded-full border">
           <Badge badgeContent={unreadMessagesCount} color="error">
             <WaterBubbleButton>
-              <BellIcon className="h-full w-full " />
+              <BellIcon className="h-full w-full text-yellow-600" />
             </WaterBubbleButton>
           </Badge>
         </div>

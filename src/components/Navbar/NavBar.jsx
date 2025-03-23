@@ -145,7 +145,7 @@ const NavBar = () => {
               {/* Nút mở ô tìm kiếm */}
               <button onClick={() => setIsSearchVisible(true)}>
                 <MagnifyingGlassIcon
-                  className={`h-10 w-10 stroke-gray-300 p-2 bg-slate-100 hover:stroke-violet-400
+                  className={`h-10 w-10 stroke-blue-300 p-2 bg-slate-100 hover:stroke-violet-400
             ${
               isSearchVisible
                 ? "rounded-l-full "
@@ -200,16 +200,16 @@ const NavBar = () => {
 
           <button>
             <LinkTo namepage="messages">
-              <div className="h-11 w-11 shadow-lg rounded-full border">
+              <div className="h-10 w-10 shadow-lg rounded-full border">
                 <WaterBubbleButton>
-                  <ChatBubbleLeftIcon className="h-full w-full" />
+                  <ChatBubbleLeftIcon className="h-full w-full text-blue-400" />
                 </WaterBubbleButton>
               </div>
             </LinkTo>
           </button>
           <NotificationDropDow />
           {isLoadingProfile ? (
-            <ArrowPathIcon className="h-12 w-12 text-gray-400 animate-spin" />
+            <ArrowPathIcon className="h-12 w-12 text-gray-400 animate-spin " />
           ) : profile === undefined ? (
             <div className="h-12 w-12 bg-gray-300 rounded-full animate-pulse"></div> // Skeleton UI khi chưa có profile
           ) : profile ? (
@@ -238,7 +238,7 @@ const NavBar = () => {
                 css="group flex items-center hover:bg-gray-200 w-24 h-full justify-center rounded-md transition-colors duration-200"
               >
                 <Button className="flex items-center justify-center h-full w-full aspect-square">
-                  <Icon className="h-6 w-6 text-gray-600 transition-colors duration-200 group-hover:text-blue-500 stroke-[1.5]" />
+                  <Icon className="h-6 w-6 text-violet-500 transition-colors duration-200 group-hover:text-violet-600 stroke-[1.5]" />
                 </Button>
               </LinkTo>
             </div>
