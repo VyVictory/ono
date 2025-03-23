@@ -15,6 +15,7 @@ import { useAuth } from "../../components/context/AuthProvider";
 import socketConfig from "../../service/socket/socketConfig";
 import { Paper } from "@mui/material";
 import { XMarkIcon } from "@heroicons/react/24/solid";
+const stickers = ["😀", "😂", "😍", "😎", "🥳", "😡", "😭", "🤔", "🙄", "🤩"]; // Example stickers (can replace with images)
 
 const InputMessage = ({ newmess }) => {
   const { profile } = useAuth();
@@ -24,6 +25,7 @@ const InputMessage = ({ newmess }) => {
   const [images, setImages] = useState([]);
   const [imagesFull, setImagesFull] = useState([]);
   const [openModal, setOpenModal] = useState(false);
+  const [openStickerModal, setOpenStickerModal] = useState(false);
 
   const handleSendMessage = () => {
     setIsSend(false);
@@ -90,7 +92,10 @@ const InputMessage = ({ newmess }) => {
       handleSendMessage();
     }
   };
-
+  const handleStickerSelect = (sticker) => {
+    setMessage((prev) => prev + sticker);
+    setOpenStickerModal(false);
+  };
   return (
     <>
       {images.length > 0 && (
@@ -170,7 +175,25 @@ const InputMessage = ({ newmess }) => {
           </Button>
         </DialogActions> */}
       </Dialog>
-
+      <Dialog
+        open={openStickerModal}
+        onClose={() => setOpenStickerModal(false)}
+      >
+        <DialogTitle>Chọn Sticker</DialogTitle>
+        <DialogContent>
+          <div className="grid grid-cols-5 gap-2 p-2">
+            {stickers.map((sticker, index) => (
+              <ButtonBase
+                key={index}
+                onClick={() => handleStickerSelect(sticker)}
+                className="p-2 border rounded-lg hover:bg-gray-200"
+              >
+                <span className="text-3xl">{sticker}</span>
+              </ButtonBase>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
       <div className="border-t flex flex-1  pointer-events-auto p-2">
         <div className="flex items-center flex-row space-x-1 pr-2">
           <label htmlFor="imageUpload" className="cursor-pointer">
@@ -227,7 +250,7 @@ const InputMessage = ({ newmess }) => {
             </svg>
           </label>
 
-          <button>
+          <button onClick={() => setOpenStickerModal(true)}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"

@@ -10,6 +10,9 @@ import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { useSocketContext } from "../../components/context/socketProvider";
 import FilePreview from "../../components/FilePreview";
+import { Bars3Icon } from "@heroicons/react/24/outline";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import IconButton from "@mui/material/IconButton";
 
 const Inbox = ({ newmess }) => {
   const { profile, isLoadingProfile } = useAuth();
@@ -209,12 +212,15 @@ const Inbox = ({ newmess }) => {
                       ? lastMessageRef
                       : null
                   }
-                  className={`flex ${
+                  className={`flex items-center space-x-2 ${
                     isMe
                       ? "justify-end pl-14 md:pl-0"
                       : "justify-start pr-14 md:pr-0"
                   } mb-2`}
                 >
+                  <IconButton>
+                    <MoreHorizIcon />
+                  </IconButton>
                   <div
                     className={` rounded-lg shadow-md min-w-20 max-w-lg ${
                       isMe && "bg-blue-100"
