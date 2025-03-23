@@ -238,7 +238,7 @@ const NavBar = () => {
                 css="group flex items-center hover:bg-gray-200 w-24 h-full justify-center rounded-md transition-colors duration-200"
               >
                 <Button className="flex items-center justify-center h-full w-full aspect-square">
-                  <Icon className="h-6 w-6 text-violet-500 transition-colors duration-200 group-hover:text-violet-600 stroke-[1.5]" />
+                  <Icon className="h-6 w-6 text-violet-400 transition-colors duration-200 group-hover:text-violet-600 stroke-[1.5]" />
                 </Button>
               </LinkTo>
             </div>

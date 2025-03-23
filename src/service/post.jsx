@@ -13,13 +13,13 @@ export const Post = async (content, files, video) => {
     if (!content && (!files || files.length === 0) && !video) return null;
 
     const formData = new FormData();
-    
+
     if (content) {
       formData.append("content", content);
     }
 
     if (files?.length) {
-        console.log('co hinh',files)
+      console.log("co hinh", files);
       files.forEach((file) => {
         console.log("Adding file:", file.name);
         formData.append("media", file);
@@ -30,17 +30,24 @@ export const Post = async (content, files, video) => {
       formData.append("media", video);
     }
 
-    console.log("FormData contents:",formData); 
-    const response = await api.post(
-        `/post`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+    console.log("FormData contents:", formData);
+    const response = await api.post(`/post`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response;
+  } catch (error) {
+    nextError(error);
+    return null;
+  }
+};
+export const getPostHome = async (start, limit) => {
+  try {
+    const response = await api.get(
+      `/message/inbox/rage/?start=${start}&limit=${limit}`
+    );
+    return response.data;
   } catch (error) {
     nextError(error);
     return null;

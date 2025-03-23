@@ -12,7 +12,7 @@ const ImageZoomModal = ({ imageUrl, onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm z-50 transition-opacity duration-300"
+      className="fixed inset-0 flex items-center w-screen h-[100dvh] justify-center bg-black bg-opacity-70 backdrop-blur-sm transition-opacity duration-300 z-[99999]"
       onClick={onClose} // Nhấn ngoài modal để đóng
     >
       <div
@@ -21,7 +21,7 @@ const ImageZoomModal = ({ imageUrl, onClose }) => {
       >
         {/* Nút đóng */}
         <button
-          className="absolute top-3 right-3 text-white bg-gray-800 p-2 rounded-full hover:bg-gray-600 transition"
+          className="fixed top-3 right-3 text-white bg-gray-800 p-2 rounded-full hover:bg-gray-600 transition"
           onClick={onClose}
         >
           <XMarkIcon className="h-7 w-7" />
@@ -31,7 +31,7 @@ const ImageZoomModal = ({ imageUrl, onClose }) => {
         <img
           src={imageUrl}
           alt="Zoomed"
-          className="w-[80dvh] h-auto max-h-[90dvh] object-contain rounded-lg shadow-2xl transform transition-all scale-100 hover:scale-105 duration-200"
+          className="w-full h-auto max-h-screen max-w-screen object-contain rounded-lg shadow-2xl transform transition-all scale-100"
         />
       </div>
     </div>

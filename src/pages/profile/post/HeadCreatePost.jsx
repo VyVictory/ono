@@ -7,13 +7,14 @@ import {
 import avt from "../../../img/DefaultAvatar.jpg";
 import { useAuth } from "../../../components/context/AuthProvider";
 import PostModal from "../../../components/PostModal";
+import { Paper } from "@mui/material";
 const HeadCreatePost = () => {
   const { profile, isLoadingProfile } = useAuth();
   if (isLoadingProfile) {
     return <div>Loading...</div>;
   }
   return (
-    <div className="border border-gray-200 bg-white rounded-lg Post px-4 py-2 w-full ShadowContent">
+    <Paper className="border   rounded-lg Post px-4 py-2 w-full ">
       <div className="border-b flex flex-row pb-2 space-x-2">
         <button className="">
           <div className="w-10 h-10 rounded-full relative">
@@ -44,7 +45,7 @@ const HeadCreatePost = () => {
           <span>Tag bạn bè</span>
         </button>
       </div>
-    </div>
+    </Paper>
   );
 };
 

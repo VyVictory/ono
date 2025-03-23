@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { ButtonBase, IconButton, Modal, TextField } from "@mui/material";
+import {
+  Avatar,
+  ButtonBase,
+  IconButton,
+  MenuItem,
+  Modal,
+  Select,
+  TextField,
+} from "@mui/material";
 import {
   XCircleIcon,
   PlusCircleIcon,
@@ -10,14 +18,17 @@ import {
 } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion } from "framer-motion";
 import { VideoCameraIcon, PhotoIcon } from "@heroicons/react/24/outline";
-import { Delete } from "@mui/icons-material";
-import { IconsManifest } from "react-icons/lib";
 import { useConfirm } from "./context/ConfirmProvider";
 import { toast } from "react-toastify";
-import { Button } from "@headlessui/react";
 import { Post } from "../service/post";
 import LoadingAnimation from "./LoadingAnimation";
+import { useAuth } from "./context/AuthProvider";
+import FilePreview from "./FilePreview";
+import { useModule } from "./context/Module";
+
 export default function PostForm({ children }) {
+  const { setZoomImg } = useModule();
+  const { profile } = useAuth();
   const confirm = useConfirm();
   const [isOpen, setIsOpen] = useState(false);
   const [post, setPost] = useState({ content: "", images: [], video: null });
@@ -26,6 +37,7 @@ export default function PostForm({ children }) {
   const [selectedImages, setSelectedImages] = useState([]);
   const [direction, setDirection] = useState("next");
   const [isLoadingPost, setIsLoadingPost] = useState(false);
+  const [privacy, setPrivacy] = useState("public"); // Default to public
 
   const handleSubmit = async () => {
     setIsLoadingPost(true);
@@ -153,7 +165,7 @@ export default function PostForm({ children }) {
             onClick={(e) => e.stopPropagation()} // Ngăn chặn đóng modal khi click vào bên trong
             className="bg-white shadow-lg shadow-violet-950 rounded-lg border border-gray-200 w-full max-w-[500px] relative flex flex-col p-4"
           >
-            <div className="w-full flex justify-between mb-4">
+            <div className="w-full flex justify-between ">
               <div>
                 {" "}
                 {post.images.length > 0 && (
@@ -171,15 +183,46 @@ export default function PostForm({ children }) {
               />
             </div>
 
-            <h2 className="text-xl font-bold text-center mb-3 w-full absolute pointer-events-none">
+            <h2 className="text-xl font-bold text-center w-full absolute pointer-events-none">
               Đăng bài viết
             </h2>
+            <div className="w-full py-2 flex items-center gap-2">
+              <Avatar src={profile?.avatar || ""} />
 
+              {/* Privacy Selector */}
+              <div>
+                <p className="text-xs font-semibold text-gray-600">
+                  {`${profile?.firstName
+                    .charAt(0)
+                    .toUpperCase()}${profile?.firstName.slice(1)} 
+      ${profile?.lastName.charAt(0).toUpperCase()}${profile?.lastName.slice(
+                    1
+                  )}`}
+                </p>
+
+                <Select
+                  value={privacy}
+                  onChange={(e) => setPrivacy(e.target.value)}
+                  variant="standard" // Removes border
+                  className="text-xs"
+                  sx={{
+                    fontSize: "0.7rem", // Super small text
+                    minWidth: "50px", // Smaller width
+                    "&::before, &::after": { display: "none" }, // Hide default underline
+                    "& .MuiSelect-select": { padding: "0px 0px" }, // Compact padding
+                  }}
+                >
+                  <MenuItem value="public">🌍 Public</MenuItem>
+                  <MenuItem value="private">🔒 Private</MenuItem>
+                  <MenuItem value="friends">👥 Friends</MenuItem>
+                </Select>
+              </div>
+            </div>
             <TextField
               label="Nội dung..."
               fullWidth
               multiline
-              rows={3}
+              rows={4}
               variant="outlined"
               size="small"
               value={post.content}
@@ -228,6 +271,7 @@ export default function PostForm({ children }) {
                   <motion.img
                     key={post.images[currentIndex].url}
                     src={post.images[currentIndex].url}
+                    onClick={() => setZoomImg(post.images[currentIndex].url)}
                     alt="uploaded"
                     className="absolute w-full h-full object-contain rounded-md"
                     initial={{
@@ -448,12 +492,16 @@ export default function PostForm({ children }) {
                       }`}
                     >
                       <div className="w-32 h-32 bg-gray-100 flex items-center justify-center">
-                        <img
+                        <FilePreview
+                          onClick={() => setCurrentIndex(index)}
+                          fileUrl={img?.url}
+                          pop={"h-32 max-w-32 object-contain cursor-pointer"}
+                        />
+                        {/* <img
                           src={img?.url}
                           alt="gallery-img"
                           className="h-32 max-w-32 object-contain cursor-pointer"
-                          onClick={() => setCurrentIndex(index)}
-                        />
+                        /> */}
                       </div>
                       <button
                         onClick={() => toggleSelectImage(index)}
