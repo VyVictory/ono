@@ -131,7 +131,7 @@ export default function Login({ chaneform }) {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen w-full">
+    <div className="flex justify-center items-center h-[100dvh] w-full">
       <div className="relative bg-gradient-to-br to-purple-100 from-pink-100 p-0.5  shadow-lg shadow-black  rounded-2xl w-full my-4 max-w-sm">
         <div className="bg-white  rounded-xl p-4">
           <div className="p-8 px-8">
