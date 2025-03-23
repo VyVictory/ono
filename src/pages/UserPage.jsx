@@ -1,12 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PostRight from "./profile/post/PostRigh";
 import PostModal from "../components/PostModal";
 import { useAuth } from "../components/context/AuthProvider";
 import Post from "../components/post/Post";
 import HeadCreatePost from "./profile/post/HeadCreatePost";
 import LoadingAnimation from "../components/LoadingAnimation";
+import { getPostHome } from "../service/post";
+
 const UserPage = () => {
   const { profile, isLoadingProfile } = useAuth();
+  const [posts, setPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Gọi API lấy danh sách bài viết
+  useEffect(() => {
+    const fetchPosts = async () => {
+      setIsLoading(true);
+      const data = await getPostHome(0, 10); // Lấy 10 bài viết đầu tiên
+      if (data) {
+        setPosts(data);
+      }
+      setIsLoading(false);
+    };
+
+    fetchPosts();
+  }, []);
+  console.log(posts);
   if (isLoadingProfile) {
     return (
       <div className="w-full h-full flex justify-center items-center">
@@ -14,14 +33,19 @@ const UserPage = () => {
       </div>
     );
   }
-  
+
   return (
-    <div className="flex py-4 flex-col items-center  h-screen overflow-auto">
+    <div className="flex py-4 flex-col items-center h-screen overflow-auto">
       <div className="max-w-[800px] px-3 md:px-0 space-y-3">
-        {/* <PostModal /> */}
         <HeadCreatePost />
         <div className="space-y-4">
-          <Post />
+          {isLoading ? (
+            <LoadingAnimation />
+          ) : posts.length > 0 ? (
+            posts.map((post) => <Post key={post._id} data={post} />)
+          ) : (
+            <p className="text-gray-500 text-center">Không có bài viết nào.</p>
+          )}
         </div>
       </div>
     </div>

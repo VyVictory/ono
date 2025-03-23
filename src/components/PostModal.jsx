@@ -39,13 +39,13 @@ export default function PostForm({ children }) {
   const [isLoadingPost, setIsLoadingPost] = useState(false);
   const [privacy, setPrivacy] = useState("Public"); // Default to public
 
-  const handleSubmit = async () => { 
+  const handleSubmit = async () => {
     setIsLoadingPost(true);
     const imageFiles = post.images.map((img) => img.file);
     const videoFile = post.video ? post.video.file : null; // Extract video file
     console.log(post.video);
     try {
-      const response = await Post(post.content, imageFiles, videoFile,privacy);
+      const response = await Post(post.content, imageFiles, videoFile, privacy);
       if (response?.status === 201) {
         toast.success("Đăng bài viết thành công", { autoClose: 500 });
         setPost({ content: "", images: [], video: null }); // Reset form

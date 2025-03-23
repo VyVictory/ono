@@ -45,8 +45,9 @@ export const Post = async (content, files, video, privacy) => {
 export const getPostHome = async (start, limit) => {
   try {
     const response = await api.get(
-      `/message/inbox/rage/?start=${start}&limit=${limit}`
+      `/post/postByRange/?start=${start}&limit=${limit}`
     );
+    console.log(response)
     return response.data;
   } catch (error) {
     nextError(error);
