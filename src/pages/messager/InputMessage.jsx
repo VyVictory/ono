@@ -28,7 +28,7 @@ const InputMessage = ({ newmess }) => {
   const handleSendMessage = () => {
     setIsSend(false);
 
-    if (!id || !message) {
+    if (!id || (!message && imagesFull.length <= 0)) {
       setIsSend(true);
       return;
     }
