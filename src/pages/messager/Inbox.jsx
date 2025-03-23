@@ -219,7 +219,8 @@ const Inbox = ({ newmess }) => {
             {group.mess.map((msg, index) => {
               const isMe =
                 msg.sender === profile._id || msg.sender?._id === profile._id;
-              const isLastThree = index >= group.mess.length - 3;
+              const isLastThree =
+                group.mess.length > 4 && index >= group.mess.length - 2;
               return (
                 <div
                   key={index}
@@ -238,7 +239,7 @@ const Inbox = ({ newmess }) => {
                   } mb-2`}
                 >
                   <Menu as="div" className="relative">
-                    {hoveredMessageId === msg._id && !msg?.isRecalled  && (
+                    {hoveredMessageId === msg._id && !msg?.isRecalled && (
                       <Menu.Button
                         as={IconButton}
                         onClick={() => setOpenMenuId(msg._id)}
