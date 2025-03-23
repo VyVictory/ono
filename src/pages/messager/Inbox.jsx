@@ -10,11 +10,9 @@ import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { useSocketContext } from "../../components/context/socketProvider";
 import FilePreview from "../../components/FilePreview";
-import { Bars3Icon } from "@heroicons/react/24/outline";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import IconButton from "@mui/material/IconButton";
-import { Menu } from "@headlessui/react";
-import { useModule } from "../../components/context/Module";
+import { Menu } from "@headlessui/react"; 
 const Inbox = ({ newmess }) => {
 
   const { profile, isLoadingProfile } = useAuth();
