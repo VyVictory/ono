@@ -37,15 +37,15 @@ export default function PostForm({ children }) {
   const [selectedImages, setSelectedImages] = useState([]);
   const [direction, setDirection] = useState("next");
   const [isLoadingPost, setIsLoadingPost] = useState(false);
-  const [privacy, setPrivacy] = useState("public"); // Default to public
+  const [privacy, setPrivacy] = useState("Public"); // Default to public
 
-  const handleSubmit = async () => {
+  const handleSubmit = async () => { 
     setIsLoadingPost(true);
     const imageFiles = post.images.map((img) => img.file);
     const videoFile = post.video ? post.video.file : null; // Extract video file
     console.log(post.video);
     try {
-      const response = await Post(post.content, imageFiles, videoFile);
+      const response = await Post(post.content, imageFiles, videoFile,privacy);
       if (response?.status === 201) {
         toast.success("Đăng bài viết thành công", { autoClose: 500 });
         setPost({ content: "", images: [], video: null }); // Reset form
@@ -212,9 +212,9 @@ export default function PostForm({ children }) {
                     "& .MuiSelect-select": { padding: "0px 0px" }, // Compact padding
                   }}
                 >
-                  <MenuItem value="public">🌍 Public</MenuItem>
-                  <MenuItem value="private">🔒 Private</MenuItem>
-                  <MenuItem value="friends">👥 Friends</MenuItem>
+                  <MenuItem value="Public">🌍 Public</MenuItem>
+                  <MenuItem value="Private">🔒 Private</MenuItem>
+                  <MenuItem value="MyFriend">👥 Friends</MenuItem>
                 </Select>
               </div>
             </div>

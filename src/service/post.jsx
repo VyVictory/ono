@@ -2,7 +2,7 @@ import api from "./components/api";
 import authToken from "./storage/authToken";
 import { nextLogin, nextError } from "./components/nextLogin";
 
-export const Post = async (content, files, video) => {
+export const Post = async (content, files, video, privacy) => {
   try {
     const token = authToken.getToken();
     if (!token) {
@@ -13,11 +13,11 @@ export const Post = async (content, files, video) => {
     if (!content && (!files || files.length === 0) && !video) return null;
 
     const formData = new FormData();
-
+    formData.append("security", privacy);
     if (content) {
       formData.append("content", content);
     }
-
+    console.log("dawdvaudaywdaw");
     if (files?.length) {
       console.log("co hinh", files);
       files.forEach((file) => {
