@@ -88,8 +88,7 @@ export const SocketProvider = ({ children }) => {
       setNewMessInbox(data);
     };
     const handleRecallMessage = (data) => {
-      setRecallMessId(data.messageId);
-      console.log(data);
+      setRecallMessId(data.messageId); 
     };
     socket.on("newMessage", handleNewMessage);
     // socket.on("messagesDelivered", (data) => {

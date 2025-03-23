@@ -116,10 +116,8 @@ const Inbox = ({ newmess }) => {
 
     setIsScroll(false);
   }, []);
-  const recallMessages = useCallback((idMessage) => {
-    console.log('recall trc return')
-    if (!idMessage) return;
-    console.log('recall')
+  const recallMessages = useCallback((idMessage) => { 
+    if (!idMessage) return; 
     recallMess(idMessage);
   }, []);
   useEffect(() => {
@@ -306,7 +304,7 @@ const Inbox = ({ newmess }) => {
                   <Menu
                     as="div"
                     className="relative "
-                    onMouseLeave={() => setHoveredMessageId(null)}
+                 
                   >
                     {hoveredMessageId === msg._id &&
                       !msg?.isRecalled &&
@@ -322,6 +320,7 @@ const Inbox = ({ newmess }) => {
                     {/* Dropdown Menu */}
                     {openMenuId === msg._id && (
                       <Menu.Items
+                      
                         className={`absolute right-0 w-40 bg-white shadow-lg rounded-md border border-gray-200 p-1 z-50 origin-bottom-right transform 
                         ${isLastThree ? "bottom-full mb-2" : "top-full mt-2"}`}
                       >
