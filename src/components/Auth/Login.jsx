@@ -6,8 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { useAuth } from "../context/AuthProvider";
 import { login } from "../../service/auth";
-import { useGoogleLogin } from "@react-oauth/google";
-import { GoogleLogin } from "@react-oauth/google";
+import { FcGoogle } from "react-icons/fc";
 import axios from "axios";
 import LoadingAnimation from "../LoadingAnimation";
 import { Button } from "@headlessui/react";
@@ -111,7 +110,26 @@ export default function Login({ chaneform }) {
       alert("Đăng nhập Google thất bại, vui lòng thử lại.");
     }
   };
+  const openLoginPopup = () => {
+    // Kích thước mặc định cho desktop
+    let popupWidth = 500;
+    let popupHeight = 600;
 
+    // Nếu là thiết bị di động, dùng full screen
+    if (window.innerWidth < 768) {
+      popupWidth = window.innerWidth * 0.9;
+      popupHeight = window.innerHeight * 0.9;
+    }
+
+    const left = (window.innerWidth - popupWidth) / 2;
+    const top = (window.innerHeight - popupHeight) / 2;
+
+    window.open(
+      "https://ono-wtxp.onrender.com/auth/google/callback",
+      "_blank",
+      `width=${popupWidth},height=${popupHeight},top=${top},left=${left}`
+    );
+  };
   return (
     <div className="flex justify-center items-center h-[100dvh] w-full">
       <div className="relative bg-gradient-to-br to-purple-100 from-pink-100 p-0.5  shadow-lg shadow-black  rounded-2xl w-full my-4 max-w-sm">
@@ -221,13 +239,16 @@ export default function Login({ chaneform }) {
               <div>hoặc</div>
               <div className=" w-full h-3 border-b"></div>
             </div>
-            <div className="w-full px-10 mt-3">
-              <GoogleLogin
-                onClick={() => {
-                  window.location.href =
-                    "https://ono-wtxp.onrender.com/auth/google/callback";
-                }}
-              />
+            <div className="w-full px-10 mt-3 flex justify-end items-center">
+              <button
+                onClick={openLoginPopup}
+                className="flex items-center justify-center gap-2 border border-gray-300 px-4 py-2 rounded-lg shadow-md bg-white hover:bg-gray-100 transition w-full"
+              >
+                <FcGoogle className="text-xl" />
+                <span className="text-gray-700 font-medium">
+                  Đăng Nhập Google
+                </span>
+              </button>
             </div>
           </div>{" "}
         </div>
