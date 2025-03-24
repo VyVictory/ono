@@ -214,7 +214,7 @@ export default function Login({ chaneform }) {
             </div>
 
             <Link
-              to="/forgotpass"
+              onClick={() => chaneform("forgotpass")}
               className="float-right text-sm text-blue-500 hover:underline mb-2"
             >
               Quên mật khẩu?

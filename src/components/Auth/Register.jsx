@@ -70,7 +70,11 @@ export default function Register({ chaneform }) {
           }, 1000);
         }
       } catch (error) {
-        toast.error("Đăng ký thất bại, vui lòng thử lại.");
+        if (error.status === 400) {
+          toast.error("Người dùng tồn tại");
+        } else {
+          toast.error("Đăng ký thất bại, vui lòng thử lại.");
+        }
       }
     } else {
       setErrors(validationErrors);

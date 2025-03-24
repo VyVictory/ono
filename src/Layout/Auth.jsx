@@ -8,13 +8,24 @@ import bgVideo2 from "../img/login/bg2.mp4";
 import bgVideo3 from "../img/login/bg3.mp4";
 import bgVideo4 from "../img/login/bg4.mp4";
 import bgVideoMobile from "../img/login/bgMobile.mp4";
-
+import Forgotpass from "../components/Auth/forgotpass";
+import Chanepass from "../components/Auth/Chanepass";
 export default function Auth() {
   const { showLogin, setShowLogin } = useAuth();
   const [formType, setFormType] = useState("login");
   const location = useLocation();
   const videoRef = useRef(null);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false); // Trạng thái kiểm tra video đã tải xong chưa
+  // ✅ Lấy giá trị otp từ URL
+  const params = new URLSearchParams(location.search);
+  const otp = params.get("otp");
+
+  // ✅ Nếu có otp, hiển thị form đổi mật khẩu
+  useEffect(() => {
+    if (otp) {
+      setFormType("chanepass");
+    }
+  }, [otp]);
 
   // Danh sách video nền desktop bgVideo1,
   const desktopVideos = [bgVideo2];
@@ -62,6 +73,10 @@ export default function Auth() {
         return <Register chaneform={chaneform} />;
       case "login":
         return <Login chaneform={chaneform} />;
+      case "forgotpass":
+        return <Forgotpass chaneform={chaneform} />;
+      case "chanepass": // ✅ Form đổi mật khẩu
+        return <Chanepass otp={otp} chaneform={chaneform} />;
       default:
         return null;
     }

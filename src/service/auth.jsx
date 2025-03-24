@@ -22,7 +22,7 @@ export const register = async (userData) => {
     });
     const { token } = response.data;
     authToken.setToken(token);
-    console.log(response)
+    console.log(response);
     return response.data;
   } catch (error) {
     console.error("Register Error: ", error.response?.data || error.message);
@@ -44,14 +44,48 @@ export const login = async (credentials) => {
 
     // Lưu token vào localStorage
     // saveToken(token);
-    authToken.setToken(token); 
+    authToken.setToken(token);
     return { token, user };
   } catch (error) {
     console.error("Login Error: ", error.response?.data || error.message);
     throw error.response?.data || error.message;
   }
 };
-
+export const forgotPassword = async (email) => {
+  try {
+    const response = await api.post("auth/forgot-password", email);
+    return response;
+  } catch (error) {
+    console.error("forgot Error: ", error.response?.data || error.message);
+    throw error.response?.data || error.message;
+  }
+};
+export const verrifyOTP = async (otp) => {
+  try {
+    if (!otp) {
+      return null;
+    }
+    const response = await api.get(`auth/reset-password/${otp}`);
+    return response;
+  } catch (error) {
+    console.error("forgot Error: ", error.response?.data || error.message);
+    throw error.response?.data || error.message;
+  }
+};
+export const resetPass = async (password, otp) => {
+  try {
+    if (!otp || !password) {
+      return null;
+    }
+    const response = await api.get(`auth/reset-password/${otp}`, {
+      password: password,
+    });
+    return response;
+  } catch (error) {
+    console.error("forgot Error: ", error.response?.data || error.message);
+    throw error.response?.data || error.message;
+  }
+};
 /**
  * Đăng xuất tài khoản (xóa token).
  */
