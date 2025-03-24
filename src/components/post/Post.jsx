@@ -53,6 +53,7 @@ const Post = ({ data }) => {
                   <div className="w-10 h-10 rounded-full relative">
                     <UserStatusIndicator
                       userId={_?.author?._id}
+                      userData={_?.author}
                       // onlineUsers={onlineUsers}
                     />
                   </div>

@@ -82,7 +82,7 @@ const UserDropDow = ({ avt }) => {
         <div className="w-12 h-12 rounded-full relative">
           <img
             className="w-12 h-12 rounded-full border-2 border-blue-200 "
-            src={avt}
+            src={profile?.avatar || avt}
             alt="user photo"
           />
           <ChevronDownIcon className="absolute bottom-0 right-0 h-4 w-4 p-[2px] rounded-full bg-gray-200 border border-white text-gray-900 " />
@@ -211,5 +211,5 @@ const UserDropDow = ({ avt }) => {
       </AnimatePresence>
     </div>
   );
-}; 
+};
 export default UserDropDow;
