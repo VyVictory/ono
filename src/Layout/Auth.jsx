@@ -104,7 +104,7 @@ export default function Auth() {
 
       {/* Nội dung form login / register */}
       {isVideoLoaded && (
-        <div className="relative overflow-hidden h-screen w-full px-4 max-w-md">
+        <div className="relative overflow-hidden h-[100dvh] overflow-y-auto  w-full px-4 max-w-md">
           {renderForm()}
         </div>
       )}
