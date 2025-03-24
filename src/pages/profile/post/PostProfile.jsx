@@ -53,6 +53,8 @@ const PostProfile = ({ data }) => {
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
+  const [heightLeft, setHeightLeft] = useState(0);
+  const leftRef = useRef(null);
   return (
     <div
       className="relative  flex" //bg-black
@@ -66,7 +68,8 @@ const PostProfile = ({ data }) => {
             isPassed ? "fixed bottom-0 px-3" : ""
           }`}
         >
-          <div className="flex flex-col  w-2/5 ">
+          {/* chiều cao thẻ này */}
+          <div ref={leftRef} className="flex flex-col  w-2/5 ">
             <PostLeft data={data} />
           </div>
           <div className="  min-h-screen w-3/5 hidden md:block"></div>
@@ -80,7 +83,7 @@ const PostProfile = ({ data }) => {
       <div
         ref={violetRef}
         className="absolute  pb-2   w-full"
-        style={{ pointerEvents: "none" }}
+        style={{ pointerEvents: "none", minHeight: `${height}px` }}
       >
         <div className="  w-full flex profileW justify-center md:pl-6 ">
           <div className="flex flex-row justify-center w-full">
@@ -90,7 +93,7 @@ const PostProfile = ({ data }) => {
               className="flex flex-col space-y-3 min-h-full relative md:w-3/5 md:px-0"
               style={{ pointerEvents: "auto" }}
             >
-              <div className=" min-h-full">
+              <div className=" min-h-full ">
                 <PostRight data={data} />
               </div>
             </div>

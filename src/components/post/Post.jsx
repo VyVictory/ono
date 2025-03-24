@@ -37,7 +37,7 @@ const Post = ({ data }) => {
             key={index}
             className="border border-gray-200 bg-white rounded-lg Post w-full ShadowContent"
           >
-            <div className="pb-4 mx-2 ">
+            <div className=" mx-2 ">
               <div className="flex flex-row space-x-2 items-center border-b p-1">
                 <button>
                   <div className="w-10 h-10 rounded-full relative">
@@ -66,11 +66,8 @@ const Post = ({ data }) => {
               </div>
               <div className="p-2 break-words">{_?.content}</div>
             </div>
-            <div
-              id={`gallery-${index}`}
-              className="w-full pb-6 border-b mb-2 "
-            >
-              <a href={pngTest} data-pswp-width="800" data-pswp-height="600"> 
+            <div id={`gallery-${index}`} className="w-full  mb-2 ">
+              <a data-pswp-width="800" data-pswp-height="600" >
                 {_?.media.map((file, index) => (
                   <FilePreview key={index} fileUrl={file.url} />
                 ))}
