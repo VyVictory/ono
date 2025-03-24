@@ -86,7 +86,7 @@ const SearchList = ({ value, close }) => {
                 >
                   <img
                     className="w-10 h-10 border border-gray-300 rounded-full"
-                    src={profile?.avt || avt}
+                    src={profile?.avatar || avt}
                     alt="user avatar"
                   />
                   <div className="text-sm">
