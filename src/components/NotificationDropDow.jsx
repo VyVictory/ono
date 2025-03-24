@@ -161,10 +161,14 @@ const FriendShip = ({ data }) => {
       <Button
         href="#"
         className="flex px-4 py-2 w-full rounded-md items-center hover:scale-105 hover:bg-gray-200 gap-1"
-      >
+      > 
         <UserStatusIndicator
           userId={data?.sender?._id}
           userData={data?.sender}
+          styler={{
+            button: { width: "40px", height: "40px" }, // ✅ Giới hạn kích thước
+            avatar: { width: "40px", height: "40px" }, // ✅ Avatar không bị to quá
+          }}
         />
         <p
           className={`ml-2 text-xs line-clamp-2 max-w-[200px] ${
