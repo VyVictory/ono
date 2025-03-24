@@ -85,12 +85,15 @@ export default function Login({ chaneform }) {
 
     if (token) {
       authToken.setToken(token); // Lưu token trước khi chuyển hướng
+      toast.success("Đăng Nhập Thành Công", { autoClose: 500 });
       setTimeout(() => {
-        setLoading(false); // Chỉ navigate sau khi token được lưu
-        navigate("/");
-      }, 500); // Delay nhẹ để đảm bảo lưu token
+        if (window.location.pathname === "/login") {
+          window.location.href = "/";
+        } else {
+          window.location.reload();
+        }
+      }, 1000);
     }
-
     if (error === "OAuthFailed") {
       toast.error("Đăng Nhập Bằng Google Thất Bại", { autoClose: 500 });
       setLoading(false);
