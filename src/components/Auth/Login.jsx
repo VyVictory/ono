@@ -9,6 +9,9 @@ import { login } from "../../service/auth";
 import { useGoogleLogin } from "@react-oauth/google";
 import { GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+import LoadingAnimation from "../LoadingAnimation";
+import { Button } from "@headlessui/react";
+import authToken from "../../service/storage/authToken";
 
 export default function Login({ chaneform }) {
   const { setShowLogin } = useAuth();
@@ -129,6 +132,38 @@ export default function Login({ chaneform }) {
       [name]: "",
     });
   };
+  // Đăng nhập với Google
+  const handleGoogleLogin = async (response) => {
+    try {
+      const googleToken = response.credential; // Lấy token từ Google
+      if (!googleToken) throw new Error("Không nhận được token từ Google"); 
+      const { data } = await axios.post(
+        "https://ono-wtxp.onrender.com/auth/google/callback",
+        { googleToken },
+        { headers: { "Content-Type": "application/json" } }
+      ); 
+      if (!data.token) throw new Error("Không nhận được token từ server");  
+      authToken.setToken(data.token)
+      toast.success(
+        `Chào mừng bạn, ${data.user?.firstName} ${data.user?.lastName}!`,
+        {
+          autoClose: 500,
+        }
+      );
+
+      // Chuyển hướng người dùng sau khi đăng nhập thành công
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1000);
+
+      setShowLogin(false);
+    } catch (error) {
+      console.error("Google login error:", error);
+      toast.error("Đăng nhập Google thất bại, vui lòng thử lại.", {
+        autoClose: 500,
+      });
+    }
+  };
 
   return (
     <div className="flex justify-center items-center h-[100dvh] w-full">
@@ -207,14 +242,20 @@ export default function Login({ chaneform }) {
           >
             {loading ? "Đang xử lý..." : "Đăng nhập"}
           </button> */}
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={loading}
-              class="text-white w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 text-center me-2 mb-2"
-            >
-              {loading ? "Đang xử lý..." : "Đăng nhập"}
-            </button>
+            {!loading ? (
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={loading}
+                class="text-white w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 text-center me-2 mb-2"
+              >
+                Đăng nhập
+              </button>
+            ) : (
+              <div className="w-full flex justify-center items-center">
+                <LoadingAnimation />
+              </div>
+            )}
             {/* Nút đăng nhập với Google */}
 
             <div className="flex items-center justify-between mt-3 mb-4 text-nowrap">
@@ -235,8 +276,8 @@ export default function Login({ chaneform }) {
             </div>
             <div className="w-full px-10 mt-3">
               <GoogleLogin
-                onSuccess={(response) => console.log(response)}
-                onError={() => console.log("Đăng nhập Google thất bại")}
+                onSuccess={handleGoogleLogin}
+                onError={() => toast.error("Đăng nhập Google thất bại")}
               />
             </div>
           </div>{" "}

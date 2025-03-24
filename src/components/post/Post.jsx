@@ -18,7 +18,9 @@ const Post = ({ data }) => {
 
   useEffect(() => {
     if (addPost) {
-      setPosts((prevPosts) => (Array.isArray(prevPosts) ? [addPost, ...prevPosts] : [addPost]));
+      setPosts((prevPosts) =>
+        Array.isArray(prevPosts) ? [addPost, ...prevPosts] : [addPost]
+      );
       setAddPost(null);
     }
   }, [addPost, setAddPost]);
@@ -36,7 +38,7 @@ const Post = ({ data }) => {
       })
       .replace(",", " lúc");
   };
-  // console.log(posts);
+  console.log(posts);
   return (
     <>
       <div id="gallery" className="flex flex-col gap-4 min-w-full">
@@ -60,12 +62,18 @@ const Post = ({ data }) => {
                     to={`/profile/posts?id=${_?.author?._id}`}
                     className="text-lg font-semibold text-gray-600 hover:text-violet-600"
                   >
-                    {`${_?.author?.firstName
-                      .charAt(0)
-                      .toUpperCase()}${_?.author?.firstName.slice(1)} 
-                    ${_?.author?.lastName
-                      .charAt(0)
-                      .toUpperCase()}${_?.author?.lastName.slice(1)}`}
+                    {`${
+                      _?.author?.firstName
+                        ? _?.author?.firstName.charAt(0).toUpperCase() +
+                          _?.author?.firstName.slice(1)
+                        : "Unknown"
+                    } 
+                      ${
+                        _?.author?.lastName
+                          ? _?.author?.lastName.charAt(0).toUpperCase() +
+                            _?.author?.lastName.slice(1)
+                          : ""
+                      }`}
                   </Link>
                   <div className="text-gray-500 flex flex-row flex-wrap items-center text-xs">
                     <div className="">{formatDate(_?.createdAt)}</div>

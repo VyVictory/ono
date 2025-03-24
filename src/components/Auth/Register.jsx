@@ -5,9 +5,11 @@ import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../context/AuthProvider";
 import { register } from "../../service/auth";
 import authToken from "../../service/storage/authToken";
+import LoadingAnimation from "../LoadingAnimation";
 
 export default function Register({ chaneform }) {
   const { setShowLogin } = useAuth();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -50,6 +52,7 @@ export default function Register({ chaneform }) {
   };
 
   const handleSubmit = async () => {
+    setLoading(true);
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length === 0) {
       try {
@@ -72,6 +75,7 @@ export default function Register({ chaneform }) {
     } else {
       setErrors(validationErrors);
     }
+    setLoading(false);
   };
   const primaryStar = () => {
     return <div className="text-red-500 mr-1">*</div>;
@@ -192,13 +196,19 @@ export default function Register({ chaneform }) {
                   Đăng nhập ngay
                 </button>
               </div>
-              <button
-                type="button"
-                onClick={handleSubmit}
-                class="text-white  w-full py-3  bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 text-center me-2"
-              >
-                Đăng ký
-              </button>
+              {!loading ? (
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  class="text-white  w-full py-3  bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 text-center me-2"
+                >
+                  Đăng ký
+                </button>
+              ) : (
+                <div className="w-full flex justify-center items-center">
+                  <LoadingAnimation />
+                </div>
+              )}
             </div>
           </div>
         </div>
