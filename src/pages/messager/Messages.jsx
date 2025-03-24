@@ -134,6 +134,7 @@ const Messages = () => {
               <>
                 <UserStatusIndicator
                   userId={profileUser?._id}
+                  userData={profileUser}
                   styler={{
                     button: { width: "40px", height: "40px" }, // ✅ Giới hạn kích thước
                     avatar: { width: "40px", height: "40px" }, // ✅ Avatar không bị to quá
