@@ -1,2 +1,12 @@
 profileRender : {myprofile , profile}
 data = profileRender
+
+                  <UserStatusIndicator
+                    userId={profileRender?.profile?._id}
+                    userData={{ avatar: profileRender?.profile?.avatar }}
+                    styler={{
+                      button: { width: "100%", height: "100%" }, // ✅ Avatar full button
+                      avatar: { width: "100%", height: "100%" }, // ✅ Đảm bảo avatar không nhỏ hơn
+                      badge: { size: "25px" }, // ✅ Badge lớn hơn
+                    }}
+                  />

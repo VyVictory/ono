@@ -14,7 +14,7 @@ import { BellIcon } from "@heroicons/react/24/outline";
 import Badge from "@mui/material/Badge";
 import { useAuth } from "./context/AuthProvider";
 import { getNotifications, readNotification } from "../service/notification";
-import UserStatusIndicator from "./UserStatusIndicator"; 
+import UserStatusIndicator from "./UserStatusIndicator";
 import { useNavigate } from "react-router-dom";
 const NotificationDropDow = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -42,7 +42,7 @@ const NotificationDropDow = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       if (isFetchNotifi.current) return; // Kiểm tra isFetchNotifi bằng ref
-      const notifications = await getNotifications({ start: 0, limit: 10 }); 
+      const notifications = await getNotifications({ start: 0, limit: 10 });
       setNotifications(notifications);
       isFetchNotifi.current = true; // Cập nhật ref để tránh fetch lại
     };
@@ -70,6 +70,7 @@ const NotificationDropDow = () => {
       return;
     }
   };
+  // console.log(notifications);
 
   return (
     <div

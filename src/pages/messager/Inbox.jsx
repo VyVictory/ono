@@ -245,8 +245,8 @@ const Inbox = ({ newmess }) => {
     if (!isConfirmed) return;
     if (!messageId) return;
     try {
-      console.log(messageId);
-      console.log(messagesByDay);
+      // console.log(messageId);
+      // console.log(messagesByDay);
       setMessagesByDay(
         (prev) =>
           prev

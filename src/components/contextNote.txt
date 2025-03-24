@@ -1,0 +1,2 @@
+import { useModule } from "./context/Module"; 
+const { setZoomImg } = useModule();

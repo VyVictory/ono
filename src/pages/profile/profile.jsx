@@ -16,8 +16,10 @@ import PostLeft from "./post/PostLeft";
 import { useModule } from "../../components/context/Module";
 import { useNavigate } from "react-router-dom";
 import { getPostHome } from "../../service/post";
-
+import { Button, ButtonBase } from "@mui/material";
+import UserStatusIndicator from "../../components/UserStatusIndicator";
 const Profile = () => {
+  const { setZoomImg } = useModule();
   const { setUsecase } = useModule();
   const { profileRender, content } = useProfile();
   const [userRender, setUserRender] = useState(null);
@@ -26,11 +28,11 @@ const Profile = () => {
 
   // Gọi API lấy danh sách bài viết
   useEffect(() => {
-    const fetchPosts = async () => { 
+    const fetchPosts = async () => {
       const data = await getPostHome(0, 10); // Lấy 10 bài viết đầu tiên
       if (data) {
         setPosts(data);
-      } 
+      }
     };
 
     fetchPosts();
@@ -47,7 +49,6 @@ const Profile = () => {
   const followersInfo = (
     <div className="text-center">0 followers ❁ 9 following</div>
   );
-
   if (userRender?.profile == null) {
     return (
       <div className="w-screen h-screen NavbarUser flex justify-center items-center">
@@ -75,35 +76,43 @@ const Profile = () => {
       <div className="w-full  flex-col relative min-h-screen ">
         <div className="w-full  flex items-center flex-col bg-white shadow-sm  shadow-slate-300">
           <div className="profileW w-full z-10 px-4">
-            <a
-              href={pictureBG} // Link ảnh để PhotoSwipe nhận diện
+            <div
               data-pswp-width="1920" // Thay đổi theo kích thước thực tế của ảnh
               data-pswp-height="1080" // Thay đổi theo kích thước thực tế của ảnh
               className="relative block w-full h-[40vh] rounded-b-xl profileW flex-shrink z-0"
             >
-              <button
+              <ButtonBase
+                onClick={() => {
+                  setZoomImg(profileRender?.profile?.coverPhoto || pictureBG);
+                }}
                 className="w-full h-full rounded-b-xl profileW flex-shrink z-0"
                 style={{
-                  backgroundImage: `url(${pictureBG})`,
+                  backgroundImage: `url(${
+                    profileRender?.profile?.coverPhoto || pictureBG
+                  })`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
               >
                 <div ref={scrollRef}></div>
                 <span className="absolute inset-0 bg-black opacity-0 transition-opacity duration-200 hover:opacity-20 rounded-b-xl"></span>
-              </button>
-            </a>
+              </ButtonBase>
+            </div>
 
             <div className=" flex flex-col md:flex-row md:justify-between justify-center mx-10 md:py-2 border-b">
               <div className="flex md:flex-row items-center md:space-x-3 flex-col">
-                <button className="w-36 h-36 border-4 border-white rounded-full -mt-9 z-10">
-                  <img
-                    className="w-full rounded-full"
-                    src={avt}
-                    alt="Profile"
-                    loading="lazy"
+                <button className="w-36 h-36 border-4 border-white rounded-full -mt-9 z-10 flex">
+                  <UserStatusIndicator
+                    userId={profileRender?.profile?._id}
+                    userData={{ avatar: profileRender?.profile?.avatar }}
+                    styler={{
+                      button: { width: "100%", height: "100%" }, // ✅ Avatar full button
+                      avatar: { width: "100%", height: "100%" }, // ✅ Đảm bảo avatar không nhỏ hơn
+                      badge: { size: "25px" }, // ✅ Badge lớn hơn
+                    }}
                   />
                 </button>
+
                 <div className="flex flex-col items-center">
                   <strong className="text-3xl text-center md:text-start w-full ">
                     {(userRender?.profile?.firstName ?? "") +
@@ -112,19 +121,17 @@ const Profile = () => {
                   </strong>
 
                   {followersInfo}
-                  <div>
-                    {[...Array(6)].map((_, index) => (
-                      <button
+                  <div className="flex flex-row">
+                    {[...Array(6)].map((_, index) => ( 
+                      <div
                         key={index}
-                        className="w-8 h-8 border-white border rounded-full -ml-2"
+                        className="w-8 h-8 border-white border rounded-full -ml-1"
                       >
-                        <img
-                          className="w-full rounded-full"
-                          src={avt}
-                          alt=""
-                          loading="lazy"
+                        <UserStatusIndicator
+                          userId={userRender?.profile?._id}
+                          // onlineUsers={onlineUsers}
                         />
-                      </button>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -150,7 +157,7 @@ const Profile = () => {
                   {/* Nút Add Friend */}
                   <AddFriend profile={userRender.profile} />
                   {/* Nút Messenger */}
-                  <button
+                  <div
                     onClick={() => {
                       navigate(
                         `/messages/inbox?idUser=${userRender.profile._id}`
@@ -159,7 +166,7 @@ const Profile = () => {
                     className="bg-gray-50 hover:bg-violet-50 min-w-16 justify-center px-2 py-1 rounded-md flex items-center transition-transform duration-200 hover:scale-110"
                   >
                     <ChatBubbleLeftEllipsisIcon className="w-8 h-8 text-gray-500 transition-transform duration-200 hover:scale-125 hover:text-violet-400" />
-                  </button>
+                  </div>
                 </div>
               )}
             </div>

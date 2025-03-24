@@ -197,25 +197,24 @@ const Messages = () => {
             <Bars3Icon className="h-6 w-6 " />
           </button>
 
-          <div className="flex flex-row min-h-16 justify-start items-center py-1 w-full space-x-3 max-h-32 pl-3 ">
+          <div className="flex flex-row min-h-16 justify-start items-center py-1 w-full space-x-3 max-h-32 pl-3">
             {profileUser && (
               <>
                 <UserStatusIndicator
                   userId={profileUser?._id}
-                  // onlineUsers={onlineUsers}
+                  styler={{
+                    button: { width: "40px", height: "40px" }, // ✅ Giới hạn kích thước
+                    avatar: { width: "40px", height: "40px" }, // ✅ Avatar không bị to quá
+                  }}
                 />
                 <h2 className="text-lg font-semibold text-gray-600">
                   {`${profileUser?.firstName
                     .charAt(0)
                     .toUpperCase()}${profileUser.firstName.slice(1)} 
-                    ${profileUser?.lastName
-                      .charAt(0)
-                      .toUpperCase()}${profileUser.lastName.slice(1)}`}
+          ${profileUser?.lastName
+            .charAt(0)
+            .toUpperCase()}${profileUser.lastName.slice(1)}`}
                 </h2>
-
-                {/* <p className="">
-                  Trạng thái:{" "} 
-                </p> */}
               </>
             )}
           </div>

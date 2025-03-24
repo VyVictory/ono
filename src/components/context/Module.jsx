@@ -7,9 +7,18 @@ export const ModuleProvider = ({ children }) => {
   const [usecase, setUsecase] = useState(null);
   const [usecase1, setUsecase1] = useState(null);
   const [zoomImg, setZoomImg] = useState(null);
+  const [addPost, setAddPost] = useState(null);
   return (
     <ModuleContext.Provider
-      value={{ usecase, setUsecase, usecase1, setUsecase1,setZoomImg }}
+      value={{
+        usecase,
+        setUsecase,
+        usecase1,
+        setUsecase1,
+        setZoomImg,
+        addPost,
+        setAddPost,
+      }}
     >
       {children}
       <Privacy isOpen={usecase == "Privacy"} onClose={() => setUsecase(null)} />

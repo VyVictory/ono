@@ -27,7 +27,7 @@ import FilePreview from "./FilePreview";
 import { useModule } from "./context/Module";
 
 export default function PostForm({ children }) {
-  const { setZoomImg } = useModule();
+  const { setZoomImg ,setAddPost} = useModule();
   const { profile } = useAuth();
   const confirm = useConfirm();
   const [isOpen, setIsOpen] = useState(false);
@@ -49,6 +49,7 @@ export default function PostForm({ children }) {
       if (response?.status === 201) {
         toast.success("Đăng bài viết thành công", { autoClose: 500 });
         setPost({ content: "", images: [], video: null }); // Reset form
+        setAddPost(response.data)
       }
       setIsOpen(false);
       console.log("Post success:", response);

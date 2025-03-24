@@ -10,6 +10,7 @@ import "../../../css/post.css";
 import PostLeft from "./PostLeft";
 import PostRight from "./PostRigh";
 import Post from "../../../components/post/Post";
+import HeadCreatePost from "./HeadCreatePost";
 const PostProfile = ({ data }) => {
   const scrollRef = useRef(null);
   const targetRef = useRef(null);
@@ -93,7 +94,8 @@ const PostProfile = ({ data }) => {
               className="flex flex-col space-y-3 min-h-full relative md:w-3/5 md:px-0"
               style={{ pointerEvents: "auto" }}
             >
-              <div className=" min-h-full ">
+              <div className=" min-h-full  space-y-4">
+                <HeadCreatePost />
                 <PostRight data={data} />
               </div>
             </div>
