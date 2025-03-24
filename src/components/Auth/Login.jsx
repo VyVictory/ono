@@ -83,7 +83,7 @@ export default function Login({ chaneform }) {
     const token = urlParams.get("token");
     const error = urlParams.get("error");
     if (token) {
-      authToken.getToken(token);
+      authToken.setToken(token);
       navigate("/"); // Chuyển hướng sau khi login
     }
     if (error === "OAuthFailed") {
