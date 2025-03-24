@@ -105,7 +105,11 @@ const UserDropDow = ({ avt }) => {
               className="px-4  py-3 flex w-full flex-row justify-center items-center space-x-2 hover:scale-110 duration-700"
             >
               <div className="w-10 h-10 border-2 border-blue-100 rounded-full flex justify-center items-center ">
-                <img className="rounded-full" src={avt} alt="user photo" />
+                <img
+                  className="rounded-full"
+                  src={profile?.avatar || avt}
+                  alt="user photo"
+                />
               </div>
               <div className="text-sm max-w-64 ">
                 <div className="font-medium text-start">
