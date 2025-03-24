@@ -41,8 +41,8 @@ const UserStatusIndicator = ({ userId, userData, styler }) => {
       variant="dot"
       sx={styler?.badge}
     >
-      <Button
-        sx={{
+      <div
+        style={{
           borderRadius: "50%",
           padding: 0,
           minWidth: "unset",
@@ -52,6 +52,7 @@ const UserStatusIndicator = ({ userId, userData, styler }) => {
           alignItems: "center",
           justifyContent: "center",
           overflow: "hidden", // Tránh ảnh bị méo
+          cursor: "pointer",
           ...styler?.button,
         }}
       >
@@ -70,7 +71,7 @@ const UserStatusIndicator = ({ userId, userData, styler }) => {
             ...styler?.avatar,
           }}
         />
-      </Button>
+      </div>
     </StyledBadge>
   );
 };

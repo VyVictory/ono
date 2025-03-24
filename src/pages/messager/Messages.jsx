@@ -93,7 +93,7 @@ const Messages = () => {
             animate={{ opacity: 1 }} // Hiện dần nội dung sau khi mở sidebar
             exit={{ opacity: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="flex flex-col h-full" // Đảm bảo chiều cao đầy đủ
+            className="flex flex-col h-full w-full" // Đảm bảo chiều cao đầy đủ
           >
             <div className="p-2 flex justify-between items-center relative">
               <h2 className="text-2xl font-semibold w-full absolute text-center truncate whitespace-nowrap">

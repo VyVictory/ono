@@ -83,7 +83,21 @@ export const getStatusByIdUser = async (idUser) => {
     return res(error);
   }
 };
-export const unFriend = async (idUser)=>{
+export const getFriendsMess = async (start, limit, name) => {
+  try {
+    if (!token) {
+      nextLogin();
+    }
+    const response = await api.get(
+      `/friend/friends/mess/?start=${start}&limit=${limit}&name=${name}`
+    );
+    return response;
+  } catch (error) {
+    nextError(error);
+    return res(error);
+  }
+};
+export const unFriend = async (idUser) => {
   try {
     if (!token) {
       nextLogin();
@@ -96,4 +110,4 @@ export const unFriend = async (idUser)=>{
     nextError(error);
     return res(error);
   }
-}
+};
