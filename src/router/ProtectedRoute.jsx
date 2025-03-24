@@ -1,10 +1,10 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../components/context/AuthProvider.jsx";
+import { useAuth } from "../components/context/AuthProvider";
 
 const ProtectedRoute = () => {
-  const { user } = useAuth(); // Kiểm tra xem user có đăng nhập không
+  const { profile } = useAuth(); // Kiểm tra xem user có đăng nhập không
 
-  if (!user) {
+  if (!profile) {
     return <Navigate to="/login" replace />; // Chuyển hướng đến trang login
   }
 
