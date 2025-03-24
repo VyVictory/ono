@@ -135,33 +135,22 @@ export default function Login({ chaneform }) {
   // Đăng nhập với Google
   const handleGoogleLogin = async (response) => {
     try {
-      const googleToken = response.credential; // Lấy token từ Google
-      if (!googleToken) throw new Error("Không nhận được token từ Google"); 
+      const googleToken = response.credential;
+      if (!googleToken) throw new Error("Không nhận được token từ Google");
+
+      // Gửi token đến server để xác thực
       const { data } = await axios.post(
         "https://ono-wtxp.onrender.com/auth/google/callback",
         { googleToken },
         { headers: { "Content-Type": "application/json" } }
-      ); 
-      if (!data.token) throw new Error("Không nhận được token từ server");  
-      authToken.setToken(data.token)
-      toast.success(
-        `Chào mừng bạn, ${data.user?.firstName} ${data.user?.lastName}!`,
-        {
-          autoClose: 500,
-        }
       );
 
-      // Chuyển hướng người dùng sau khi đăng nhập thành công
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 1000);
-
-      setShowLogin(false);
+      if (!data.token) throw new Error("Không nhận được token từ server");
+      authToken.setToken(data.token);
+      setUserData(data.user);
     } catch (error) {
-      console.error("Google login error:", error);
-      toast.error("Đăng nhập Google thất bại, vui lòng thử lại.", {
-        autoClose: 500,
-      });
+      console.error("Lỗi đăng nhập Google:", error);
+      alert("Đăng nhập Google thất bại, vui lòng thử lại.");
     }
   };
 
