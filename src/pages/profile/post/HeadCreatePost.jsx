@@ -7,7 +7,8 @@ import {
 import avt from "../../../img/DefaultAvatar.jpg";
 import { useAuth } from "../../../components/context/AuthProvider";
 import PostModal from "../../../components/PostModal";
-import { Paper } from "@mui/material";
+import { Avatar, Paper } from "@mui/material";
+
 const HeadCreatePost = () => {
   const { profile, isLoadingProfile } = useAuth();
   if (isLoadingProfile) {
@@ -17,12 +18,8 @@ const HeadCreatePost = () => {
     <Paper className="border   rounded-lg Post px-4 py-2 w-full ">
       <div className="border-b flex flex-row pb-2 space-x-2">
         <button className="">
-          <div className="w-10 h-10 rounded-full relative">
-            <img
-              className="w-10 h-10 rounded-full border-2 border-blue-200 "
-              src={avt}
-              alt="user photo"
-            />
+          <div className="w-10 h-10 rounded-full relative"> 
+            <Avatar src={profile?.avatar || avt} />
           </div>
         </button>
         <PostModal>

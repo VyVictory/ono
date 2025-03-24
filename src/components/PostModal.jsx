@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Avatar,
   ButtonBase,
@@ -8,6 +8,7 @@ import {
   Select,
   TextField,
 } from "@mui/material";
+import { Navigate } from "react-router-dom";
 import {
   XCircleIcon,
   PlusCircleIcon,
@@ -27,7 +28,7 @@ import FilePreview from "./FilePreview";
 import { useModule } from "./context/Module";
 
 export default function PostForm({ children }) {
-  const { setZoomImg ,setAddPost} = useModule();
+  const { setZoomImg, setAddPost } = useModule();
   const { profile } = useAuth();
   const confirm = useConfirm();
   const [isOpen, setIsOpen] = useState(false);
@@ -49,7 +50,7 @@ export default function PostForm({ children }) {
       if (response?.status === 201) {
         toast.success("Đăng bài viết thành công", { autoClose: 500 });
         setPost({ content: "", images: [], video: null }); // Reset form
-        setAddPost(response.data)
+        setAddPost(response.data);
       }
       setIsOpen(false);
       console.log("Post success:", response);
@@ -104,7 +105,9 @@ export default function PostForm({ children }) {
       }));
     }
   };
-
+  if (!profile && isOpen) {
+    return <Navigate to="/login" replace />; // Chuyển hướng đến trang login
+  }
   const handleVideoUpload = (e) => {
     if (e.target.files.length > 0) {
       const file = e.target.files[0];
