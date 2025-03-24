@@ -34,7 +34,7 @@ const AppRouter = () => (
       {/* Các route khác */}
     </Route>
     {/* <Route path="/test" element={<Test />} /> */}
-    <Route path="/login" element={<Auth />} />
+    <Route path="/login/*" element={<Auth />} />
     <Route path="/auth/callback" element={<Auth />} />
   </Routes>
 );
