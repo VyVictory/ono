@@ -79,7 +79,6 @@ export default function Login({ chaneform }) {
     }
   };
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -224,8 +223,10 @@ export default function Login({ chaneform }) {
             </div>
             <div className="w-full px-10 mt-3">
               <GoogleLogin
-                onSuccess={handleGoogleLogin}
-                onError={() => toast.error("Đăng nhập Google thất bại")}
+                onClick={() => {
+                  window.location.href =
+                    "https://ono-wtxp.onrender.com/auth/google/callback";
+                }}
               />
             </div>
           </div>{" "}
