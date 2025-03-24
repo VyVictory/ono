@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import LoadingAnimation from "../LoadingAnimation";
 import axios from "axios";
 import { resetPass, verrifyOTP } from "../../service/auth";
-
+import { FcGoogle } from "react-icons/fc";
 export default function ChangePass({ otp, chaneform }) {
   const [formData, setFormData] = useState({
     newPassword: "",
@@ -156,6 +156,37 @@ export default function ChangePass({ otp, chaneform }) {
                 )}
               </>
             )}
+            <div className="flex items-center justify-between mt-3 mb-4 text-nowrap">
+              <button
+                onClick={() => chaneform("login")}
+                className="text-sm text-blue-500 hover:underline"
+              >
+                Đăng nhập
+              </button>
+              <button
+                onClick={() => chaneform("register")}
+                className="text-sm text-blue-500 hover:underline"
+              >
+                Đăng ký ngay
+              </button>
+            </div>
+            <div className="w-full p-2 flex flex-row space-x-2">
+              <div className="w-full h-3 border-b "></div>
+              <div>hoặc</div>
+              <div className=" w-full h-3 border-b"></div>
+            </div>
+            <div className="w-full px-10 mt-3 flex justify-end items-center">
+              <a
+                // onClick={openLoginPopup}
+                href="https://ono-wtxp.onrender.com/auth/google/callback"
+                className="flex items-center justify-center gap-2 border border-gray-300 px-4 py-2 rounded-lg shadow-md bg-white hover:bg-gray-100 transition w-full"
+              >
+                <FcGoogle className="text-xl" />
+                <span className="text-gray-700 font-medium">
+                  Đăng Nhập Google
+                </span>
+              </a>
+            </div>
           </div>
         </div>
       </div>

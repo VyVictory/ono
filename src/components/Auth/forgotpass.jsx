@@ -119,11 +119,14 @@ export default function Forgotpass({ chaneform }) {
                   </div>
                 )}
               </form>
-            )} 
+            )}
             <div className="flex items-center justify-between mt-3 mb-4 text-nowrap">
-              <div className="text-sm text-gray-400 hover:underline">
-                Chưa có tài khoản?
-              </div>
+              <button
+                onClick={() => chaneform("login")}
+                className="text-sm text-blue-500 hover:underline"
+              >
+                Đăng nhập
+              </button>
               <button
                 onClick={() => chaneform("register")}
                 className="text-sm text-blue-500 hover:underline"
