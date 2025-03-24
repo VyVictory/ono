@@ -49,7 +49,7 @@ export const getPostHome = async (start, limit) => {
     ); 
     return response.data;
   } catch (error) {
-    nextError(error);
+    // nextError(error);
     return null;
   }
 };

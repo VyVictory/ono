@@ -22,16 +22,17 @@ import { useEffect } from "react";
 import ProfileLayout from "../Layout/ProfileLayout.jsx";
 import { PhotoSwipeProvider } from "../components/context/PhotoSwipeProvider.jsx";
 import HomeLayout from "../Layout/HomeLayout.jsx";
+import ProtectedRoute from "./ProtectedRoute.jsx";
 const AppRouter = () => (
   <Routes>
     <Route element={<Layout />}>
       <Route element={<HomeLayout />}>
         <Route path="/" element={<UserPage />} />
       </Route>
-      <Route path="/messages/*" element={<Messages />} />
-      <Route path="/profile/*" element={<ProfileLayout />} />
-      {/* <Route path="/profile1" element={<Profile1 />} /> */}
-      {/* Các route khác */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/messages/*" element={<Messages />} />
+        <Route path="/profile/*" element={<ProfileLayout />} />
+      </Route> 
     </Route>
     {/* <Route path="/test" element={<Test />} /> */}
     <Route path="/login/*" element={<Auth />} />

@@ -15,7 +15,7 @@ export const getNotifications = async ({ start, limit }) => {
     );
     return response.data;
   } catch (error) {
-    nextError(error);
+    // nextError(error);
     return res(error);
   }
 };
@@ -24,7 +24,7 @@ export const readNotification = async ({ id }) => {
   try {
     if (!token) {
       return;
-        nextLogin();
+        // nextLogin();
     }
     const response = await api.put(`/noti/notifications/${id}/read`);
     return response.data;

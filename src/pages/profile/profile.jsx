@@ -101,14 +101,16 @@ const Profile = () => {
 
             <div className=" flex flex-col md:flex-row md:justify-between justify-center mx-10 md:py-2 border-b">
               <div className="flex md:flex-row items-center md:space-x-3 flex-col">
-                <button className="w-36 h-36  rounded-full -mt-9 z-10 flex">
+                <button className="w-36 h-36  rounded-full -mt-9 z-10 flex border-4 border-white">
                   <UserStatusIndicator
                     userId={profileRender?.profile?._id}
                     userData={{ avatar: profileRender?.profile?.avatar }}
                     styler={{
                       button: { width: "100%", height: "100%" }, // ✅ Avatar full button
                       avatar: { width: "100%", height: "100%" }, // ✅ Đảm bảo avatar không nhỏ hơn
-                      badge: { size: "14px" }, // ✅ Badge lớn hơn
+                      badge: { 
+                        size: "14px", // ✅ Badge lớn hơn 
+                      },
                     }}
                   />
                 </button>
