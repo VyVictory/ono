@@ -78,6 +78,20 @@ export default function Login({ chaneform }) {
     }
   };
 
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token");
+    const error = urlParams.get("error");
+    if (token) {
+      authToken.getToken(token);
+      navigate("/"); // Chuyển hướng sau khi login
+    }
+    if (error === "OAuthFailed") {
+      toast.error(`Đăng Nhập Bằng Google Thất Bại`, {
+        autoClose: 500,
+      });
+    }
+  }, []);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
