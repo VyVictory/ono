@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import {
   ArrowLeftIcon,
@@ -13,37 +13,105 @@ import { useNavigate } from "react-router-dom"; // Import for navigation
 import UserStatusIndicator from "../../components/UserStatusIndicator";
 import getTimeAgo from "../../components/GetTimeAgo";
 import { ButtonBase, Paper } from "@mui/material";
-
+import { useSocketContext } from "../../components/context/socketProvider";
+import LoadingAnimation from "../../components/LoadingAnimation";
 const LeftMess = () => {
+  const { newMessInbox, recallMessId, setRecallMessId } = useSocketContext();
   const [searchText, setSearchText] = useState(false);
   const [friends, setFriends] = useState([]);
   const [listChat, setListChat] = useState(null);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(false);
+  const [currentScrollPos, setCurrentScrollPos] = useState(0);
   const [startIndex, setStartIndex] = useState(0);
-  const [limitCount, setLimitCount] = useState(10);
+  const [limitCount, setLimitCount] = useState(8);
   const [name, setName] = useState("");
   const navigate = useNavigate();
+  const listRef = useRef(null);
+  const scrollPositionRef = useRef(0);
+  const fetchFriends = async (startIndex, limitCount, name, current) => {
+    setLoading(true);
+    try {
+      const response = await getFriendsMess(startIndex, limitCount, name);
+      const currentScrollPos = current; // Capture the current scroll position before updating
 
-  useEffect(() => {
-    const fetchFriends = async () => {
-      setLoading(true);
-      try {
-        const response = await getFriendsMess(startIndex, limitCount, name);
+      // Save the scroll position in ref to prevent race conditions
+      scrollPositionRef.current = currentScrollPos;
+      console.log(currentScrollPos);
+      if (startIndex === 0) {
         setFriends(response.data.friends);
-        console.log(response.data);
         setListChat(response.data);
-        setHasMore(response.data.hasMore);
-      } catch (error) {
-        console.error("Error fetching friends:", error);
-      } finally {
-        setLoading(false);
+      } else {
+        setFriends((prevFriends) => [...prevFriends, ...response.data.friends]);
+        setListChat((prevListChat) => ({
+          ...prevListChat,
+          friends: [...prevListChat.friends, ...response.data.friends],
+        }));
       }
-    };
 
-    fetchFriends();
-  }, [startIndex, limitCount, name]);
+      // After the new data is set, scroll back to the previous position
+      setTimeout(() => {
+        listRef.current.scrollTop = currentScrollPos;
+      }, 500); // Add a slight delay to ensure that the render has completed before restoring the scroll position
 
+      console.log(response.data);
+      setHasMore(response.data.hasMore);
+    } catch (error) {
+      console.error("Error fetching friends:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchFriends(0, limitCount, name);
+  }, []);
+  const addList = async (start, limit, name, current) => {
+    fetchFriends(start, limit, name, current);
+  };
+  useEffect(() => {
+    console.log(newMessInbox);
+
+    if (newMessInbox && newMessInbox.message) {
+      const messAdd = newMessInbox.message;
+      console.log(messAdd);
+
+      setListChat((prevListChat) => {
+        if (!prevListChat || !prevListChat.friends) return prevListChat;
+
+        const updatedFriends = prevListChat.friends.map((friend) =>
+          friend._id === messAdd.sender._id
+            ? { ...friend, lastMessage: messAdd }
+            : friend
+        );
+        const senderIndex = updatedFriends.findIndex(
+          (friend) => friend._id === messAdd.sender._id
+        );
+        if (senderIndex > -1) {
+          const sender = updatedFriends.splice(senderIndex, 1)[0];
+          updatedFriends.unshift(sender);
+        }
+        return {
+          ...prevListChat,
+          friends: updatedFriends,
+        };
+      });
+    }
+  }, [newMessInbox]);
+  const handleScroll = () => {
+    const bottom =
+      listRef.current.scrollHeight ===
+      listRef.current.scrollTop + listRef.current.clientHeight;
+
+    if (bottom && hasMore && !loading) {
+      setStartIndex(startIndex + limitCount);
+      addList(
+        startIndex + limitCount,
+        limitCount,
+        name,
+        listRef.current.scrollTop
+      );
+    }
+  };
   const handleLinkToMess = (chane, id) => {
     let chaneInbox = null;
     switch (chane) {
@@ -58,7 +126,12 @@ const LeftMess = () => {
     }
     navigate(`/messages/${chaneInbox}=${id}`);
   };
-
+  // Using useEffect to restore scroll position after data is loaded
+  useEffect(() => {
+    if (!loading) {
+      listRef.current.scrollTop = scrollPositionRef.current;
+    }
+  }, [loading]);
   return (
     <>
       {/* Ô tìm kiếm */}
@@ -111,13 +184,21 @@ const LeftMess = () => {
           <span className="text-sm font-medium">Tin</span>
         </button>
       </div>
-      <div className=" overflow-y-auto h-full px-2 flex flex-col">
+      <div
+        className=" overflow-y-auto flex flex-col "
+        ref={listRef}
+        onScroll={handleScroll}
+      >
         {/* Loading state */}
-        {loading ? (
-          <div>Loading...</div>
-        ) : (
+        {!loading &&
           listChat?.friends?.map((friend, index) => (
-            <ButtonBase key={friend._id} className=" hover:bg-gray-100">
+            <ButtonBase
+              onClick={() => {
+                handleLinkToMess("inbox", friend?._id);
+              }}
+              key={friend._id}
+              className=" hover:bg-gray-100"
+            >
               <div className="w-full flex items-center space-x-2 p-2 border-b border-gray-100 h-20">
                 {/* Avatar */}
                 <div className="w-10 h-10 rounded-full relative">
@@ -135,22 +216,18 @@ const LeftMess = () => {
                   </div>
                   <div className="text-xs text-gray-400 px-1">
                     {/* Time Ago */}
-                    {getTimeAgo(friend?.lastMessage?.createdAt)}
+                    {getTimeAgo(friend?.lastMessage?.createdAt) !==
+                      "Invalid Date" &&
+                      getTimeAgo(friend?.lastMessage?.createdAt)}
                   </div>
                 </div>
               </div>
             </ButtonBase>
-          ))
-        )}
-
-        {/* Show "Load more" button if there are more friends */}
-        {hasMore && (
-          <button
-            onClick={() => setStartIndex(startIndex + limitCount)}
-            className="my-2 w-full py-2 text-center bg-blue-500 text-white rounded-full"
-          >
-            Load More
-          </button>
+          ))}
+        {loading && (
+          <div>
+            <LoadingAnimation />
+          </div>
         )}
       </div>
     </>
