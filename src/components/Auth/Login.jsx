@@ -82,14 +82,18 @@ export default function Login({ chaneform }) {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("token");
     const error = urlParams.get("error");
+
     if (token) {
-      authToken.setToken(token);
-      navigate("/"); // Chuyển hướng sau khi login
+      authToken.setToken(token); // Lưu token trước khi chuyển hướng
+      setTimeout(() => {
+        setLoading(false); // Chỉ navigate sau khi token được lưu
+        navigate("/");
+      }, 500); // Delay nhẹ để đảm bảo lưu token
     }
+
     if (error === "OAuthFailed") {
-      toast.error(`Đăng Nhập Bằng Google Thất Bại`, {
-        autoClose: 500,
-      });
+      toast.error("Đăng Nhập Bằng Google Thất Bại", { autoClose: 500 });
+      setLoading(false);
     }
   }, []);
   const handleChange = (e) => {
