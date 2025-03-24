@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { href, Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -240,15 +240,16 @@ export default function Login({ chaneform }) {
               <div className=" w-full h-3 border-b"></div>
             </div>
             <div className="w-full px-10 mt-3 flex justify-end items-center">
-              <button
-                onClick={openLoginPopup}
+              <a
+                // onClick={openLoginPopup}
+                href="https://ono-wtxp.onrender.com/auth/google/callback"
                 className="flex items-center justify-center gap-2 border border-gray-300 px-4 py-2 rounded-lg shadow-md bg-white hover:bg-gray-100 transition w-full"
               >
                 <FcGoogle className="text-xl" />
                 <span className="text-gray-700 font-medium">
                   Đăng Nhập Google
                 </span>
-              </button>
+              </a>
             </div>
           </div>{" "}
         </div>
