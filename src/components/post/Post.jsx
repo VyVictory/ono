@@ -64,43 +64,22 @@ const Post = ({ data }) => {
                   </div>
                 </div>
               </div>
-              <p className="p-2">{_?.content}</p>
+              <div className="p-2 break-words">{_?.content}</div>
             </div>
-            <div id={`gallery-${index}`} className="w-full pb-6 border-b mb-2">
-              <a
-                href={pngTest}
-                data-pswp-width="800"
-                data-pswp-height="600" 
-              >
-                <img src={pngTest} className="w-full h-auto cursor-pointer" />
+            <div
+              id={`gallery-${index}`}
+              className="w-full pb-6 border-b mb-2 "
+            >
+              <a href={pngTest} data-pswp-width="800" data-pswp-height="600"> 
                 {_?.media.map((file, index) => (
-                    <FilePreview key={index} fileUrl={file.url} />
-                  ))}
+                  <FilePreview key={index} fileUrl={file.url} />
+                ))}
               </a>
             </div>
             {/* <div id={`gallery-${index}`} className="w-full pb-6 border-b mb-2">
-              {_?.media?.length > 0 && (
-                <div
-                  className={`grid  
-                                               ${
-                                                 _?.media.length === 1 &&
-                                                 "grid-cols-1"
-                                               } 
-                                               ${
-                                                 _?.media.length % 2 === 0 &&
-                                                 "grid-cols-2"
-                                               } 
-                                             ${
-                                               _?.media.length % 3 === 0 &&
-                                               "grid-cols-3"
-                                             } 
-                                             gap-1`}
-                >
-                  {_?.media.map((file, index) => (
-                    <FilePreview key={index} fileUrl={file.url} />
-                  ))}
-                </div>
-              )}
+              {_?.media?.length > 0 && 
+              <div className="w-full h-auto cursor-pointer">daw
+                </div>}
             </div> */}
           </Paper>
         ))}

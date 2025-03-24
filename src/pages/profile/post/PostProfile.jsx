@@ -79,18 +79,20 @@ const PostProfile = ({ data }) => {
       {/* right */}
       <div
         ref={violetRef}
-        className="absolute  pb-2 "
+        className="absolute  pb-2   w-full"
         style={{ pointerEvents: "none" }}
       >
-        <div className="  w-full flex profileW justify-center md:pl-6">
-          <div className="flex flex-row justify-center">
+        <div className="  w-full flex profileW justify-center md:pl-6 ">
+          <div className="flex flex-row justify-center w-full">
             {/* // độn div left */}
-            <div className="  min-h-screen w-2/5 hidden md:block"></div>
+            <div className="  min-h-full w-2/5 hidden md:block"></div>
             <div
-              className="flex flex-col space-y-3   md:w-3/5 md:px-0"
+              className="flex flex-col space-y-3 min-h-full relative md:w-3/5 md:px-0"
               style={{ pointerEvents: "auto" }}
             >
-              <PostRight data={data} />
+              <div className=" min-h-full">
+                <PostRight data={data} />
+              </div>
             </div>
           </div>
         </div>
