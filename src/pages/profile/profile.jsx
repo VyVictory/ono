@@ -108,7 +108,7 @@ const Profile = () => {
                     styler={{
                       button: { width: "100%", height: "100%" }, // ✅ Avatar full button
                       avatar: { width: "100%", height: "100%" }, // ✅ Đảm bảo avatar không nhỏ hơn
-                      badge: { size: "25px" }, // ✅ Badge lớn hơn
+                      badge: { size: "14px" }, // ✅ Badge lớn hơn
                     }}
                   />
                 </button>
