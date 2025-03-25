@@ -15,7 +15,7 @@ import getTimeAgo from "../../components/GetTimeAgo";
 import { ButtonBase, Paper } from "@mui/material";
 import { useSocketContext } from "../../components/context/socketProvider";
 import LoadingAnimation from "../../components/LoadingAnimation";
-const LeftMess = () => {
+const LeftMess = ({ onClose }) => {
   const { newMessInbox, recallMessId, setRecallMessId } = useSocketContext();
   const [searchText, setSearchText] = useState(false);
   const [friends, setFriends] = useState([]);
@@ -206,6 +206,7 @@ const LeftMess = () => {
             <ButtonBase
               onClick={() => {
                 handleLinkToMess("inbox", friend?._id);
+                onClose();
               }}
               key={friend._id}
               className=" hover:bg-gray-100"

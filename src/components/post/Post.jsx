@@ -20,6 +20,8 @@ const Post = ({ data }) => {
 
   useEffect(() => {
     if (addPost) {
+      console.log(addPost);
+      console.log(posts);
       setPosts((prevPosts) =>
         Array.isArray(prevPosts) ? [addPost, ...prevPosts] : [addPost]
       );

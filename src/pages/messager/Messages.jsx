@@ -108,7 +108,9 @@ const Messages = () => {
                 />
               </div>
             </div>
-            <LeftMess />
+            <LeftMess
+              onClose={() => setSidebarOpen((prevState) => !prevState)}
+            />
           </motion.div>
         </AnimatePresence>
       </motion.div>
