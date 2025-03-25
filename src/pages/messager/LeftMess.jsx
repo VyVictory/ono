@@ -99,9 +99,8 @@ const LeftMess = () => {
   }, [newMessInbox]);
   const handleScroll = () => {
     const bottom =
-      listRef.current.scrollHeight ===
-      listRef.current.scrollTop + listRef.current.clientHeight;
-
+      listRef.current.clientHeight >
+      listRef.current.scrollHeight - listRef.current.scrollTop - 2;
     if (bottom && hasMore && !loading) {
       setStartIndex(startIndex + limitCount);
       addList(
@@ -170,22 +169,24 @@ const LeftMess = () => {
         </motion.div>
       </div>
       {/* Menu */}
-      <div className="p-2 flex space-x-2 bg-white shadow-sm rounded-lg overflow-x-auto pb-3 mx-1">
-        <button className="flex items-center space-x-2 bg-gray-100 text-gray-700 rounded-3xl px-4 py-2 shadow-sm hover:bg-violet-100 hover:scale-105 active:bg-violet-200 active:scale-105 transition-all duration-300 ease-in-out">
-          <FriendIcon />
-          <span className="text-sm font-medium text-nowrap">Bạn bè</span>
-        </button>
-        <button className="flex items-center space-x-2 bg-gray-100 text-gray-700 rounded-3xl px-4 shadow-sm hover:bg-blue-100 hover:scale-105 active:bg-blue-200 active:scale-105 transition-all duration-300 ease-in-out">
-          <GroupIcon />
-          <span className="text-sm font-medium">Nhóm</span>
-        </button>
-        <button className="flex items-center space-x-2 bg-gray-100 text-gray-700 rounded-3xl px-4 shadow-sm hover:bg-orange-100 hover:scale-105 active:bg-orange-200 active:scale-105 transition-all duration-300 ease-in-out">
-          <NewsIcon />
-          <span className="text-sm font-medium">Tin</span>
-        </button>
+      <div>
+        <div className="p-2 flex space-x-2 bg-white shadow-sm rounded-lg overflow-x-auto pb-3 mx-1">
+          <button className="flex items-center space-x-2 bg-gray-100 text-gray-700 rounded-3xl px-4 py-2 shadow-sm hover:bg-violet-100 hover:scale-105 active:bg-violet-200 active:scale-105 transition-all duration-300 ease-in-out">
+            <FriendIcon />
+            <span className="text-sm font-medium text-nowrap">Bạn bè</span>
+          </button>
+          <button className="flex items-center space-x-2 bg-gray-100 text-gray-700 rounded-3xl px-4 shadow-sm hover:bg-blue-100 hover:scale-105 active:bg-blue-200 active:scale-105 transition-all duration-300 ease-in-out">
+            <GroupIcon />
+            <span className="text-sm font-medium">Nhóm</span>
+          </button>
+          <button className="flex items-center space-x-2 bg-gray-100 text-gray-700 rounded-3xl px-4 shadow-sm hover:bg-orange-100 hover:scale-105 active:bg-orange-200 active:scale-105 transition-all duration-300 ease-in-out">
+            <NewsIcon />
+            <span className="text-sm font-medium">Tin</span>
+          </button>
+        </div>
       </div>
       <div
-        className=" overflow-y-auto flex flex-col "
+        className=" overflow-y-auto flex flex-col pb-4 px-2"
         ref={listRef}
         onScroll={handleScroll}
       >
@@ -225,7 +226,7 @@ const LeftMess = () => {
             </ButtonBase>
           ))}
         {loading && (
-          <div>
+          <div className="w-full flex justify-center items-center">
             <LoadingAnimation />
           </div>
         )}
