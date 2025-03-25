@@ -17,8 +17,9 @@ import { getCurrentUser } from "../../service/user";
 
 import socketConfig from "../../service/socket/socketConfig";
 import UserStatusIndicator from "../../components/UserStatusIndicator";
-import { Paper } from "@mui/material";
+import { ButtonBase, Paper } from "@mui/material";
 import LeftMess from "./LeftMess";
+import { FcCellPhone } from "react-icons/fc";
 const Messages = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isRightbarOpen, setRightbarOpen] = useState(false);
@@ -153,9 +154,11 @@ const Messages = () => {
               </>
             )}
           </div>
-
+          <a href={`/call/${profileUser?._id}`}>
+            <FcCellPhone className="h-12 w-12" />
+          </a>
           {/* lớn thì hiện */}
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center pl-2">
             <button className="xl:hidden">
               <ExclamationCircleIcon
                 onClick={() => {
