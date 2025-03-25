@@ -18,11 +18,14 @@ import { useNavigate } from "react-router-dom";
 import { getPostHome } from "../../service/post";
 import { Button, ButtonBase } from "@mui/material";
 import UserStatusIndicator from "../../components/UserStatusIndicator";
+import { getFriendsMess } from "../../service/friend";
 const Profile = () => {
   const { setZoomImg } = useModule();
   const { setUsecase } = useModule();
   const { profileRender, content } = useProfile();
+
   const [userRender, setUserRender] = useState(null);
+  const [friends, setFrineds] = useState([]);
   const navigate = useNavigate();
   const [posts, setPosts] = useState(null);
 
@@ -38,6 +41,16 @@ const Profile = () => {
     fetchPosts();
   }, []);
   useEffect(() => {
+    const fetchFriend = async () => {
+      const response = await getFriendsMess(0, 6, "");
+      if (response) {
+        setFrineds(response.data);
+      }
+    };
+
+    fetchFriend();
+  }, []);
+  useEffect(() => {
     setUserRender(profileRender);
   }, [profileRender]);
 
@@ -45,7 +58,7 @@ const Profile = () => {
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "auto" });
   }, [userRender]);
-
+  console.log(friends);
   const followersInfo = (
     <div className="text-center">0 followers ❁ 9 following</div>
   );
@@ -108,8 +121,8 @@ const Profile = () => {
                     styler={{
                       button: { width: "100%", height: "100%" }, // ✅ Avatar full button
                       avatar: { width: "100%", height: "100%" }, // ✅ Đảm bảo avatar không nhỏ hơn
-                      badge: { 
-                        size: "14px", // ✅ Badge lớn hơn 
+                      badge: {
+                        size: "14px", // ✅ Badge lớn hơn
                       },
                     }}
                   />
@@ -124,13 +137,14 @@ const Profile = () => {
 
                   {followersInfo}
                   <div className="flex flex-row">
-                    {[...Array(6)].map((_, index) => ( 
+                    {friends?.friends?.map((_, index) => (
                       <div
                         key={index}
                         className="w-8 h-8 border-white border rounded-full -ml-1"
                       >
                         <UserStatusIndicator
-                          userId={userRender?.profile?._id}
+                          userId={_?._id}
+                          userData={_}
                           // onlineUsers={onlineUsers}
                         />
                       </div>
