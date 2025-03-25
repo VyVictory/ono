@@ -36,18 +36,20 @@ const CallComponent = () => {
         console.log("🎥 Tạo Peer mới...");
         peerRef.current = createPeer(false);
       }
-    
+
       try {
-        await peerRef.current.setRemoteDescription(new RTCSessionDescription(offer));
+        await peerRef.current.setRemoteDescription(
+          new RTCSessionDescription(offer)
+        );
         console.log("✅ Remote Description đã được đặt.");
-    
+
         // Xử lý các ICE Candidate bị chờ
         pendingCandidates.forEach(async (candidate) => {
           await peerRef.current.addIceCandidate(new RTCIceCandidate(candidate));
           console.log("✅ Đã thêm ICE Candidate:", candidate);
         });
         pendingCandidates = []; // Xóa danh sách sau khi thêm xong
-    
+
         const answer = await peerRef.current.createAnswer();
         await peerRef.current.setLocalDescription(answer);
         socket.emit("webrtcAnswer", { answer, receiverId: senderId });
@@ -56,7 +58,7 @@ const CallComponent = () => {
         console.error("❌ Lỗi khi đặt Remote Description:", error);
       }
     });
-    
+
     socket.on("webrtcCandidate", async ({ candidate }) => {
       if (peerRef.current) {
         if (peerRef.current.remoteDescription) {
@@ -101,29 +103,23 @@ const CallComponent = () => {
 
     peer.onicecandidate = (event) => {
       if (event.candidate) {
-        if (!socket) {
-          console.error("⚠️ Socket chưa kết nối, không thể gửi ICE Candidate!");
-          return;
-        }
-        socket.emit("webrtcCandidate", {
-          candidate: event.candidate,
-          receiverId: partnerId,
-        });
+        console.log("📡 Gửi ICE Candidate:", event.candidate);
+        socket.emit("webrtcCandidate", { candidate: event.candidate, receiverId: partnerId });
+      } else {
+        console.log("✅ Không còn ICE Candidate nào nữa.");
       }
     };
+    
 
     peer.ontrack = (event) => {
-      console.log("📹 Nhận track video từ người kia:", event.streams[0]);
+      console.log("📹 Nhận track video:", event.streams[0]);
+      console.log("🎞️ Số lượng track video:", event.streams[0].getVideoTracks().length);
     
       if (remoteVideoRef.current) {
-        console.log("🎥 Đặt srcObject cho remote video");
         remoteVideoRef.current.srcObject = event.streams[0];
-      } else {
-        console.warn("⚠️ remoteVideoRef.current không tồn tại!");
       }
     };
     
-
     if (isInitiator) {
       navigator.mediaDevices
         .getUserMedia({ video: true, audio: true })
@@ -173,6 +169,12 @@ const CallComponent = () => {
     }
     setCallStarted(false);
   };
+  setTimeout(() => {
+    console.log("🎥 Remote Video Element:", remoteVideoRef.current);
+    if (remoteVideoRef.current) {
+      console.log("📺 Video srcObject:", remoteVideoRef.current.srcObject);
+    }
+  }, 3000);
 
   return (
     <div className="flex flex-col items-center">
