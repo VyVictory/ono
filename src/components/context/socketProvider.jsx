@@ -6,7 +6,6 @@ import React, {
   useRef,
 } from "react";
 import { useAuth } from "./AuthProvider";
-import { useSocket } from "../../service/socket/socket";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../css/toastStyles.css";
@@ -14,6 +13,8 @@ import { Button } from "@headlessui/react";
 import UserStatusIndicator from "../UserStatusIndicator";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import io from "socket.io-client";
+import connectENV from "../../service/connectENV";
 
 const SocketContext = createContext();
 
@@ -44,7 +45,31 @@ const CustomToast = ({ message }) => {
 
 export const SocketProvider = ({ children }) => {
   const { profile } = useAuth();
-  const socket = useSocket();
+  const [socket, setSocket] = useState(null);
+
+  useEffect(() => {
+    if (!profile) return;
+    const newSocket = io(connectENV.socketUrl || "ws://localhost:3001", {
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 2000,
+      transports: ["websocket"],
+    });
+  
+    newSocket.on("connect", () => {
+      console.log("✅ Connected to socket:", newSocket.id);
+      setSocket(newSocket); // 🔹 Cập nhật socket ngay khi kết nối thành công
+      newSocket.emit("authenticate", profile?._id);
+    });
+  
+    newSocket.on("disconnect", (reason) => {
+      console.error("❌ Socket disconnected", reason);
+      setSocket(null); // 🚨 Cập nhật lại socket khi mất kết nối
+    });
+  
+    return () => newSocket.disconnect();
+  }, [profile]);
+  
   const [newMessInbox, setNewMessInbox] = useState(null);
   const [recallMessId, setRecallMessId] = useState(null);
   const [idUser, setIdUser] = useState(null);
@@ -88,7 +113,7 @@ export const SocketProvider = ({ children }) => {
       setNewMessInbox(data);
     };
     const handleRecallMessage = (data) => {
-      setRecallMessId(data.messageId); 
+      setRecallMessId(data.messageId);
     };
     socket.on("newMessage", handleNewMessage);
     // socket.on("messagesDelivered", (data) => {
@@ -108,7 +133,7 @@ export const SocketProvider = ({ children }) => {
 
   return (
     <SocketContext.Provider
-      value={{ newMessInbox, recallMessId, setRecallMessId }}
+      value={{ newMessInbox, recallMessId, setRecallMessId, socket }}
     >
       {children}
     </SocketContext.Provider>

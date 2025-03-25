@@ -8,7 +8,7 @@ export const useSocket = () => {
   const { profile } = useAuth();
 
   useEffect(() => {
-    if (!profile?._id) return;
+    if (!profile?._id ||socket) return;
     
     // Nếu socket đã tồn tại và đang kết nối, không tạo lại
     if (socket && socket.connected) {

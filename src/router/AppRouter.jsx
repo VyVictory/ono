@@ -23,6 +23,7 @@ import ProfileLayout from "../Layout/ProfileLayout.jsx";
 import { PhotoSwipeProvider } from "../components/context/PhotoSwipeProvider.jsx";
 import HomeLayout from "../Layout/HomeLayout.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
+import CallComponent from "./CallComponent.jsx";
 const AppRouter = () => (
   <Routes>
     <Route element={<Layout />}>
@@ -30,6 +31,7 @@ const AppRouter = () => (
         <Route path="/" element={<UserPage />} />
       </Route>
       <Route element={<ProtectedRoute />}>
+        <Route path="/call/:partnerId" element={<CallComponent />} />
         <Route path="/messages/*" element={<Messages />} />
         <Route path="/profile/*" element={<ProfileLayout />} />
       </Route>
