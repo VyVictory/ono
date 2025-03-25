@@ -50,8 +50,7 @@ export default function Login({ chaneform }) {
           : { numberPhone: formData.identifier, password: formData.password };
 
         // Gửi yêu cầu đăng nhập
-        const { token, user } = await login(requestData);
-        console.log(user);
+        const { token, user } = await login(requestData); 
 
         toast.success(`Chào mừng bạn, ${user?.firstName + user?.lastName}.`, {
           autoClose: 500,
@@ -110,27 +109,7 @@ export default function Login({ chaneform }) {
       [name]: "",
     });
   };
-  // Đăng nhập với Google
-  const handleGoogleLogin = async (response) => {
-    try {
-      const googleToken = response.credential;
-      if (!googleToken) throw new Error("Không nhận được token từ Google");
-
-      // Gửi token đến server để xác thực
-      const { data } = await axios.get(
-        "https://ono-wtxp.onrender.com/auth/google/callback",
-        { googleToken },
-        { headers: { "Content-Type": "application/json" } }
-      );
-
-      if (!data.token) throw new Error("Không nhận được token từ server");
-      authToken.setToken(data.token);
-      setUserData(data.user);
-    } catch (error) {
-      console.error("Lỗi đăng nhập Google:", error);
-      alert("Đăng nhập Google thất bại, vui lòng thử lại.");
-    }
-  };
+ 
   const openLoginPopup = () => {
     // Kích thước mặc định cho desktop
     let popupWidth = 500;
