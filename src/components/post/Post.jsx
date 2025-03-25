@@ -8,6 +8,7 @@ import FilePreview from "../FilePreview";
 import { Gallery } from "react-grid-gallery";
 import { useModule } from "../context/Module";
 import { Link } from "react-router-dom";
+const MAX_VISIBLE_IMAGES = 6; // Hiển thị tối đa 6 ảnh
 const Post = ({ data }) => {
   const { addPost, setAddPost } = useModule();
   const postsData = data?.posts || []; // ✅ Đảm bảo luôn có giá trị mặc định
@@ -87,34 +88,40 @@ const Post = ({ data }) => {
               </div>
               <div className="p-2 break-words">{_?.content}</div>
             </div>
-            <div id={`gallery-${index}`} className="w-full  mb-2 px-2">
-              <a
-                data-pswp-width="800"
-                data-pswp-height="600"
-                className={`grid  
-               ${_?.media?.length === 1 ? "grid-cols-1" : ""} 
-               ${_?.media?.length % 2 === 0 ? "grid-cols-2" : ""} 
-               ${_?.media?.length % 3 === 0 ? "grid-cols-3" : ""} 
-               gap-1`}
+            {/* Bố cục hiển thị ảnh */}
+            <div id={`gallery-${index}`} className="w-full mb-2 px-2">
+              <div
+                className={`grid gap-2 
+                        ${_.media.length === 1 ? "grid-cols-1" : ""} 
+                        ${_.media.length === 2 ? "grid-cols-2" : ""} 
+                        ${_.media.length >= 3 ? "grid-cols-3" : ""}`}
               >
-                {_?.media?.map((file, index) => (
-                  <button
-                    key={index}
-                    className="bg-gray-200 flex justify-center items-center p-2 rounded-md overflow-hidden"
-                  >
-                    <FilePreview
-                      fileUrl={file.url}
-                      popcontainer={"w-full  max-h-24 overflow-y-auto "}
-                    />
-                  </button>
-                ))}
-              </a>
+                {_.media.map((file, i) =>
+                  i > MAX_VISIBLE_IMAGES - 2 ? (
+                    ""
+                  ) : (
+                    <button
+                      key={i}
+                      className="bg-gray-200 flex justify-center items-center rounded-md overflow-hidden"
+                    >
+                      <FilePreview
+                        fileUrl={file.url}
+                        pop="w-full h-64 md:h-96 object-cover"
+                      />
+                    </button>
+                  )
+                )}
+
+                {/* Hiển thị ô "+ số ảnh còn lại" nếu có ảnh dư */}
+                {_.media.length - MAX_VISIBLE_IMAGES > 0 && (
+                  <div className="relative flex items-center justify-center bg-gray-200 rounded-md overflow-hidden">
+                    <span className="absolute text-xl font-bold text-white bg-black bg-opacity-50 px-4 py-2 rounded-md">
+                      +{_.media.length - MAX_VISIBLE_IMAGES}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
-            {/* <div id={`gallery-${index}`} className="w-full pb-6 border-b mb-2">
-              {_?.media?.length > 0 && 
-              <div className="w-full h-auto cursor-pointer">daw
-                </div>}
-            </div> */}
           </Paper>
         ))}
       </div>
