@@ -72,7 +72,7 @@ const LeftMess = () => {
   };
   useEffect(() => {
     fetchFriends(0, limitCount, name);
-  }, []);
+  }, [name]);
   const addList = async (start, limit, name, current) => {
     fetchFriends(start, limit, name, current);
   };
