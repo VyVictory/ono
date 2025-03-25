@@ -21,7 +21,7 @@ const ImageZoomModal = ({ imageUrl, onClose }) => {
       >
         {/* Nút đóng */}
         <button
-          className="fixed top-3 right-3 text-white bg-gray-800 p-2 rounded-full hover:bg-gray-600 transition"
+          className="fixed top-3 right-3 text-white bg-gray-800 p-2 rounded-full hover:bg-gray-600 transition z-50"
           onClick={onClose}
         >
           <XMarkIcon className="h-7 w-7" />

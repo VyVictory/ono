@@ -2,7 +2,7 @@ import { ButtonBase } from "@mui/material";
 import React from "react";
 import ReactPlayer from "react-player";
 import { useModule } from "./context/Module";
-export default function FilePreview({ fileUrl, pop }) {
+export default function FilePreview({ fileUrl, pop ,popcontainer}) {
   const fileType = fileUrl.split(".").pop().toLowerCase(); // Lấy phần mở rộng file
   const { setZoomImg } = useModule();
   const isImage =
@@ -12,13 +12,13 @@ export default function FilePreview({ fileUrl, pop }) {
     );
   if (["jpg", "jpeg", "png", "gif", "webp"].includes(fileType) || isImage) {
     return (
-      <ButtonBase onClick={() => setZoomImg(`${fileUrl}`)}>
+      <div className={`cursor-pointer`} onClick={() => setZoomImg(`${fileUrl}`)}>
         <img
           src={fileUrl}
           alt="preview"
           className={pop || `max-w-full rounded-md w-full h-auto`}
         />
-      </ButtonBase>
+      </div>
     );
   }
 

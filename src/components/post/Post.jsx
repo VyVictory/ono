@@ -1,10 +1,11 @@
 import { UserGroupIcon } from "@heroicons/react/24/outline";
 import pngTest from "../../img/post/post.png";
-import { Avatar, Paper } from "@mui/material";
+import { Avatar, Button, Paper } from "@mui/material";
 import { useState, useEffect } from "react";
 import UserStatusIndicator from "../UserStatusIndicator";
 import SecurityLabel from "./SecurityLabel";
 import FilePreview from "../FilePreview";
+import { Gallery } from "react-grid-gallery";
 import { useModule } from "../context/Module";
 import { Link } from "react-router-dom";
 const Post = ({ data }) => {
@@ -87,9 +88,25 @@ const Post = ({ data }) => {
               <div className="p-2 break-words">{_?.content}</div>
             </div>
             <div id={`gallery-${index}`} className="w-full  mb-2 px-2">
-              <a data-pswp-width="800" data-pswp-height="600">
+              <a
+                data-pswp-width="800"
+                data-pswp-height="600"
+                className={`grid  
+               ${_?.media?.length === 1 ? "grid-cols-1" : ""} 
+               ${_?.media?.length % 2 === 0 ? "grid-cols-2" : ""} 
+               ${_?.media?.length % 3 === 0 ? "grid-cols-3" : ""} 
+               gap-1`}
+              >
                 {_?.media?.map((file, index) => (
-                  <FilePreview key={index} fileUrl={file.url} />
+                  <button
+                    key={index}
+                    className="bg-gray-200 flex justify-center items-center p-2 rounded-md overflow-hidden"
+                  >
+                    <FilePreview
+                      fileUrl={file.url}
+                      popcontainer={"w-full  max-h-24 overflow-y-auto "}
+                    />
+                  </button>
                 ))}
               </a>
             </div>
