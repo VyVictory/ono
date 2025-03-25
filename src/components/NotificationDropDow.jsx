@@ -62,7 +62,7 @@ const NotificationDropDow = () => {
         notifications: prevNotifications.notifications.map((group) => ({
           ...group,
           notifications: group.notifications.map((noti) =>
-            noti._id === id ? { ...noti, read: true } : noti
+            noti._id === id ? { ...noti, isRead: true } : noti
           ),
         })),
       }));
@@ -125,7 +125,7 @@ const NotificationDropDow = () => {
                         <li
                           key={noti._id}
                           onClick={() => {
-                            handleReadNotification(noti?._id, noti?.read);
+                            handleReadNotification(noti?._id, noti?.isRead);
                           }}
                           className="relative flex items-center w-full pr-2"
                         >
@@ -155,7 +155,7 @@ const FriendShip = ({ data }) => {
         navigate(`/profile/posts?id=${data?.sender?._id}`);
       }}
       className={`transition-opacity duration-300 ${
-        data?.read ? "opacity-60" : "opacity-100"
+        data?.isRead ? "opacity-60" : "opacity-100"
       }`}
     >
       <Button
@@ -172,7 +172,7 @@ const FriendShip = ({ data }) => {
         />
         <p
           className={`ml-2 text-xs line-clamp-2 max-w-[200px] ${
-            data?.read && "text-gray-500"
+            data?.isRead && "text-gray-500"
           }`}
         >
           {data?.content}
