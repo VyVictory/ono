@@ -36,3 +36,28 @@ export const getSearchUser = async (name) => {
     return null;
   }
 };
+// firstName,
+// lastName,
+// gender,
+// title,
+// birthDate,
+
+// street,
+// ward,
+// district,
+// city,
+// country,
+
+// education,
+
+// email,
+// phoneNumber,
+export const editUser = async (userData) => {
+  try {
+    const response = await api.put("user/profile/update", userData); 
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi cập nhật:", error);
+    return null;
+  }
+};

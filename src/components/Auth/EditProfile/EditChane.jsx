@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { PencilIcon } from "@heroicons/react/24/outline";
 import { Dialog } from "@headlessui/react";
 import { Button } from "@mui/material";
-
 const EditChane = ({ isOpen, onClose, field, value, onSave }) => {
-  const [inputValue, setInputValue] = useState(value);
+  const [inputValue, setInputValue] = useState(value || "");
+
   useEffect(() => {
-    setInputValue(value);
+    setInputValue(value || "");
   }, [value]);
 
   const handleChange = (e) => {
@@ -16,6 +16,7 @@ const EditChane = ({ isOpen, onClose, field, value, onSave }) => {
   const handleSave = () => {
     onSave(field, inputValue);
   };
+
   const modalRef = useRef(null);
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -29,6 +30,12 @@ const EditChane = ({ isOpen, onClose, field, value, onSave }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen, onClose]);
 
+  const getFormattedDate = (dateString) => {
+    if (!dateString) return ""; // Trả về chuỗi rỗng nếu không có giá trị
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? "" : date.toISOString().split("T")[0]; // Kiểm tra nếu là ngày hợp lệ
+  };
+
   return (
     <Dialog
       open={isOpen}
@@ -39,14 +46,27 @@ const EditChane = ({ isOpen, onClose, field, value, onSave }) => {
         <Dialog.Title className="text-lg font-semibold">
           Chỉnh sửa {field}
         </Dialog.Title>
-        <input
-          type={field === "email" ? "email" : "text"}
-          name={field}
-          value={inputValue}
-          onChange={handleChange}
-          className="w-full p-2 mt-2 border rounded-md"
-          placeholder={`Nhập ${field}`}
-        />
+
+        {/* Nếu field là birthDate, hiển thị input kiểu date */}
+        {field === "birthDate" ? (
+          <input
+            type="date"
+            name={field}
+            value={getFormattedDate(inputValue)}
+            onChange={handleChange}
+            className="w-full p-2 mt-2 border rounded-md"
+          />
+        ) : (
+          <input
+            type={field === "email" ? "email" : "text"}
+            name={field}
+            value={inputValue}
+            onChange={handleChange}
+            className="w-full p-2 mt-2 border rounded-md"
+            placeholder={`Nhập ${field}`}
+          />
+        )}
+
         <div className="flex justify-end mt-4 space-x-2">
           <Button variant="outlined" onClick={onClose}>
             Đóng
@@ -59,4 +79,5 @@ const EditChane = ({ isOpen, onClose, field, value, onSave }) => {
     </Dialog>
   );
 };
+
 export { EditChane };

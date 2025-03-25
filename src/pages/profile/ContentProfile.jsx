@@ -3,13 +3,13 @@ import { useAuth } from "../../components/context/AuthProvider";
 import "../../css/post.css";
 import PostProfile from "./post/PostProfile";
 import PostLeft from "./post/PostLeft";
-const ContentProfile = ({ data, content }) => {
+const ContentProfile = ({ data, content,profile }) => {
   const eventProfile = (data) => {
     switch (content) {
       case "about":
-        return <PostLeft data={data} />;
+        return <PostLeft data={profile} />;
       default:
-        return <PostProfile data={data} />;
+        return <PostProfile data={data} profile={profile} />;
     }
   };
   return (

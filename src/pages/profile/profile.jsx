@@ -58,7 +58,6 @@ const Profile = () => {
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "auto" });
   }, [userRender]);
-  console.log(friends);
   const followersInfo = (
     <div className="text-center">0 followers ❁ 9 following</div>
   );
@@ -83,7 +82,7 @@ const Profile = () => {
       </div>
     );
   }
-  // console.log(userRender);
+  console.log(profileRender);
   return (
     <div className="NavbarUser ">
       <div className="w-full  flex-col relative min-h-screen ">
@@ -112,7 +111,7 @@ const Profile = () => {
               </ButtonBase>
             </div>
 
-            <div className=" flex flex-col md:flex-row md:justify-between justify-center mx-10 md:py-2 border-b">
+            <div className="space-y-2 pb-2 flex flex-col md:flex-row md:justify-between justify-center mx-10 md:py-2 border-b">
               <div className="flex md:flex-row items-center md:space-x-3 flex-col">
                 <button className="w-36 h-36  rounded-full -mt-9 z-10 flex border-4 border-white">
                   <UserStatusIndicator
@@ -128,24 +127,31 @@ const Profile = () => {
                   />
                 </button>
 
-                <div className="flex flex-col items-center">
-                  <strong className="text-3xl text-center md:text-start w-full ">
-                    {(userRender?.profile?.firstName ?? "") +
-                      " " +
-                      (userRender?.profile?.lastName ?? "")}
+                <div className="flex flex-col items-center md:items-start">
+                  <strong className="text-3xl text-center md:text-start md:flex md:flex-row w-full ">
+                    <div>
+                      {" "}
+                      {(userRender?.profile?.firstName ?? "") +
+                        " " +
+                        (userRender?.profile?.lastName ?? "")}
+                    </div>
+                    <div>
+                      {" "}
+                      {profileRender?.profile?.title &&
+                        `(${profileRender?.profile?.title})`}
+                    </div>
                   </strong>
 
                   {followersInfo}
-                  <div className="flex flex-row">
+                  <div className="flex flex-row ">
                     {friends?.friends?.map((_, index) => (
-                      <div
-                        key={index}
-                        className="w-8 h-8 border-white border rounded-full mr-1"
-                      >
+                      <div key={index} className=" rounded-full border-gray-200 border-2 -mr-1">
                         <UserStatusIndicator
                           userId={_?._id}
                           userData={_}
-                          // onlineUsers={onlineUsers}
+                          styler={{
+                            avatar: { width: "20px", height: "20px" }, // Kích thước avatar
+                          }}
                         />
                       </div>
                     ))}
@@ -154,7 +160,7 @@ const Profile = () => {
               </div>
               {/* lựa chọn  */}
               {userRender.myprofile ? (
-                <div className="flex flex-row md:flex-col md:items-center mb-2 md:mb-0 items-center justify-center space-y-0 md:space-y-2 space-x-2 md:space-x-0">
+                <div className="flex flex-row md:flex-col md:items-center mb-2 md:mb-0 items-center justify-center space-y-0 md:space-y-2 space-x-2 md:space-x-0 ">
                   <button
                     onClick={() => {
                       setUsecase("EditProfile");
@@ -190,7 +196,7 @@ const Profile = () => {
           </div>
         </div>
 
-        <ContentProfile data={posts} content={content} />
+        <ContentProfile data={posts} content={content} profile={profileRender}/>
       </div>
     </div>
   );

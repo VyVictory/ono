@@ -44,7 +44,7 @@ export const ProfileProvider = ({ children }) => {
     } else {
       setProfileRender({ myprofile: true, profile: profile });
     }
-  }, [currentUser, isLoadingProfile, id]);
+  }, [currentUser, isLoadingProfile, id, profile]);
   return (
     <ProfileContext.Provider
       value={{

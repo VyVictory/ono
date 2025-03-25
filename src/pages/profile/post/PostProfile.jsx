@@ -11,7 +11,7 @@ import PostLeft from "./PostLeft";
 import PostRight from "./PostRigh";
 import Post from "../../../components/post/Post";
 import HeadCreatePost from "./HeadCreatePost";
-const PostProfile = ({ data }) => {
+const PostProfile = ({ data,profile }) => {
   const scrollRef = useRef(null);
   const targetRef = useRef(null);
   const targetRefH = useRef(null);
@@ -71,7 +71,7 @@ const PostProfile = ({ data }) => {
         >
           {/* chiều cao thẻ này */}
           <div ref={leftRef} className="flex flex-col  w-2/5 ">
-            <PostLeft data={data} />
+            <PostLeft data={profile} />
           </div>
           <div className="  min-h-screen w-3/5 hidden md:block"></div>
         </div>

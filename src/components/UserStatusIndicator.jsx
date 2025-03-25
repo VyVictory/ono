@@ -4,7 +4,7 @@ import Badge from "@mui/material/Badge";
 import avt from "../img/DefaultAvatar.jpg";
 import useUserStatus from "./socket/useUserStatus";
 
-const UserStatusIndicator = ({ userId, userData, styler }) => {
+const UserStatusIndicator = ({ userId, userData, styler = {} }) => {
   const isOnline = useUserStatus(userId);
 
   const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -16,6 +16,7 @@ const UserStatusIndicator = ({ userId, userData, styler }) => {
       height: styler?.badge?.size || "8px",
       borderRadius: "100%",
       fontSize: "12px",
+      transform: styler?.badge?.translate || "",
       "&::after": isOnline && {
         position: "absolute",
         top: 0,
@@ -46,8 +47,8 @@ const UserStatusIndicator = ({ userId, userData, styler }) => {
           borderRadius: "50%",
           padding: 0,
           minWidth: "unset",
-          width: styler?.button?.size || "40px", // Giữ tỉ lệ cố định
-          height: styler?.button?.size || "40px",
+          width: styler?.button?.size || "32px", // Giữ tỉ lệ cố định
+          height: styler?.button?.size || "32px",
           display: "flex", // Đảm bảo không bị co
           alignItems: "center",
           justifyContent: "center",

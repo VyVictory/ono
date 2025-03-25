@@ -69,8 +69,7 @@ const NotificationDropDow = () => {
     } else {
       return;
     }
-  };
-  console.log(notifications);
+  }; 
 
   return (
     <div

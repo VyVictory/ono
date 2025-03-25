@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../components/context/AuthProvider";
-import socketConfig from "./socketConfig";
 import connectENV from "../connectENV";
 import { io } from "socket.io-client";
 
@@ -9,7 +8,14 @@ export const useSocket = () => {
   const { profile } = useAuth();
 
   useEffect(() => {
-    if (!profile?._id || socket) return;
+    if (!profile?._id) return;
+    
+    // Nếu socket đã tồn tại và đang kết nối, không tạo lại
+    if (socket && socket.connected) {
+      console.log("⚡ Socket is already connected:", socket.id);
+      return;
+    }
+
     const newSocket = io(connectENV.socketUrl || "ws://localhost:3001", {
       transports: ["websocket"],
     });
@@ -29,7 +35,7 @@ export const useSocket = () => {
       console.log("🛑 Cleaning up socket:", newSocket?.id);
       newSocket?.disconnect();
     };
-  }, [profile]);
+  }, [profile?._id]); // 🔹 Chỉ theo dõi _id để tránh render lại không cần thiết
 
   return socket;
 };
