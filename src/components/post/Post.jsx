@@ -38,7 +38,7 @@ const Post = ({ data }) => {
       })
       .replace(",", " lúc");
   };
-  console.log(posts);
+  // console.log(posts);
   return (
     <>
       <div id="gallery" className="flex flex-col gap-4 min-w-full">

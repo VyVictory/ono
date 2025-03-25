@@ -22,7 +22,7 @@ const LeftMess = () => {
   const [listChat, setListChat] = useState(null);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(false);
-  const [currentScrollPos, setCurrentScrollPos] = useState(0);
+  const [loadingAdd, setLoadingAdd] = useState(false);
   const [startIndex, setStartIndex] = useState(0);
   const [limitCount, setLimitCount] = useState(8);
   const [name, setName] = useState("");
@@ -30,14 +30,18 @@ const LeftMess = () => {
   const listRef = useRef(null);
   const scrollPositionRef = useRef(0);
   const fetchFriends = async (startIndex, limitCount, name, current) => {
-    setLoading(true);
+    if (!current) {
+      setLoading(true);
+    } else {
+      setLoadingAdd(true);
+    }
     try {
       const response = await getFriendsMess(startIndex, limitCount, name);
       const currentScrollPos = current; // Capture the current scroll position before updating
 
       // Save the scroll position in ref to prevent race conditions
       scrollPositionRef.current = currentScrollPos;
-      console.log(currentScrollPos);
+      // console.log(currentScrollPos);
       if (startIndex === 0) {
         setFriends(response.data.friends);
         setListChat(response.data);
@@ -54,12 +58,16 @@ const LeftMess = () => {
         listRef.current.scrollTop = currentScrollPos;
       }, 500); // Add a slight delay to ensure that the render has completed before restoring the scroll position
 
-      console.log(response.data);
+      // console.log(response.data);
       setHasMore(response.data.hasMore);
     } catch (error) {
       console.error("Error fetching friends:", error);
     } finally {
-      setLoading(false);
+      if (!current) {
+        setLoading(true);
+      } else {
+        setLoadingAdd(true);
+      }
     }
   };
   useEffect(() => {
@@ -69,7 +77,7 @@ const LeftMess = () => {
     fetchFriends(start, limit, name, current);
   };
   useEffect(() => {
-    console.log(newMessInbox);
+    // console.log(newMessInbox);
 
     if (newMessInbox && newMessInbox.message) {
       const messAdd = newMessInbox.message;
@@ -100,8 +108,8 @@ const LeftMess = () => {
   const handleScroll = () => {
     const bottom =
       listRef.current.clientHeight >
-      listRef.current.scrollHeight - listRef.current.scrollTop - 2;
-    if (bottom && hasMore && !loading) {
+      listRef.current.scrollHeight - listRef.current.scrollTop - 2; 
+    if (bottom && hasMore && loading) {
       setStartIndex(startIndex + limitCount);
       addList(
         startIndex + limitCount,
@@ -191,7 +199,7 @@ const LeftMess = () => {
         onScroll={handleScroll}
       >
         {/* Loading state */}
-        {!loading &&
+        {loading ? (
           listChat?.friends?.map((friend, index) => (
             <ButtonBase
               onClick={() => {
@@ -224,8 +232,11 @@ const LeftMess = () => {
                 </div>
               </div>
             </ButtonBase>
-          ))}
-        {loading && (
+          ))
+        ) : (
+          <LoadingAnimation />
+        )}
+        {loadingAdd && (
           <div className="w-full flex justify-center items-center">
             <LoadingAnimation />
           </div>
