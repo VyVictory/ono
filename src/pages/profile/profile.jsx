@@ -19,6 +19,7 @@ import { getPostHome } from "../../service/post";
 import { Button, ButtonBase } from "@mui/material";
 import UserStatusIndicator from "../../components/UserStatusIndicator";
 import { getFriendsMess } from "../../service/friend";
+import DropdownChangeImage from "./DropdownChangeImage";
 const Profile = () => {
   const { setZoomImg } = useModule();
   const { setUsecase } = useModule();
@@ -145,7 +146,10 @@ const Profile = () => {
                   {followersInfo}
                   <div className="flex flex-row ">
                     {friends?.friends?.map((_, index) => (
-                      <div key={index} className=" rounded-full border-gray-200 border-2 -mr-1">
+                      <div
+                        key={index}
+                        className=" rounded-full border-gray-200 border-2 -mr-1"
+                      >
                         <UserStatusIndicator
                           userId={_?._id}
                           userData={_}
@@ -170,9 +174,7 @@ const Profile = () => {
                     <PencilIcon className="h-6 w-6 text-gray-500" />
                     Edit
                   </button>
-                  <button className="bg-gray-50 hover:bg-violet-50 min-w-16 justify-center px-2 py-1 rounded-md flex items-center transition-transform duration-200 hover:scale-110">
-                    <ChevronDownIcon className="w-8 h-8 text-gray-500 transition-transform duration-200 hover:scale-125 hover:text-violet-400" />
-                  </button>
+                  <DropdownChangeImage />
                 </div>
               ) : (
                 <div className="flex flex-row flex-wrap items-center justify-center space-x-4 py-2 sm:pb-4">
@@ -196,7 +198,11 @@ const Profile = () => {
           </div>
         </div>
 
-        <ContentProfile data={posts} content={content} profile={profileRender}/>
+        <ContentProfile
+          data={posts}
+          content={content}
+          profile={profileRender}
+        />
       </div>
     </div>
   );

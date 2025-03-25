@@ -32,7 +32,8 @@ const AppRouter = () => (
       <Route element={<ProtectedRoute />}>
         <Route path="/messages/*" element={<Messages />} />
         <Route path="/profile/*" element={<ProfileLayout />} />
-      </Route> 
+      </Route>
+      <Route path="/*" element={<HomeLayout />} />
     </Route>
     {/* <Route path="/test" element={<Test />} /> */}
     <Route path="/login/*" element={<Auth />} />

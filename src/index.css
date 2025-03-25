@@ -116,7 +116,7 @@
     }
 
     .animate-ripple {
-        animation: ripple 1s linear;
+        animation: ripple 0.2s linear;
         position: absolute;
         border-radius: 50%;
         pointer-events: none;

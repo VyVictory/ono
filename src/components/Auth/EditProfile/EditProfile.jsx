@@ -61,10 +61,10 @@ const EditProfile = ({ isOpen, onClose }) => {
     birthDate: "Ngày sinh",
   };
 
-  if (!user) return <LoadingAnimation />;
+  if (!user) return <></>;
   return (
     <>
-      <Dialog  open={isOpen} onClose={onClose}>
+      <Dialog open={isOpen} onClose={onClose}>
         <motion.div
           initial={{ opacity: 0, scale: 1 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -74,10 +74,10 @@ const EditProfile = ({ isOpen, onClose }) => {
           onClick={onClose}
         >
           <Paper
-            onClick={(e) => e.stopPropagation()} 
+            onClick={(e) => e.stopPropagation()}
             className="w-96 max-w-[90dvh] border-2"
           >
-            <div className="w-full h-full border-violet-100  p-6 bg-violet-50">
+            <div className="w-full h-full border-violet-100  p-4 bg-violet-50">
               <h2 className="text-xl font-semibold text-gray-900 border-b pb-3">
                 Thông tin cá nhân
               </h2>
@@ -85,7 +85,7 @@ const EditProfile = ({ isOpen, onClose }) => {
                 {fields.map((field) => (
                   <div
                     key={field}
-                    className="flex justify-between items-center shadow-inner shadow-gray-200 px-4 py-2 rounded-lg"
+                    className="flex justify-between items-center shadow-inner shadow-blue-100 px-4 py-2 rounded-lg"
                   >
                     <p className="text-gray-700">
                       <span className="font-medium">{fieldLabels[field]}:</span>{" "}
@@ -111,7 +111,7 @@ const EditProfile = ({ isOpen, onClose }) => {
         <EditChane
           isOpen={isDialogOpen}
           onClose={() => setIsDialogOpen(false)}
-          field={fieldLabels[editField]}
+          field={editField}
           value={user[editField]}
           onSave={handleSave}
         />

@@ -52,12 +52,37 @@ export const getSearchUser = async (name) => {
 
 // email,
 // phoneNumber,
-export const editUser = async (userData) => {
+export const editUser = async (userData) => { 
   try {
-    const response = await api.put("user/profile/update", userData); 
+    const response = await api.put("user/profile/update", userData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      withCredentials: true,
+    });
     return response.data;
   } catch (error) {
     console.error("Lỗi khi cập nhật:", error);
     return null;
+  }
+};
+export const editUserImage = async (formData) => {
+  try {
+    const response = await api.put("/user/profile/update", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      withCredentials: true, // Nếu API cần xác thực cookie
+    });
+
+    return response; // Trả về dữ liệu user mới
+  } catch (error) {
+    console.error(
+      "Lỗi khi cập nhật ảnh:",
+      error.response?.data || error.message
+    );
+    throw new Error(
+      error.response?.data?.message || "Có lỗi xảy ra khi cập nhật ảnh!"
+    );
   }
 };
