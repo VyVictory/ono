@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../components/context/AuthProvider";
 import { useSocketContext } from "../components/context/socketProvider";
 import { Avatar } from "@mui/material";
 
-const CallComponent = () => {
+const Call = () => {
   const { profile } = useAuth();
   const { partnerId } = useParams();
   const { socket } = useSocketContext();
@@ -20,21 +20,44 @@ const CallComponent = () => {
   let pendingCandidates = [];
 
   useEffect(() => {
+    const getMediaDevices = async () => {
+      try {
+        const userStream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
+        localStreamRef.current = userStream;
+        if (localVideoRef.current) {
+          localVideoRef.current.srcObject = userStream;
+        }
+      } catch (err) {
+        console.error("Lỗi lấy thiết bị media:", err);
+      }
+    };
+    getMediaDevices();
+  }, []);
+
+  useEffect(() => {
     if (!socket) return;
 
     socket.on("webrtcOffer", async ({ offer, senderId }) => {
       setIncomingCall(true);
       setCallerId(senderId);
-      peerRef.current = createPeer(false);
+      if (!peerRef.current) {
+        peerRef.current = createPeer(false);
+      }
       await peerRef.current.setRemoteDescription(new RTCSessionDescription(offer));
-      pendingCandidates.forEach(async (candidate) => {
-        await peerRef.current.addIceCandidate(new RTCIceCandidate(candidate));
-      });
-      pendingCandidates = [];
+      
+      if (pendingCandidates.length > 0) {
+        pendingCandidates.forEach(async (candidate) => {
+          await peerRef.current.addIceCandidate(new RTCIceCandidate(candidate));
+        });
+        pendingCandidates = [];
+      }
     });
 
     socket.on("webrtcCandidate", async ({ candidate }) => {
-      if (peerRef.current?.remoteDescription) {
+      if (peerRef.current && peerRef.current.remoteDescription) {
         await peerRef.current.addIceCandidate(new RTCIceCandidate(candidate));
       } else {
         pendingCandidates.push(candidate);
@@ -42,11 +65,9 @@ const CallComponent = () => {
     });
 
     socket.on("webrtcAnswer", async ({ answer }) => {
-      await peerRef.current.setRemoteDescription(new RTCSessionDescription(answer));
-      pendingCandidates.forEach(async (candidate) => {
-        await peerRef.current.addIceCandidate(new RTCIceCandidate(candidate));
-      });
-      pendingCandidates = [];
+      if (peerRef.current) {
+        await peerRef.current.setRemoteDescription(new RTCSessionDescription(answer));
+      }
     });
 
     return () => {
@@ -56,29 +77,34 @@ const CallComponent = () => {
     };
   }, [socket]);
 
-  useEffect(() => () => endCall(), []);
+  const createPeer = (isCaller) => {
+    const peer = new RTCPeerConnection({
+      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+    });
 
-  const createPeer = (isInitiator) => {
-    const peer = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
-    peer.onicecandidate = (event) => {
-      if (event.candidate) {
-        socket.emit("webrtcCandidate", { candidate: event.candidate, receiverId: partnerId });
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach((track) => peer.addTrack(track, localStreamRef.current));
+    }
+
+    peer.onicecandidate = (e) => {
+      if (e.candidate && socket) {
+        socket.emit("webrtcCandidate", { candidate: e.candidate, receiverId: partnerId });
       }
     };
-   
-    peer.ontrack = (event) => (remoteVideoRef.current.srcObject = event.streams[0] , console.log(event.streams[0]));
+    peer.ontrack = (e) => {
+      console.log("🎥 Nhận track:", e.streams);
+      if (e.streams.length > 0) {
+        remoteVideoRef.current.srcObject = e.streams[0];
+      }
+    };
     
-    if (isInitiator) {
-      navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-        localStreamRef.current = stream;
-        localVideoRef.current.srcObject = stream;
-        stream.getTracks().forEach((track) => peer.addTrack(track, stream));
-        peer.createOffer().then((offer) => {
-          peer.setLocalDescription(offer);
-          socket.emit("webrtcOffer", { offer, receiverId: partnerId });
-        });
+    if (isCaller) {
+      peer.createOffer().then((offer) => {
+        peer.setLocalDescription(offer);
+        socket.emit("webrtcOffer", { offer, receiverId: partnerId });
       });
     }
+
     return peer;
   };
 
@@ -92,19 +118,28 @@ const CallComponent = () => {
   const acceptCall = async () => {
     setIncomingCall(false);
     setCallStarted(true);
-    const answer = await peerRef.current.createAnswer();
-    await peerRef.current.setLocalDescription(answer);
-    socket.emit("webrtcAnswer", { answer, receiverId: callerId });
+    
+    if (!peerRef.current) {
+      peerRef.current = createPeer(false);
+    }
+    
+    if (peerRef.current.remoteDescription) {
+      const answer = await peerRef.current.createAnswer();
+      await peerRef.current.setLocalDescription(answer);
+      socket.emit("webrtcAnswer", { answer, receiverId: callerId });
+    } else {
+      console.error("Remote description chưa được thiết lập trước khi tạo answer.");
+    }
   };
 
   const endCall = () => {
-    peerRef.current?.close();
-    peerRef.current = null;
-    localStreamRef.current?.getTracks().forEach((track) => track.stop());
-    localStreamRef.current = null;
-    localVideoRef.current.srcObject = remoteVideoRef.current.srcObject = null;
     setCallStarted(false);
     setIncomingCall(false);
+    if (peerRef.current) {
+      peerRef.current.close();
+      peerRef.current = null;
+    }
+    if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
   };
 
   return (
@@ -131,4 +166,4 @@ const CallComponent = () => {
   );
 };
 
-export default CallComponent;
+export default Call;

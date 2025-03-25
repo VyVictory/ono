@@ -31,7 +31,7 @@ const AppRouter = () => (
         <Route path="/" element={<UserPage />} />
       </Route>
       <Route element={<ProtectedRoute />}>
-        <Route path="/call/:partnerId" element={<CallComponent />} />
+        {/* <Route path="/call/:partnerId" element={<CallComponent />} /> */}
         <Route path="/messages/*" element={<Messages />} />
         <Route path="/profile/*" element={<ProfileLayout />} />
       </Route>
