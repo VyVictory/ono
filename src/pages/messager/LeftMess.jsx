@@ -31,7 +31,7 @@ const LeftMess = () => {
   const scrollPositionRef = useRef(0);
   const fetchFriends = async (startIndex, limitCount, name, current) => {
     if (!current) {
-      setLoading(true);
+      setLoading(false);
     } else {
       setLoadingAdd(true);
     }
@@ -66,7 +66,7 @@ const LeftMess = () => {
       if (!current) {
         setLoading(true);
       } else {
-        setLoadingAdd(true);
+        setLoadingAdd(false);
       }
     }
   };
@@ -108,15 +108,17 @@ const LeftMess = () => {
   const handleScroll = () => {
     const bottom =
       listRef.current.clientHeight >
-      listRef.current.scrollHeight - listRef.current.scrollTop - 2; 
+      listRef.current.scrollHeight - listRef.current.scrollTop - 2;
     if (bottom && hasMore && loading) {
-      setStartIndex(startIndex + limitCount);
-      addList(
-        startIndex + limitCount,
-        limitCount,
-        name,
-        listRef.current.scrollTop
-      );
+      if (startIndex + limitCount < listChat.total) {
+        setStartIndex(startIndex + limitCount);
+        addList(
+          startIndex + limitCount,
+          limitCount,
+          name,
+          listRef.current.scrollTop
+        );
+      }
     }
   };
   const handleLinkToMess = (chane, id) => {
