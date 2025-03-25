@@ -140,7 +140,7 @@ const Profile = () => {
                     {friends?.friends?.map((_, index) => (
                       <div
                         key={index}
-                        className="w-8 h-8 border-white border rounded-full -ml-1"
+                        className="w-8 h-8 border-white border rounded-full mr-1"
                       >
                         <UserStatusIndicator
                           userId={_?._id}
