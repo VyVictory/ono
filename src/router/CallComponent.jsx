@@ -59,8 +59,7 @@ export default function CallComponent() {
         });
         
         
-
-        const iceCandidateQueue = [];
+ 
 
         peerConnection.current.onicecandidate = (event) => {
           if (event.candidate) {
@@ -77,36 +76,49 @@ export default function CallComponent() {
           }
         };
 
-        socket.on("answer", async (answer) => {
-          if (answer) {
-            try {
-              await peerConnection.current.setRemoteDescription(
-                new RTCSessionDescription(answer)
-              );
-
-              // Send queued ICE candidates after setting the remote description
-              while (iceCandidateQueue.length > 0) {
-                const candidate = iceCandidateQueue.shift();
-                socket.emit("ice-candidate", {
-                  candidate,
-                  receiverId: partnerId,
-                });
-              }
-            } catch (error) {
-              console.error("Error handling answer:", error);
+        socket.on("answer", async (data) => {
+          console.log("📥 Received answer:", data);
+          if (!data || !data.answer) {
+            console.error("❌ Received null or invalid answer:", data);
+            return;
+          }
+          try {
+            await peerConnection.current.setRemoteDescription(
+              new RTCSessionDescription(data.answer) // ✅ Fix: Access answer correctly
+            );
+        
+            // Send queued ICE candidates after setting the remote description
+            while (iceCandidateQueue.length > 0) {
+              const candidate = iceCandidateQueue.shift();
+              socket.emit("ice-candidate", {
+                candidate,
+                receiverId: partnerId,
+              });
             }
+          } catch (error) {
+            console.error("Error handling answer:", error);
           }
         });
+        
+        
 
-        socket.on("ice-candidate", async (candidate) => {
+        const iceCandidateQueue = [];
+
+        socket.on("ice-candidate", async (data) => {
+          if (!peerConnection.current.remoteDescription) {
+            console.warn("❌ Remote description not set yet, queuing ICE candidate:", data);
+            iceCandidateQueue.push(data.candidate);
+            return;
+          }
+          
           try {
-            await peerConnection.current.addIceCandidate(
-              new RTCIceCandidate(candidate)
-            );
+            await peerConnection.current.addIceCandidate(new RTCIceCandidate(data.candidate));
+            console.log("✅ Successfully added ICE Candidate:", data.candidate);
           } catch (error) {
             console.error("Error adding received ICE candidate:", error);
           }
         });
+        
       } catch (error) {
         console.error("Error accessing media devices:", error);
       }
