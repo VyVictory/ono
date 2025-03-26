@@ -61,43 +61,39 @@ export default function CallComponent() {
         
         
  
-
         peerConnection.current.onicecandidate = (event) => {
           if (event.candidate) {
             const candidate = event.candidate;
-            console.log("candidate",candidate)
-            if (peerConnection.current.remoteDescription) {
-              socket.emit("ice-candidate", {
-                candidate,
-                receiverId: partnerId,
-              });
-            } else {
-              iceCandidateQueue.push(event.candidate);
-            }
+            console.log(`📡 [MY ICE] Sending ICE Candidate:`, candidate);
+            
+            socket.emit("ice-candidate", {
+              candidate,
+              senderId: profile.id,  // Gửi ID của mình
+              receiverId: partnerId,
+            });
           }
         };
-
-        socket.on("answer", async (data) => {
-          console.log("📥 Received answer:", data);
-          if (!data || !data.answer) {
-            console.error("❌ Received null or invalid answer:", data);
-            return;
-          }
-          try {
-            await peerConnection.current.setRemoteDescription(
-              new RTCSessionDescription(data.answer) // ✅ Fix: Access answer correctly
-            );
         
-            // Send queued ICE candidates after setting the remote description
-            while (iceCandidateQueue.length > 0) {
-              const candidate = iceCandidateQueue.shift();
-              socket.emit("ice-candidate", {
-                candidate,
-                receiverId: partnerId,
-              });
+
+        socket.on("answer", async (answer) => {
+          if (answer) {
+            try {
+              await peerConnection.current.setRemoteDescription(new RTCSessionDescription(answer));
+              console.log("📥 Remote description set from answer");
+        
+              // ✅ Process queued ICE candidates after setting remote description
+              while (iceCandidateQueue.length > 0) {
+                const candidate = iceCandidateQueue.shift();
+                try {
+                  await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
+                  console.log("✅ Successfully added queued ICE Candidate:", candidate);
+                } catch (error) {
+                  console.error("❌ Error adding queued ICE candidate:", error);
+                }
+              }
+            } catch (error) {
+              console.error("Error handling answer:", error);
             }
-          } catch (error) {
-            console.error("Error handling answer:", error);
           }
         });
         
@@ -106,19 +102,29 @@ export default function CallComponent() {
 
 
         socket.on("ice-candidate", async (data) => {
+          if (!data || !data.candidate) return;
+          
+          if (data.senderId === profile.id) {
+            console.log(`👤 [MY ICE] Ignoring my own ICE Candidate:`, data.candidate);
+            return;
+          }
+        
+          console.log(`📥 [PARTNER ICE] Received ICE Candidate from ${data.senderId}:`, data.candidate);
+        
           if (!peerConnection.current.remoteDescription) {
-            console.warn("❌ Remote description not set yet, queuing ICE candidate:", data);
+            console.warn("⚠️ Remote description not set yet, queuing ICE candidate:", data.candidate);
             iceCandidateQueue.push(data.candidate);
             return;
           }
-          
+        
           try {
             await peerConnection.current.addIceCandidate(new RTCIceCandidate(data.candidate));
-            console.log("✅ Successfully added ICE Candidate:", data.candidate);
+            console.log("✅ Successfully added received ICE Candidate:", data.candidate);
           } catch (error) {
-            console.error("Error adding received ICE candidate:", error);
+            console.error("❌ Error adding received ICE candidate:", error);
           }
         });
+        
         
       } catch (error) {
         console.error("Error accessing media devices:", error);
