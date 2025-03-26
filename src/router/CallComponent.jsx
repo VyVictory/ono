@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSocketContext } from "../components/context/socketProvider";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../components/context/AuthProvider";
+const iceCandidateQueue = [];
 export default function CallComponent() {
   const { profile } = useAuth();
   const { socket } = useSocketContext();
@@ -102,7 +103,7 @@ export default function CallComponent() {
         
         
 
-        const iceCandidateQueue = [];
+
 
         socket.on("ice-candidate", async (data) => {
           if (!peerConnection.current.remoteDescription) {
