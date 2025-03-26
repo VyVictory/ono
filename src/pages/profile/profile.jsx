@@ -83,7 +83,7 @@ const Profile = () => {
       </div>
     );
   }
-  console.log(profileRender);
+  //console.log(profileRender);
   return (
     <div className="NavbarUser ">
       <div className="w-full  flex-col relative min-h-screen ">

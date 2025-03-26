@@ -154,9 +154,9 @@ const Messages = () => {
               </>
             )}
           </div>
-          {/* <a href={`/call/${profileUser?._id}`}>
+          <a href={`/call/${profileUser?._id}`}>
             <FcCellPhone className="h-12 w-12" />
-          </a> */}
+          </a>
           {/* lớn thì hiện */}
           <div className="flex items-center justify-center pl-2">
             <button className="xl:hidden">
