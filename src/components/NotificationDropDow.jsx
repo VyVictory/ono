@@ -16,10 +16,11 @@ import { useAuth } from "./context/AuthProvider";
 import { getNotifications, readNotification } from "../service/notification";
 import UserStatusIndicator from "./UserStatusIndicator";
 import { useNavigate } from "react-router-dom";
+import { useSocketContext } from "./context/socketProvider";
 const NotificationDropDow = () => {
   const [isOpen, setIsOpen] = useState(false);
   const isFetchNotifi = useRef(false);
-
+  const { newNotifi, setNewNotifi } = useSocketContext();
   const { profile } = useAuth();
   const [notifications, setNotifications] = useState([]); // đây là mảng {unreadCount, notifications[]}
   const containerRef = useRef(null);
@@ -39,6 +40,22 @@ const NotificationDropDow = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+  useEffect(() => {
+    if (newNotifi && profile) {
+      setNotifications((prevNotifications) => ({
+        ...prevNotifications,
+        unreadCount: prevNotifications.unreadCount + 1,
+        notifications: [
+          {
+            date: new Date().toISOString().split("T")[0], // Ngày hiện tại
+            notifications: [newNotifi, ...(prevNotifications.notifications[0]?.notifications || [])],
+          },
+          ...prevNotifications.notifications.slice(1),
+        ],
+      }));
+    }
+  }, [newNotifi, profile]);
+  
   useEffect(() => {
     const fetchNotifications = async () => {
       if (isFetchNotifi.current) return; // Kiểm tra isFetchNotifi bằng ref
@@ -70,7 +87,6 @@ const NotificationDropDow = () => {
       return;
     }
   }; 
-
   return (
     <div
       className="relative w-full h-full flex justify-center"
@@ -160,7 +176,7 @@ const FriendShip = ({ data }) => {
       <Button
         href="#"
         className="flex px-4 py-2 w-full rounded-md items-center hover:scale-105 hover:bg-gray-200 gap-1"
-      > 
+      >
         <UserStatusIndicator
           userId={data?.sender?._id}
           userData={data?.sender}

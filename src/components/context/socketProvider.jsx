@@ -55,22 +55,23 @@ export const SocketProvider = ({ children }) => {
       reconnectionDelay: 2000,
       transports: ["websocket"],
     });
-  
+
     newSocket.on("connect", () => {
       console.log("✅ Connected to socket:", newSocket.id);
       setSocket(newSocket); // 🔹 Cập nhật socket ngay khi kết nối thành công
       newSocket.emit("authenticate", profile?._id);
     });
-  
+
     newSocket.on("disconnect", (reason) => {
       console.error("❌ Socket disconnected", reason);
       setSocket(null); // 🚨 Cập nhật lại socket khi mất kết nối
     });
-  
+
     return () => newSocket.disconnect();
   }, [profile]);
-  
+
   const [newMessInbox, setNewMessInbox] = useState(null);
+  const [newNotifi, setNewNotifi] = useState(null);
   const [recallMessId, setRecallMessId] = useState(null);
   const [idUser, setIdUser] = useState(null);
   const location = useLocation();
@@ -122,6 +123,10 @@ export const SocketProvider = ({ children }) => {
     // socket.on("messagesSeen", (data) => {
     //   console.log("Messages seen:", data.messages);
     // });
+    const handleNewNotifi = (data) => {
+      setNewNotifi(data);
+    };
+    socket.on("notification", handleNewNotifi);
     socket.on("messageRecalled", handleRecallMessage);
     return () => {
       socket.off("newMessage", handleNewMessage);
@@ -133,7 +138,14 @@ export const SocketProvider = ({ children }) => {
 
   return (
     <SocketContext.Provider
-      value={{ newMessInbox, recallMessId, setRecallMessId, socket }}
+      value={{
+        newMessInbox,
+        recallMessId,
+        setRecallMessId,
+        socket,
+        newNotifi,
+        setNewNotifi,
+      }}
     >
       {children}
     </SocketContext.Provider>
