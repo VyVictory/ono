@@ -36,18 +36,19 @@ export default function CallComponent() {
         peerConnection.current.onicecandidate = (event) => {
           if (event.candidate) {
             const candidate = event.candidate;
+            console.log("candidate",candidate)
             socket.emit("ice-candidate", { candidate, receiverId: partnerId });
           }
         };
         socket.on("offer", async (data) => {
-          console.log("📥 Received offer:", data); // Debugging log
-          if (!data) {
+          console.log("📥 Received offer:", data);
+          if (!data || !data.offer) {
             console.error("❌ Received null or invalid offer:", data);
             return;
           }
           try {
             await peerConnection.current.setRemoteDescription(
-              new RTCSessionDescription(data)
+              new RTCSessionDescription(data.offer) // ✅ FIXED
             );
             const answer = await peerConnection.current.createAnswer();
             await peerConnection.current.setLocalDescription(answer);
@@ -56,12 +57,15 @@ export default function CallComponent() {
             console.error("Error handling offer:", error);
           }
         });
+        
+        
 
         const iceCandidateQueue = [];
 
         peerConnection.current.onicecandidate = (event) => {
           if (event.candidate) {
             const candidate = event.candidate;
+            console.log("candidate",candidate)
             if (peerConnection.current.remoteDescription) {
               socket.emit("ice-candidate", {
                 candidate,
