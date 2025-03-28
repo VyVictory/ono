@@ -29,7 +29,7 @@ const AppRouter = () => (
     <Route element={<Layout />}>
       <Route element={<HomeLayout />}>
         <Route path="/" element={<UserPage />} />
-        <Route path="/call" element={<VideoCall />} />
+        <Route path="/call/:partnerId" element={<VideoCall />} />
       </Route>
       <Route element={<ProtectedRoute />}>
         <Route path="/messages/*" element={<Messages />} />

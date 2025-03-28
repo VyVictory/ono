@@ -145,6 +145,7 @@ export const SocketProvider = ({ children }) => {
         socket,
         newNotifi,
         setNewNotifi,
+        userId: profile?._id,
       }}
     >
       {children}
