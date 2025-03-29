@@ -1,124 +1,122 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Dialog } from "@headlessui/react";
+import { Button, Dialog } from "@headlessui/react";
 import { Paper } from "@mui/material";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import SimplePeer from "simple-peer";
 import { useCall } from "../context/CallProvider";
 import { useSocketContext } from "../context/socketProvider";
+import { useConfirm } from "../context/ConfirmProvider";
+import { set } from "date-fns";
 const CallModel = ({ isOpen, onClose, id }) => {
   const { socket } = useSocketContext();
-  const { incomingCall, setIncomingCall } = useCall();
-  const [myId, setMyId] = useState("");
-  const [partnerId, setPartnerId] = useState("");
+  const { incomingCall, setIncomingCall, isAccept, setIsAccept } = useCall();
   const [stream, setStream] = useState(null);
-  const myVideoRef = useRef();
-  const partnerVideoRef = useRef();
+  const myVideoRef = useRef(null);
+  const partnerVideoRef = useRef(null);
+  const [isStart, setIsStart] = useState(false);
   const peerRef = useRef(null);
   useEffect(() => {
-    if (!id) return;
-    setPartnerId(id);
-  }, [id]);
-
-  useEffect(() => {
     if (!socket) return;
-
-    setMyId(socket.id);
-    socket.on("end-call", cleanupCall);
-    socket.on("offer", handleReceiveOffer);
+    socket.on("call-accept", handleCallAccept);
     socket.on("answer", handleReceiveAnswer);
     socket.on("ice-candidate", handleNewICECandidate);
 
+    socket.on("end-call", cleanupCall);
     return () => {
-      socket.off("offer", handleReceiveOffer);
+      socket.off("call-accept", handleCallAccept);
       socket.off("answer", handleReceiveAnswer);
       socket.off("ice-candidate", handleNewICECandidate);
+
       socket.off("end-call", cleanupCall);
     };
   }, [socket]);
+  useEffect(() => {
+    if (!isStart) return;
+    if (!id) return;
+    startCall();
+    return () => {
+      if (peerRef.current) {
+        peerRef.current.destroy();
+        peerRef.current = null;
+      }
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+        setStream(null);
+      }
+    };
+  }, [isStart]);
+  useEffect(() => {
+    if (!isAccept) return;
+    if (!id) return;
+    acceptCall();
+    return () => {
+      if (peerRef.current) {
+        peerRef.current.destroy();
+        peerRef.current = null;
+      }
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+        setStream(null);
+      }
+    };
+  }, [isAccept, id]); // Ensure `id` is included
+  const handleCallAccept = ({ caller, status }) => { 
+    console.log("Cuộc gọi từ:", caller, "đã được chấp nhận:", status);
+    if (!status) {
+      toast.error("Cuộc gọi bị từ chối!");
+      cleanupCall();
+    } else {
+      toast.success("Cuộc gọi được chấp nhận!");
+    }
+  };
 
   const startCall = async () => {
-    console.log("startCall");
-
+    if (!id) return;
     try {
       const userStream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true,
       });
-
       setStream(userStream);
-      if (myVideoRef.current) {
-        myVideoRef.current.srcObject = userStream;
-      }
+      if (myVideoRef.current) myVideoRef.current.srcObject = userStream;
 
-      // Khởi tạo peer trước khi gọi bất kỳ sự kiện nào trên nó
       peerRef.current = new SimplePeer({
         initiator: true,
         trickle: false,
         stream: userStream,
       });
 
-      // Kiểm tra nếu peerRef đã tồn tại trước khi gán sự kiện
-      if (!peerRef.current) {
-        console.error("Peer connection failed to initialize.");
-        return;
-      }
-
-      peerRef.current.on("error", (err) => {
-        console.error("WebRTC Error:", err);
-        alert("Kết nối bị gián đoạn, vui lòng thử lại!");
-      });
-
       peerRef.current.on("signal", (data) => {
-        socket.emit("offer", { target: partnerId, sdp: data });
+        socket.emit("offer", { target: id, sdp: data });
       });
 
       peerRef.current.on("stream", (remoteStream) => {
-        if (partnerVideoRef.current) {
+        if (partnerVideoRef.current)
           partnerVideoRef.current.srcObject = remoteStream;
-        }
       });
 
-      peerRef.current.on("ice-candidate", (candidate) => {
-        socket.emit("ice-candidate", { target: partnerId, candidate });
+      peerRef.current.on("error", (err) => {
+        console.error("WebRTC Error:", err);
+        toast.error("Lỗi kết nối, vui lòng thử lại!");
+        cleanupCall();
       });
     } catch (error) {
-      console.error("Error accessing media devices:", error);
+      console.error("Lỗi truy cập thiết bị:", error);
+      toast.error("Không thể truy cập camera/micro!");
     }
   };
 
-  const handleReceiveOffer = ({ sdp, caller }) => {
-    if (!sdp || !caller) return;
-    setIncomingCall({ sdp, caller });
-  }; 
-  const cleanupCall = () => {
-    console.log("cleanupCall");
-    if (socket && partnerId) { 
-      socket.emit("end-call", { target: partnerId });
-    }
-    if (peerRef.current) {
-      peerRef.current.destroy();
-      peerRef.current = null;
-    }
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-      setStream(null);
-    }
-    onClose();
-  };
-  // Khi người nhận bấm nút nhận
   const acceptCall = async () => {
-    if (!incomingCall || !incomingCall.sdp || !incomingCall.caller) return;
+    if (!incomingCall) return;
+
     try {
       const userStream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true,
       });
-
       setStream(userStream);
-      if (myVideoRef.current) {
-        myVideoRef.current.srcObject = userStream;
-      }
+      if (myVideoRef.current) myVideoRef.current.srcObject = userStream;
 
       peerRef.current = new SimplePeer({
         initiator: false,
@@ -129,92 +127,99 @@ const CallModel = ({ isOpen, onClose, id }) => {
       peerRef.current.signal(incomingCall.sdp);
 
       peerRef.current.on("signal", (data) => {
-        if (socket) {
-          socket.emit("answer", { target: incomingCall.caller, sdp: data });
-        }
+        socket.emit("answer", { target: incomingCall.caller, sdp: data });
       });
 
       peerRef.current.on("stream", (remoteStream) => {
-        if (partnerVideoRef.current) {
+        if (partnerVideoRef.current)
           partnerVideoRef.current.srcObject = remoteStream;
-        }
       });
 
-      setIncomingCall(null); // Xóa thông báo cuộc gọi
+      peerRef.current.on("error", (err) => {
+        console.error("WebRTC Error:", err);
+        toast.error("Lỗi kết nối, vui lòng thử lại!");
+        cleanupCall();
+      });
+
+      setIncomingCall(null);
     } catch (error) {
       console.error("Lỗi khi truy cập thiết bị:", error);
+      toast.error("Không thể truy cập camera/micro!");
     }
   };
 
   const handleReceiveAnswer = ({ sdp }) => {
-    if (!sdp || !peerRef.current) return;
+    if (!peerRef.current || !sdp) return;
     peerRef.current.signal(sdp);
   };
 
-  const handleNewICECandidate = (data) => {
-    if (!data || !data.candidate || !peerRef.current) return;
-    peerRef.current.signal(data.candidate);
+  const handleNewICECandidate = ({ candidate }) => {
+    if (peerRef.current && candidate) {
+      peerRef.current.signal(candidate);
+    }
   };
-  if (!id) return <></>;
 
+  const cleanupCall = () => {
+    if (socket && id) {
+      socket.emit("end-call", { target: id });
+    }
+    if (peerRef.current) {
+      peerRef.current.destroy();
+      peerRef.current = null;
+    }
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+      setStream(null);
+    }
+    setIncomingCall(null);
+    onClose();
+  };
+  if (!id) return null;
   return (
     <>
-      <Dialog open={isOpen} onClose={cleanupCall}>
-        <motion.div
-          initial={{ opacity: 0, scale: 1 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ duration: 0.2, ease: "linear" }}
-          className="fixed inset-0 flex items-center justify-center   bg-opacity-50 bg-black px-4 lg:px-0 z-50"
-          onClick={cleanupCall}
-        >
-          <Paper
-            onClick={(e) => e.stopPropagation()}
-            className="w-96 max-w-[90dvh] border-2"
+      {/* Modal gọi điện (mở sau khi chấp nhận) */}
+      {isOpen && id && (
+        <Dialog open={isOpen} onClose={cleanupCall}>
+          <motion.div
+            initial={{ opacity: 0, scale: 1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2, ease: "linear" }}
+            className="fixed inset-0 flex items-center justify-center bg-opacity-50 bg-black px-4 lg:px-0 z-50"
+            onClick={cleanupCall}
           >
-            <div className="p-4">
-              {incomingCall && (
-                <div className="p-4 bg-yellow-100 border">
-                  <p>Cuộc gọi đến từ {incomingCall.caller}</p>
-                  <button
-                    onClick={acceptCall}
-                    className="p-2 bg-green-500 text-white rounded"
-                  >
-                    Chấp nhận
-                  </button>
-                </div>
-              )}
-              <h2>My ID: {myId}</h2>
-              {/* <input
-                type="text"
-                placeholder="Nhập ID đối tác"
-                value={partnerId}
-                onChange={(e) => setPartnerId(e.target.value)}
-              /> */}
-              <button
-                onClick={startCall}
-                className="p-2 bg-blue-500 text-white rounded"
-              >
-                Gọi
-              </button>
+            <Paper
+              onClick={(e) => e.stopPropagation()}
+              className="w-96 max-w-[90dvh] border-2"
+            >
+              <div className="p-4">
+                <button
+                  onClick={() => {
+                    setIsStart(true);
+                  }}
+                  className="p-2 bg-blue-500 text-white rounded"
+                >
+                  📞 Gọi
+                </button>
 
-              <div className="mt-4 flex gap-4">
-                <video
-                  ref={myVideoRef}
-                  autoPlay
-                  muted
-                  className="w-1/2 border rounded"
-                />
-                <video
-                  ref={partnerVideoRef}
-                  autoPlay
-                  className="w-1/2 border rounded"
-                />
+                <div className="mt-4 flex gap-4">
+                  <video
+                    ref={myVideoRef}
+                    autoPlay
+                    muted
+                    className="w-1/2 border rounded"
+                  />
+                  <video
+                    ref={partnerVideoRef}
+                    autoPlay
+                    className="w-1/2 border rounded"
+                  />
+                </div>
               </div>
-            </div>
-          </Paper>
-        </motion.div>
-      </Dialog>
+            </Paper>
+          </motion.div>
+        </Dialog>
+      )}
     </>
   );
 };

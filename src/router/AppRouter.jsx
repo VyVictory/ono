@@ -47,8 +47,7 @@ const App = () => {
           <ToastContainer
             position="top-left"
             className="toast-container "
-            style={{ marginTop: "20px", paddingRight: "60px" }}
-            autoClose={3000}
+            style={{ marginTop: "20px", paddingRight: "60px" }} 
             limit={3}
           />
         </MainProvider>
