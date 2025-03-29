@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import SimplePeer from "simple-peer";
-import { useSocketContext } from "../components/context/socketProvider";
+import { useSocketContext } from "./context/socketProvider";
 
 const VideoCall = () => {
   const { socket } = useSocketContext();

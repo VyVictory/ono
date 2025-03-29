@@ -13,23 +13,18 @@ import { useNavigate } from "react-router-dom";
 
 import UseMessageInfo from "./UseMessageInfo";
 import InputMessage from "./InputMessage";
-import { getCurrentUser } from "../../service/user";
-
-import socketConfig from "../../service/socket/socketConfig";
+import { getCurrentUser } from "../../service/user"; 
 import UserStatusIndicator from "../../components/UserStatusIndicator";
 import { ButtonBase, Paper } from "@mui/material";
-import LeftMess from "./LeftMess";
-import { FcCellPhone } from "react-icons/fc";
-import { Phone } from "@mui/icons-material";
-import { useModule } from "../../components/context/Module";
+import LeftMess from "./LeftMess"; 
+import { Phone } from "@mui/icons-material"; 
+import { useCall } from "../../components/context/CallProvider";
 const Messages = () => {
-  const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const { setUsecase, usecase, setCallId } = useModule();
-  const [isRightbarOpen, setRightbarOpen] = useState(false);
-  const [screenHeight, setScreenHeight] = useState(window?.innerHeight);
+  const [isSidebarOpen, setSidebarOpen] = useState(false); 
+  const { setCallId } = useCall();
+  const [isRightbarOpen, setRightbarOpen] = useState(false); 
   const [profileUser, setProfileUser] = useState(null);
-  const [isRightbarOpen1, setRightbarOpen1] = useState(true);
-  const navigate = useNavigate();
+  const [isRightbarOpen1, setRightbarOpen1] = useState(true); 
   const MessMenuLeft = useRef(null);
   const MessMenuRight = useRef(null);
   const { type, id } = UseMessageInfo();
@@ -37,15 +32,7 @@ const Messages = () => {
 
   const handleNewMessage = (newMessage) => {
     setMessages(newMessage); // ✅ Cập nhật tin nhắn mới, xoá danh sách cũ
-  };
-  useEffect(() => {
-    const updateHeight = () => setScreenHeight(window?.innerHeight);
-    window?.addEventListener("resize", updateHeight);
-
-    return () => window?.removeEventListener("resize", updateHeight);
-  }, []);
-  // console.log("Loại tin nhắn:", type);
-  // console.log("ID:", id);
+  };  
 
   UseClickOutside(MessMenuLeft, () => setSidebarOpen(false));
   UseClickOutside(MessMenuRight, () => setRightbarOpen(false));
@@ -158,8 +145,7 @@ const Messages = () => {
             )}
           </div>
           <a
-            onClick={() => {
-              setUsecase("Call");
+            onClick={() => { 
               setCallId(profileUser._id);
             }}
           >

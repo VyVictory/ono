@@ -4,24 +4,27 @@ import { Paper } from "@mui/material";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import SimplePeer from "simple-peer";
-
-const CallModel = ({ isOpen, onClose, id, socket }) => {
+import { useCall } from "../context/CallProvider";
+import { useSocketContext } from "../context/socketProvider";
+const CallModel = ({ isOpen, onClose, id }) => {
+  const { socket } = useSocketContext();
+  const { incomingCall, setIncomingCall } = useCall();
   const [myId, setMyId] = useState("");
   const [partnerId, setPartnerId] = useState("");
   const [stream, setStream] = useState(null);
   const myVideoRef = useRef();
   const partnerVideoRef = useRef();
   const peerRef = useRef(null);
-  const [incomingCall, setIncomingCall] = useState(null);
   useEffect(() => {
     if (!id) return;
     setPartnerId(id);
   }, [id]);
+
   useEffect(() => {
     if (!socket) return;
 
     setMyId(socket.id);
-
+    socket.on("end-call", cleanupCall);
     socket.on("offer", handleReceiveOffer);
     socket.on("answer", handleReceiveAnswer);
     socket.on("ice-candidate", handleNewICECandidate);
@@ -30,6 +33,7 @@ const CallModel = ({ isOpen, onClose, id, socket }) => {
       socket.off("offer", handleReceiveOffer);
       socket.off("answer", handleReceiveAnswer);
       socket.off("ice-candidate", handleNewICECandidate);
+      socket.off("end-call", cleanupCall);
     };
   }, [socket]);
 
@@ -86,12 +90,25 @@ const CallModel = ({ isOpen, onClose, id, socket }) => {
   const handleReceiveOffer = ({ sdp, caller }) => {
     if (!sdp || !caller) return;
     setIncomingCall({ sdp, caller });
+  }; 
+  const cleanupCall = () => {
+    console.log("cleanupCall");
+    if (socket && partnerId) { 
+      socket.emit("end-call", { target: partnerId });
+    }
+    if (peerRef.current) {
+      peerRef.current.destroy();
+      peerRef.current = null;
+    }
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+      setStream(null);
+    }
+    onClose();
   };
-
   // Khi người nhận bấm nút nhận
   const acceptCall = async () => {
     if (!incomingCall || !incomingCall.sdp || !incomingCall.caller) return;
-
     try {
       const userStream = await navigator.mediaDevices.getUserMedia({
         video: true,
@@ -142,14 +159,14 @@ const CallModel = ({ isOpen, onClose, id, socket }) => {
 
   return (
     <>
-      <Dialog open={isOpen} onClose={onClose}>
+      <Dialog open={isOpen} onClose={cleanupCall}>
         <motion.div
           initial={{ opacity: 0, scale: 1 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.2, ease: "linear" }}
           className="fixed inset-0 flex items-center justify-center   bg-opacity-50 bg-black px-4 lg:px-0 z-50"
-          onClick={onClose}
+          onClick={cleanupCall}
         >
           <Paper
             onClick={(e) => e.stopPropagation()}

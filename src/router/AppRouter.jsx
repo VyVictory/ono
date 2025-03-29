@@ -13,23 +13,16 @@ import UserPage from "../pages/UserPage";
 import Messages from "../pages/messager/Messages.jsx";
 import { useAuth } from "../components/context/AuthProvider.jsx";
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-// import Profile from "../pages/profile/profile.jsx";
-import Profile from "../pages/profile/profile.jsx";
-// import Test from "../pages/test.jsx";
-
-import { useEffect } from "react";
-import ProfileLayout from "../Layout/ProfileLayout.jsx";
-import { PhotoSwipeProvider } from "../components/context/PhotoSwipeProvider.jsx";
+import "react-toastify/dist/ReactToastify.css";  
+import ProfileLayout from "../Layout/ProfileLayout.jsx"; 
 import HomeLayout from "../Layout/HomeLayout.jsx";
-import ProtectedRoute from "./ProtectedRoute.jsx";
-import VideoCall from "./VideoCall.jsx";
+import ProtectedRoute from "./ProtectedRoute.jsx"; 
+import { MainProvider } from "./MainProvider.jsx";
 const AppRouter = () => (
   <Routes>
     <Route element={<Layout />}>
       <Route element={<HomeLayout />}>
-        <Route path="/" element={<UserPage />} />
-        <Route path="/call/:partnerId" element={<VideoCall />} />
+        <Route path="/" element={<UserPage />} /> 
       </Route>
       <Route element={<ProtectedRoute />}>
         <Route path="/messages/*" element={<Messages />} />
@@ -46,20 +39,21 @@ const AppRouter = () => (
 const App = () => {
   const { showLogin, setShowLogin } = useAuth();
 
-  return (
-    <PhotoSwipeProvider>
+  return ( 
       <Router>
-        {showLogin && <Auth />}
-        <AppRouter />{" "}
-        <ToastContainer
-          position="top-left"
-          className="toast-container "
-          style={{ marginTop: "20px", paddingRight: "60px" }}
-          autoClose={3000}
-          limit={3}
-        />
+        <MainProvider>
+          {showLogin && <Auth />}
+          <AppRouter />{" "}
+          <ToastContainer
+            position="top-left"
+            className="toast-container "
+            style={{ marginTop: "20px", paddingRight: "60px" }}
+            autoClose={3000}
+            limit={3}
+          />
+        </MainProvider>
       </Router>
-    </PhotoSwipeProvider>
+
   );
 };
 

@@ -140,14 +140,14 @@ const Inbox = ({ newmess }) => {
     }
   }, [messagesByDay, isLoadingProfile]);
   useEffect(() => {
-    if (!containerRefMess.current) return;
+    if (!containerRefMess?.current) return;
 
     let timeoutId; // Biến để lưu `setTimeout`
 
-    const handleScroll = async () => {
+    const handleScroll = async () => { 
       const { scrollTop, scrollHeight, clientHeight } =
-        containerRefMess.current;
-
+        containerRefMess?.current;
+      if( scrollTop, scrollHeight, clientHeight === undefined) return;
       // Kiểm tra có cần hiển thị nút cuộn xuống không
       setShowScrollButton(scrollTop < scrollHeight - clientHeight - 150);
 
