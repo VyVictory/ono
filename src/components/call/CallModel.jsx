@@ -61,7 +61,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
       }
     };
   }, [isAccept, id]); // Ensure `id` is included
-  const handleCallAccept = ({ caller, status }) => { 
+  const handleCallAccept = ({ caller, status }) => {
     console.log("Cuộc gọi từ:", caller, "đã được chấp nhận:", status);
     if (!status) {
       toast.error("Cuộc gọi bị từ chối!");
