@@ -20,8 +20,11 @@ import UserStatusIndicator from "../../components/UserStatusIndicator";
 import { ButtonBase, Paper } from "@mui/material";
 import LeftMess from "./LeftMess";
 import { FcCellPhone } from "react-icons/fc";
+import { Phone } from "@mui/icons-material";
+import { useModule } from "../../components/context/Module";
 const Messages = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const { setUsecase, usecase, setCallId } = useModule();
   const [isRightbarOpen, setRightbarOpen] = useState(false);
   const [screenHeight, setScreenHeight] = useState(window?.innerHeight);
   const [profileUser, setProfileUser] = useState(null);
@@ -154,8 +157,13 @@ const Messages = () => {
               </>
             )}
           </div>
-          <a href={`/call/${profileUser?._id}`}>
-            <FcCellPhone className="h-12 w-12" />
+          <a
+            onClick={() => {
+              setUsecase("Call");
+              setCallId(profileUser._id);
+            }}
+          >
+            <Phone className="w-12 h-12 text-blue-400" />
           </a>
           {/* lớn thì hiện */}
           <div className="flex items-center justify-center pl-2">

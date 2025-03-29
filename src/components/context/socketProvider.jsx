@@ -130,7 +130,7 @@ export const SocketProvider = ({ children }) => {
     socket.on("messageRecalled", handleRecallMessage);
     return () => {
       socket.off("newMessage", handleNewMessage);
-      socket.off("messageRecalled", handleNewMessage);
+      socket.off("messageRecalled", handleRecallMessage);
       // socket.off("messagesDelivered");
       // socket.off("messagesSeen");
     };
