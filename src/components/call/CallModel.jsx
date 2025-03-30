@@ -6,13 +6,17 @@ import { motion } from "framer-motion";
 import SimplePeer from "simple-peer";
 import { useCall } from "../context/CallProvider";
 import { useSocketContext } from "../context/socketProvider";
+import { useConfirm } from "../context/ConfirmProvider";
 const CallModel = ({ isOpen, onClose, id }) => {
+ 
   const { socket } = useSocketContext();
+  const confirm = useConfirm();
+
   const { incomingCall, setIncomingCall, isAccept, setIsAccept } = useCall();
   const [stream, setStream] = useState(null);
+  const [cssOpen, setCssOpen] = useState('');
   const myVideoRef = useRef(null);
-  const partnerVideoRef = useRef(null);
-  const [isStart, setIsStart] = useState(false);
+  const partnerVideoRef = useRef(null); 
   const peerRef = useRef(null);
   useEffect(() => {
     if (!socket) return;
@@ -30,8 +34,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
     };
   }, [socket]);
   useEffect(() => {
-    if (!isStart) return;
-    if (!id) return;
+    if (!id || isAccept) return;
     startCall();
     return () => {
       if (peerRef.current) {
@@ -43,7 +46,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
         setStream(null);
       }
     };
-  }, [isStart]);
+  }, [id]);
   useEffect(() => {
     if (!isAccept) return;
     if (!id) return;
@@ -71,6 +74,12 @@ const CallModel = ({ isOpen, onClose, id }) => {
 
   const startCall = async () => {
     if (!id) return;
+    const isConfirmed = await confirm("Bạn có chắc muốn gọi?");
+    if (!isConfirmed) {
+      cleanupCall();
+      return;
+    }
+    setIsAccept(true);
     try {
       const userStream = await navigator.mediaDevices.getUserMedia({
         video: true,
@@ -95,11 +104,13 @@ const CallModel = ({ isOpen, onClose, id }) => {
       });
 
       peerRef.current.on("error", (err) => {
+        cleanupCall();
         console.error("WebRTC Error:", err);
         toast.error("Lỗi kết nối, vui lòng thử lại!");
         cleanupCall();
       });
     } catch (error) {
+      cleanupCall(  );
       console.error("Lỗi truy cập thiết bị:", error);
       toast.error("Không thể truy cập camera/micro!");
     }
@@ -134,6 +145,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
       });
 
       peerRef.current.on("error", (err) => {
+        cleanupCall();
         console.error("WebRTC Error:", err);
         toast.error("Lỗi kết nối, vui lòng thử lại!");
         cleanupCall();
@@ -142,6 +154,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
       setIncomingCall(null);
     } catch (error) {
       console.error("Lỗi khi truy cập thiết bị:", error);
+      cleanupCall();
       toast.error("Không thể truy cập camera/micro!");
     }
   };
@@ -161,18 +174,30 @@ const CallModel = ({ isOpen, onClose, id }) => {
     if (socket && id) {
       socket.emit("end-call", { target: id });
     }
+
     if (peerRef.current) {
       peerRef.current.destroy();
       peerRef.current = null;
     }
+
     if (stream) {
       stream.getTracks().forEach((track) => track.stop());
       setStream(null);
     }
+
+    // Xóa nguồn stream khỏi video elements
+    if (myVideoRef.current) {
+      myVideoRef.current.srcObject = null;
+    }
+    if (partnerVideoRef.current) {
+      partnerVideoRef.current.srcObject = null;
+    }
+    setIsAccept(null);
     setIncomingCall(null);
     onClose();
   };
-  if (!id) return null;
+
+  if (!id || !isAccept) return null;
   return (
     <>
       {/* Modal gọi điện (mở sau khi chấp nhận) */}
@@ -183,23 +208,14 @@ const CallModel = ({ isOpen, onClose, id }) => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2, ease: "linear" }}
-            className="fixed inset-0 flex items-center justify-center bg-opacity-50 bg-black px-4 lg:px-0 z-50"
+            className="fixed inset-0 flex items-center justify-center bg-opacity-50 bg-black lg:px-0 z-50"
             onClick={cleanupCall}
           >
             <Paper
               onClick={(e) => e.stopPropagation()}
-              className="w-96 max-w-[90dvh] border-2"
+              className="max-w-[100dvh] lg:max-w-[90dvh] h-full max-h-[100dvh] lg:max-h-[80dvh] border-2 relative"
             >
               <div className="p-4">
-                <button
-                  onClick={() => {
-                    setIsStart(true);
-                  }}
-                  className="p-2 bg-blue-500 text-white rounded"
-                >
-                  📞 Gọi
-                </button>
-
                 <div className="mt-4 flex gap-4">
                   <video
                     ref={myVideoRef}
@@ -210,7 +226,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
                   <video
                     ref={partnerVideoRef}
                     autoPlay
-                    className="w-1/2 border rounded"
+                    className="w-1/2 absolute bottom-0 left-0 border rounded"
                   />
                 </div>
               </div>

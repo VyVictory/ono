@@ -16,7 +16,8 @@ import { useConfirm } from "./context/ConfirmProvider";
 import { toast } from "react-toastify";
 const AddFriend = ({ profile }) => {
   const [loading, setLoading] = useState(false);
-  const confirm = useConfirm();
+  const confirm = useConfirm(); // Sửa lại như trong AddFriend
+
   const [friendStatus, setFriendStatus] = useState(profile.friendStatus); // ✅ Thêm state lưu trạng thái
 
   useEffect(() => {
@@ -67,7 +68,7 @@ const AddFriend = ({ profile }) => {
     }
   };
   const adFriend = async () => {
-    const isConfirmed = await confirm("Bạn có chắc muốn kết bạn?");
+    const isConfirmed = await confirm("Bạn có chắc muốn gửi yêu cầu kết bạn?");
     if (!isConfirmed) return;
     try {
       console.log("Đang gửi yêu cầu kết bạn ID:", profile._id);
@@ -139,7 +140,11 @@ const AddFriend = ({ profile }) => {
       text: "Đồng ý kết bạn",
       color: "text-green-500",
     },
-    accepted: { icon: UserMinusIcon, text: "Xóa bạn bè", color: "text-red-500" },
+    accepted: {
+      icon: UserMinusIcon,
+      text: "Xóa bạn bè",
+      color: "text-red-500",
+    },
     noFriend: {
       icon: UserPlusIcon,
       text: "Thêm bạn bè",
