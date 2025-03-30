@@ -6,8 +6,6 @@ import { motion } from "framer-motion";
 import SimplePeer from "simple-peer";
 import { useCall } from "../context/CallProvider";
 import { useSocketContext } from "../context/socketProvider";
-import { useConfirm } from "../context/ConfirmProvider";
-import { set } from "date-fns";
 const CallModel = ({ isOpen, onClose, id }) => {
   const { socket } = useSocketContext();
   const { incomingCall, setIncomingCall, isAccept, setIsAccept } = useCall();
