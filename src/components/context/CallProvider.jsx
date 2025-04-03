@@ -9,6 +9,7 @@ import { Paper } from "@mui/material";
 const CallContext = createContext();
 import { useConfirm } from "./ConfirmProvider";
 import RequestCallModel from "../call/RequestCallModel";
+import { isCancel } from "axios";
 export const CallProvider = ({ children }) => {
   const { profile } = useAuth();
   const { socket } = useSocketContext();
@@ -25,23 +26,13 @@ export const CallProvider = ({ children }) => {
       if (!sdp || !caller) return;
       setIncomingCall({ sdp, caller, profile });
       setOpenRequest(true);
-      // const isConfirmed = window.confirm("Có nhận cuộc gọi không ?");
-      // if (isConfirmed) {
-      //   console.log("Đã đồng ý cuộc gọi từ:", caller);
-      //   socket.emit("call-accept", { target: caller, status: true });
-      //   setCallId(caller); // Đảm bảo callId cập nhật đúng khi nhận cuộc gọi
-      //   setIsAccept(true); // Đảm bảo trạng thái cập nhật đúng khi nhận cuộc gọi
-      // } else {
-      //   setIsAccept(false); // Đảm bảo trạng thái cập nhật đúng khi từ chối cuộc gọi
-      //   socket.emit("call-accept", { target: caller, status: false });
-      // }
     });
 
     return () => {
       socket.off("offer");
     };
   }, [socket]);
-
+  console.log(callId)
   return (
     <CallContext.Provider
       value={{

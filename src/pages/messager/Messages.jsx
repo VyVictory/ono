@@ -149,7 +149,7 @@ const Messages = () => {
               setCallId(profileUser._id);
             }}
           >
-            <Phone className="w-12 h-12 text-blue-400" />
+            <Phone className="w-12 cursor-pointer h-12 text-blue-400" />
           </a>
           {/* lớn thì hiện */}
           <div className="flex items-center justify-center pl-2">
