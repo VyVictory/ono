@@ -31,8 +31,7 @@ export const CallProvider = ({ children }) => {
     return () => {
       socket.off("offer");
     };
-  }, [socket]);
-  console.log(callId)
+  }, [socket]); 
   return (
     <CallContext.Provider
       value={{

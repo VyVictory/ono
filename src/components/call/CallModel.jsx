@@ -15,8 +15,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
   const { socket } = useSocketContext();
   const confirm = useConfirm(); 
   const { incomingCall, setIncomingCall, isAccept, setIsAccept } = useCall();
-  const [stream, setStream] = useState(null);
-  const [cssOpen, setCssOpen] = useState("");
+  const [stream, setStream] = useState(null); 
   const myVideoRef = useRef(null);
   const partnerVideoRef = useRef(null);
   const peerRef = useRef(null);
@@ -174,8 +173,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
 
   const cleanupCall = () => {
     if (socket && id) {
-      socket.emit("end-call", { target: id });
-      socket.disconnect(); // Ngắt kết nối socket nếu không cần nữa
+      socket.emit("end-call", { target: id }); 
     }
   
     if (peerRef.current && typeof peerRef.current.destroy === "function") {
@@ -208,15 +206,10 @@ const CallModel = ({ isOpen, onClose, id }) => {
       });
   
     onClose(); // Đóng UI hoặc thực hiện hành động kết thúc cuộc gọi
-  };
-  
-  // setIsAccept(null);
-  //   setIncomingCall(null);
-  //   onClose();
+  }; 
   if (!id || !isAccept) return null;
   return (
-    <>
-      {/* Modal gọi điện (mở sau khi chấp nhận) */}
+    <> 
       {isOpen && id && (
         <Dialog open={isOpen} onClose={cleanupCall}>
           <motion.div
