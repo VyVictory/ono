@@ -20,6 +20,8 @@ import { Button, ButtonBase } from "@mui/material";
 import UserStatusIndicator from "../../components/UserStatusIndicator";
 import { getFriendsMess } from "../../service/friend";
 import DropdownChangeImage from "./DropdownChangeImage";
+import { FavoriteBorder, Add, Remove } from "@mui/icons-material";
+import AddFollow from "./AddFollow";
 const Profile = () => {
   const { setZoomImg } = useModule();
   const { setUsecase } = useModule();
@@ -178,7 +180,7 @@ const Profile = () => {
                 </div>
               ) : (
                 <div className="flex flex-row flex-wrap items-center justify-center space-x-4 py-2 sm:pb-4">
-                  {/* Nút Add Friend */}
+                  <AddFollow profile={userRender.profile} />
                   <AddFriend profile={userRender.profile} />
                   {/* Nút Messenger */}
                   <div

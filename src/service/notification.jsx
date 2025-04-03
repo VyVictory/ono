@@ -19,7 +19,21 @@ export const getNotifications = async ({ start, limit }) => {
     return res(error);
   }
 };
-
+export const getNotificationsFollow = async ({ start, limit }) => {
+  try {
+    if (!token) {
+      return;
+      //   nextLogin();
+    }
+    const response = await api.get(
+      `/noti/notifications/follow?start=${start}&limit=${limit}`
+    );
+    return response.data;
+  } catch (error) {
+    // nextError(error);
+    return res(error);
+  }
+};
 export const readNotification = async ({ id }) => {
   try {
     if (!token) {

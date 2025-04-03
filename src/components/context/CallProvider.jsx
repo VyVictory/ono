@@ -32,6 +32,7 @@ export const CallProvider = ({ children }) => {
       socket.off("offer");
     };
   }, [socket]); 
+  
   return (
     <CallContext.Provider
       value={{
@@ -47,7 +48,12 @@ export const CallProvider = ({ children }) => {
       {callId && (
         <CallModel isOpen={true} onClose={() => setCallId(null)} id={callId} />
       )}
-      <RequestCallModel isOpen={openRequest} onClose={()=>{setOpenRequest(false)}}/>
+      <RequestCallModel
+        isOpen={openRequest}
+        onClose={() => {
+          setOpenRequest(false);
+        }}
+      />
     </CallContext.Provider>
   );
 };

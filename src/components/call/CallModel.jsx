@@ -10,12 +10,14 @@ import { useCall } from "../context/CallProvider";
 import { useSocketContext } from "../context/socketProvider";
 import { useConfirm } from "../context/ConfirmProvider";
 import { PhoneXMarkIcon } from "@heroicons/react/24/outline";
+import { constrainedMemory } from "process";
 
 const CallModel = ({ isOpen, onClose, id }) => {
   const { socket } = useSocketContext();
-  const confirm = useConfirm(); 
-  const { incomingCall, setIncomingCall, isAccept, setIsAccept } = useCall();
-  const [stream, setStream] = useState(null); 
+  const confirm = useConfirm();
+  const { incomingCall, setIncomingCall, isAccept, setIsAccept, setCallId } =
+    useCall();
+  const [stream, setStream] = useState(null);
   const myVideoRef = useRef(null);
   const partnerVideoRef = useRef(null);
   const peerRef = useRef(null);
@@ -25,13 +27,13 @@ const CallModel = ({ isOpen, onClose, id }) => {
     socket.on("answer", handleReceiveAnswer);
     socket.on("ice-candidate", handleNewICECandidate);
 
-    socket.on("end-call", cleanupCall);
+    socket.on("end-call", handleEndCall);
     return () => {
       socket.off("call-accept", handleCallAccept);
       socket.off("answer", handleReceiveAnswer);
       socket.off("ice-candidate", handleNewICECandidate);
 
-      socket.off("end-call", cleanupCall);
+      socket.off("end-call", handleEndCall);
     };
   }, [socket]);
   useEffect(() => {
@@ -47,7 +49,13 @@ const CallModel = ({ isOpen, onClose, id }) => {
         setStream(null);
       }
     };
-  }, [id]);
+  }, []);
+  const handleEndCall = () => {
+    if (isAccept || peerRef.current) {
+      toast.error("Cuộc gọi kết thúc", { autoClose: 500 });
+    }
+    cleanupCall();
+  };
   useEffect(() => {
     if (!isAccept) return;
     if (!id) return;
@@ -64,7 +72,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
     };
   }, [isAccept, id]); // Ensure `id` is included
   const handleCallAccept = ({ caller, status }) => {
-    console.log("Cuộc gọi từ:", caller, "đã được chấp nhận:", status);
+    // console.log("Cuộc gọi từ:", caller, "đã được chấp nhận:", status);
     if (!status) {
       toast.error("Cuộc gọi bị từ chối!");
       cleanupCall();
@@ -77,7 +85,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
     if (!id) return;
     const isConfirmed = await confirm("Bạn có chắc muốn gọi?");
     if (!isConfirmed) {
-      cleanupCall();
+      setCallId(null);
       return;
     }
     setIsAccept(true);
@@ -105,7 +113,6 @@ const CallModel = ({ isOpen, onClose, id }) => {
       });
 
       peerRef.current.on("error", (err) => {
-        cleanupCall();
         console.error("WebRTC Error:", err);
         toast.error("Lỗi kết nối, vui lòng thử lại!");
         cleanupCall();
@@ -146,7 +153,6 @@ const CallModel = ({ isOpen, onClose, id }) => {
       });
 
       peerRef.current.on("error", (err) => {
-        cleanupCall();
         console.error("WebRTC Error:", err);
         toast.error("Lỗi kết nối, vui lòng thử lại!");
         cleanupCall();
@@ -172,44 +178,47 @@ const CallModel = ({ isOpen, onClose, id }) => {
   };
 
   const cleanupCall = () => {
-    if (socket && id) {
-      socket.emit("end-call", { target: id }); 
-    }
-  
+    setIsAccept(null);
+    setIncomingCall(null);
+    setCallId(null);
+    endCallHand();
     if (peerRef.current && typeof peerRef.current.destroy === "function") {
       peerRef.current.destroy();
       peerRef.current = null;
     }
-  
+
     if (stream) {
       stream.getTracks().forEach((track) => {
         track.stop();
-        stream.removeTrack(track); 
+        stream.removeTrack(track);
       });
       setStream(null);
     }
-  
+
     if (myVideoRef.current) {
       myVideoRef.current.srcObject = null;
     }
     if (partnerVideoRef.current) {
       partnerVideoRef.current.srcObject = null;
     }
-  
-    setIsAccept(null);
-    setIncomingCall(null);
-  
+
     // Tắt hoàn toàn quyền truy cập camera/micro (chỉ có tác dụng sau khi tải lại trang)
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: true })
       .then((tempStream) => {
-        tempStream.getTracks().forEach(track => track.stop());
+        tempStream.getTracks().forEach((track) => track.stop());
       });
-  
+
     onClose(); // Đóng UI hoặc thực hiện hành động kết thúc cuộc gọi
-  }; 
+  };
+  const endCallHand = async () => {
+    if (socket && id) {
+      return socket.emit("end-call", { target: id });
+    }
+  };
   if (!id || !isAccept) return null;
   return (
-    <> 
+    <>
       {isOpen && id && (
         <Dialog open={isOpen} onClose={cleanupCall}>
           <motion.div
@@ -230,7 +239,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
                   muted
                   className="w-full h-full border rounded"
                 />
-                <Draggable bounds="parent">
+                <Draggable bounds="parent" nodeRef={myVideoRef}>
                   <div className="absolute bottom-0 left-0 flex justify-center items-center cursor-grab w-1/5 bg-black aspect-square border rounded">
                     <video ref={myVideoRef} autoPlay className=" " />
                   </div>

@@ -8,17 +8,25 @@ import {
   LockClosedIcon,
 } from "@heroicons/react/24/solid";
 import ThemeToggle from "./ThemeToggle";
-import { Avatar, Button, Paper } from "@mui/material";
+import { Avatar, Button, ButtonBase, Paper } from "@mui/material";
 import WaterBubbleButton from "./button/WaterBubbleButton";
 import { BellIcon } from "@heroicons/react/24/outline";
 import Badge from "@mui/material/Badge";
 import { useAuth } from "./context/AuthProvider";
-import { getNotifications, readNotification } from "../service/notification";
+import {
+  getNotifications,
+  getNotificationsFollow,
+  readNotification,
+} from "../service/notification";
 import UserStatusIndicator from "./UserStatusIndicator";
 import { useNavigate } from "react-router-dom";
+import { UserPlusIcon, UserGroupIcon } from "@heroicons/react/24/solid";
+
 import { useSocketContext } from "./context/socketProvider";
+
 const NotificationDropDow = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [chane, setChane] = useState("Friend");
   const isFetchNotifi = useRef(false);
   const { newNotifi, setNewNotifi } = useSocketContext();
   const { profile } = useAuth();
@@ -48,21 +56,40 @@ const NotificationDropDow = () => {
         notifications: [
           {
             date: new Date().toISOString().split("T")[0], // Ngày hiện tại
-            notifications: [newNotifi, ...(prevNotifications.notifications[0]?.notifications || [])],
+            notifications: [
+              newNotifi,
+              ...(prevNotifications.notifications[0]?.notifications || []),
+            ],
           },
           ...prevNotifications.notifications.slice(1),
         ],
       }));
     }
   }, [newNotifi, profile]);
-  
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      if (isFetchNotifi.current) return; // Kiểm tra isFetchNotifi bằng ref
-      const notifications = await getNotifications({ start: 0, limit: 10 });
-      setNotifications(notifications);
-      isFetchNotifi.current = true; // Cập nhật ref để tránh fetch lại
+  const fetchNotifications = async () => {
+    if (isFetchNotifi.current) return; // Kiểm tra isFetchNotifi bằng ref
+    const chaneFetch = async () => {
+      return await getNotifications({ start: 0, limit: 10 });
+      // switch (chane) {
+      //   case "111":
+      //     return await getNotificationsFollow({ start: 0, limit: 20 });
+
+      //   default:
+      //     return await getNotifications({ start: 0, limit: 20 });
+      // }
     };
+
+    const notifications = await chaneFetch();
+    console.log(notifications);
+    setNotifications(notifications);
+    isFetchNotifi.current = true; // Cập nhật ref để tránh fetch lại
+  };
+  // useEffect(() => {
+  //   if (profile) {
+  //     fetchNotifications();
+  //   }
+  // }, [chane]);
+  useEffect(() => {
     if (profile) {
       fetchNotifications();
     }
@@ -86,7 +113,7 @@ const NotificationDropDow = () => {
     } else {
       return;
     }
-  }; 
+  };
   return (
     <div
       className="relative w-full h-full flex justify-center"
@@ -113,9 +140,25 @@ const NotificationDropDow = () => {
             className="absolute min-w-72  -right-6 mt-14 z-50 divide-y rounded-lg"
           >
             <Paper elevation={3}>
-              <button className="px-4  py-3  flex w-full flex-row justify-center items-center space-x-2 hover:scale-110 duration-700 border-b ">
-                <div className="text-sm max-w-72 ">
+              <button className="px-1  py-3 pb-1  flex w-full flex-col justify-center items-center space-x-2 border-b ">
+                <div className="text-sm max-w-72  hover:scale-110 duration-700">
                   <strong>Thông báo</strong>
+                </div>
+
+                <div className="w-full flex flex-row flex-wrap gap-2">
+                  {" "}
+                  <div onClick={() => setChane("Friend")}>
+                    <div className="w-full h-full p-2 flex items-center gap-2 rounded-md bg-green-50 shadow-sm hover:scale-105 hover:bg-green-200">
+                      <UserGroupIcon className="w-5 h-5 text-green-500" />
+                      <span>Friend</span>
+                    </div>
+                  </div>
+                  <div onClick={() => setChane("Follow")}>
+                    <div className="w-full h-full p-2 flex items-center gap-2 rounded-md bg-violet-50 shadow-sm hover:scale-105 hover:bg-violet-200">
+                      <UserPlusIcon className="w-5 h-5 text-violet-500" />
+                      <span>Follow</span>
+                    </div>
+                  </div>
                 </div>
               </button>
               <ul className="py-1 text-base px-2 overflow-y-auto max-h-[80vh] pb-2 space-y-2">
@@ -127,15 +170,6 @@ const NotificationDropDow = () => {
                 ) : (
                   notifications?.notifications?.map((group) => (
                     <div key={group?.date}>
-                      {/* Tiêu đề ngày thông báo */}
-                      {/* <h3 className="text-sm font-bold text-gray-600 px-4 py-2 text-center flex items-center">
-                        <span className="flex-1 h-px bg-gray-300"></span>
-                        <span className="px-3">
-                          {new Date(group.date).toLocaleDateString()}
-                        </span>
-                        <span className="flex-1 h-px bg-gray-300"></span>
-                      </h3> */}
-                      {/* Danh sách thông báo trong ngày đó */}
                       {group.notifications.map((noti) => (
                         <li
                           key={noti._id}
@@ -144,9 +178,14 @@ const NotificationDropDow = () => {
                           }}
                           className="relative flex items-center w-full pr-2"
                         >
-                          {noti?.referenceModel == "Friendship" && (
-                            <FriendShip data={noti} />
-                          )}
+                          {noti?.referenceModel == "Friendship" &&
+                            chane == "Friend" && <FriendShip data={noti} />}
+                          {noti?.referenceModel == "Follow" &&
+                            chane == "Follow" && (
+                              <>
+                                <Follow data={noti} />
+                              </>
+                            )}
                         </li>
                       ))}
                     </div>
@@ -197,7 +236,41 @@ const FriendShip = ({ data }) => {
     </div>
   );
 };
-
+const Follow = ({ data }) => {
+  const navigate = useNavigate();
+  return (
+    <div
+      onClick={() => {
+        navigate(`/profile/posts?id=${data?.sender?._id}`);
+      }}
+      className={`transition-opacity duration-300 ${
+        data?.isRead ? "opacity-60" : "opacity-100"
+      }`}
+    >
+      <Button
+        href="#"
+        className="flex px-4 py-2 w-full rounded-md items-center hover:scale-105 hover:bg-gray-200 gap-1"
+      >
+        <UserStatusIndicator
+          userId={data?.sender?._id}
+          userData={data?.sender}
+          styler={{
+            button: { width: "40px", height: "40px" }, // ✅ Giới hạn kích thước
+            avatar: { width: "40px", height: "40px" }, // ✅ Avatar không bị to quá
+          }}
+        />
+        <p
+          className={`ml-2 text-xs line-clamp-2 max-w-[200px] ${
+            data?.isRead && "text-gray-500"
+          }`}
+        >
+          {data?.content}
+        </p>
+      </Button>
+      <DetailTool />
+    </div>
+  );
+};
 const DetailTool = () => {
   return (
     <button
