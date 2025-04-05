@@ -74,7 +74,7 @@ const Post = ({ data }) => {
                 <div className="flex flex-col">
                   <Link
                     to={`/profile/posts?id=${_?.author?._id}`}
-                    className="text-lg font-semibold text-gray-600 hover:text-violet-600"
+                    className="text-base md:text-sm sm:text-xs font-semibold text-gray-500 hover:text-gray-700"
                   >
                     {`${
                       _?.author?.firstName
