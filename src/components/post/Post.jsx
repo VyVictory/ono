@@ -71,7 +71,7 @@ const Post = ({ data }) => {
                 <div className="flex flex-col">
                   <Link
                     to={`/profile/posts?id=${_?.author?._id}`}
-                    className="text-sm font-semibold text-gray-600 hover:text-violet-600"
+                    className="text-sm font-semibold text-gray-600 hover:text-black"
                   >
                     {`${
                       _?.author?.firstName
@@ -169,7 +169,7 @@ const Post = ({ data }) => {
                   posts[openGalleryIndex]?.media.map((file, i) => (
                     <div
                       key={i}
-                      className="rounded-md bg-white overflow-hidden flex justify-center items-center"
+                      className="rounded-md overflow-hidden flex justify-center items-center"
                     >
                       <FilePreview
                         fileUrl={file.url}
