@@ -1,6 +1,6 @@
-import { UserGroupIcon } from "@heroicons/react/24/outline";
+import { UserGroupIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import pngTest from "../../img/post/post.png";
-import { Avatar, Button, Paper } from "@mui/material";
+import { Avatar, Button, ButtonBase, Modal, Paper } from "@mui/material";
 import { useState, useEffect } from "react";
 import UserStatusIndicator from "../UserStatusIndicator";
 import SecurityLabel from "./SecurityLabel";
@@ -8,10 +8,11 @@ import FilePreview from "../FilePreview";
 import { Gallery } from "react-grid-gallery";
 import { useModule } from "../context/Module";
 import { Link } from "react-router-dom";
-const MAX_VISIBLE_IMAGES = 6; // Hiển thị tối đa 6 ảnh
+const MAX_VISIBLE_IMAGES = 3; // Hiển thị tối đa 6 ảnh
 const Post = ({ data }) => {
   const { addPost, setAddPost } = useModule();
   const postsData = data?.posts || []; // ✅ Đảm bảo luôn có giá trị mặc định
+  const [openGalleryIndex, setOpenGalleryIndex] = useState(null); // index của post
 
   const [posts, setPosts] = useState([]);
   useEffect(() => {
@@ -42,6 +43,14 @@ const Post = ({ data }) => {
       })
       .replace(",", " lúc");
   };
+  const handleOpenGallery = (index) => {
+    setOpenGalleryIndex(index);
+  };
+
+  const handleCloseGallery = () => {
+    setOpenGalleryIndex(null);
+  };
+
   // console.log(posts);
   return (
     <>
@@ -104,11 +113,11 @@ const Post = ({ data }) => {
                   ) : (
                     <button
                       key={i}
-                      className="bg-gray-200 flex justify-center items-center rounded-md overflow-hidden"
+                      className=" flex justify-center  items-center rounded-md overflow-hidden"
                     >
                       <FilePreview
                         fileUrl={file.url}
-                        pop="w-full h-64 md:h-96 object-cover"
+                        pop="w-full h-full max-h-60 object-cover"
                       />
                     </button>
                   )
@@ -116,7 +125,10 @@ const Post = ({ data }) => {
 
                 {/* Hiển thị ô "+ số ảnh còn lại" nếu có ảnh dư */}
                 {_.media.length - MAX_VISIBLE_IMAGES > 0 && (
-                  <div className="relative flex items-center justify-center bg-gray-200 rounded-md overflow-hidden">
+                  <div
+                    onClick={() => handleOpenGallery(index)}
+                    className="relative cursor-pointer flex items-center justify-center bg-gray-200 rounded-md overflow-hidden"
+                  >
                     <span className="absolute text-xl font-bold text-white bg-black bg-opacity-50 px-4 py-2 rounded-md">
                       +{_.media.length - MAX_VISIBLE_IMAGES}
                     </span>
@@ -127,6 +139,50 @@ const Post = ({ data }) => {
           </Paper>
         ))}
       </div>
+      <Modal
+        open={openGalleryIndex !== null}
+        onClose={handleCloseGallery}
+        aria-labelledby="image-gallery-modal"
+        aria-describedby="show-all-images"
+      >
+        <div
+          onClick={handleCloseGallery}
+          className="flex items-center justify-center min-h-screen p-4 bg-black bg-opacity-80"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative bg-gray-100 rounded-lg w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden shadow-lg"
+          >
+            {/* Header */}
+            <div className="sticky top-0 z-10 bg-white p-2 border-b flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-gray-700">
+                Tất cả hình ảnh
+              </h2>
+              <ButtonBase onClick={handleCloseGallery}>
+                <XCircleIcon className="w-8 h-8 hover:scale-110 text-red-500" />
+              </ButtonBase>
+            </div>
+
+            {/* Nội dung ảnh */}
+            <div className="p-4 overflow-y-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {openGalleryIndex !== null &&
+                  posts[openGalleryIndex]?.media.map((file, i) => (
+                    <div
+                      key={i}
+                      className="rounded-md bg-white overflow-hidden flex justify-center items-center"
+                    >
+                      <FilePreview
+                        fileUrl={file.url}
+                        pop="w-full h-64 md:h-72 object-cover"
+                      />
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 };
