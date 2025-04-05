@@ -74,7 +74,7 @@ const Post = ({ data }) => {
                 <div className="flex flex-col">
                   <Link
                     to={`/profile/posts?id=${_?.author?._id}`}
-                    className="text-base md:text-sm sm:text-xs font-semibold text-gray-500 hover:text-gray-700"
+                    className="text-lg font-semibold text-gray-600 hover:text-violet-600"
                   >
                     {`${
                       _?.author?.firstName
@@ -97,7 +97,9 @@ const Post = ({ data }) => {
                   </div>
                 </div>
               </div>
-              <div className="p-2 break-words">{_?.content}</div>
+              <div className="p-2 text-sm sm:text-base md:text-lg break-words break-all whitespace-pre-wrap w-full">
+                {_?.content}
+              </div>
             </div>
             {/* Bố cục hiển thị ảnh */}
             <div id={`gallery-${index}`} className="w-full mb-2 px-2">
@@ -117,7 +119,7 @@ const Post = ({ data }) => {
                     >
                       <FilePreview
                         fileUrl={file.url}
-                        pop="w-full h-full max-h-60 object-cover"
+                        pop="w-full h-auto max-h-60 object-cover"
                       />
                     </button>
                   )

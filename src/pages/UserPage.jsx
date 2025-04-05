@@ -37,7 +37,7 @@ const UserPage = () => {
     <div className="flex py-4 flex-col items-center h-screen overflow-auto">
       <div className="max-w-[500px] px-3 xl:px-0  space-y-3 w-full">
         <HeadCreatePost />
-        <div className={`space-y-4 min-w-full `}>
+        <div className={`space-y-4 min-w-full relative`}>
           {isLoading ? (
             <LoadingAnimation />
           ) : posts?.posts?.length > 0 ? (
