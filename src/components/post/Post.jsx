@@ -56,10 +56,7 @@ const Post = ({ data }) => {
     <>
       <div id="gallery" className="flex flex-col gap-4 min-w-full">
         {posts?.map((_, index) => (
-          <Paper
-            key={index}
-            className="border border-gray-200 bg-white rounded-lg Post w-full ShadowContent"
-          >
+          <Paper key={index} className=" w-full">
             <div className=" mx-2 ">
               <div className="flex flex-row space-x-2 items-center border-b p-1">
                 <div>
@@ -74,7 +71,7 @@ const Post = ({ data }) => {
                 <div className="flex flex-col">
                   <Link
                     to={`/profile/posts?id=${_?.author?._id}`}
-                    className="text-lg font-semibold text-gray-600 hover:text-violet-600"
+                    className="text-sm font-semibold text-gray-600 hover:text-violet-600"
                   >
                     {`${
                       _?.author?.firstName
@@ -97,14 +94,14 @@ const Post = ({ data }) => {
                   </div>
                 </div>
               </div>
-              <div className="p-2 text-sm sm:text-base md:text-lg break-words break-all whitespace-pre-wrap w-full">
+              <div className="p-2 break-words break-all whitespace-pre-wrap w-full">
                 {_?.content}
               </div>
             </div>
             {/* Bố cục hiển thị ảnh */}
-            <div id={`gallery-${index}`} className="w-full mb-2 px-2">
+            <div id={`gallery-${index}`} className="w-full">
               <div
-                className={`grid gap-2 
+                className={`grid gap-2  p-2
                         ${_.media.length === 1 ? "grid-cols-1" : ""} 
                         ${_.media.length === 2 ? "grid-cols-2" : ""} 
                         ${_.media.length >= 3 ? "grid-cols-3" : ""}`}

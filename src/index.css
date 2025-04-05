@@ -16,7 +16,7 @@
             background-position: 0% 50%;
         }
     }
- 
+
 
     .backgoundWave {
         background: linear-gradient(270deg, red, orange, yellow, green, cyan, blue, violet);
@@ -28,14 +28,16 @@
     .backgoundWeb {
         background: linear-gradient(to right, rgba(0, 0, 255, 0.02), rgba(255, 181, 255, 0.02));
     }
+
     .grid-container {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         grid-auto-rows: minmax(100px, auto);
         gap: 10px;
-        grid-auto-flow: dense; /* Quan trọng để lấp đầy khoảng trống */
-      }
-      
+        grid-auto-flow: dense;
+        /* Quan trọng để lấp đầy khoảng trống */
+    }
+
     select option[value=""] {
         color: gray;
     }
@@ -67,30 +69,37 @@
     body,
     .scrollable-container {
         overflow: overlay;
-    } 
+    }
+
     ::-webkit-scrollbar {
         width: 4px;
         height: 8px;
-    } 
+    }
+
     ::-webkit-scrollbar-track {
         border-radius: 10px;
-    } 
+    }
+
     ::-webkit-scrollbar-thumb {
         background: gray;
         border-radius: 10px;
         transition: background 0.3s ease-in-out;
-    } 
+    }
+
     ::-webkit-scrollbar-thumb:hover {
         background: linear-gradient(45deg, #c26dff, rgb(255, 95, 95));
-    } 
+    }
+
     ::-webkit-scrollbar-horizontal {
         height: 6px;
-    } 
-    .hidden-scrollbar {
-        scrollbar-width: none; 
     }
+
+    .hidden-scrollbar {
+        scrollbar-width: none;
+    }
+
     .hidden-scrollbar::-webkit-scrollbar {
-        display: none; 
+        display: none;
     }
 
     body,
