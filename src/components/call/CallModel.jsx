@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Dialog } from "@headlessui/react"; 
+import { Button, Dialog } from "@headlessui/react";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import SimplePeer from "simple-peer";
@@ -42,10 +42,10 @@ const CallModel = ({ isOpen, onClose, id }) => {
   const [isPartnerVideoOn, setIsPartnerVideoOn] = useState(true);
   const [isLoadingVideo, setIsLoadingVideo] = useState(true);
   const [isSelfVideoMaximized, setIsSelfVideoMaximized] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false); // Kiểm tra trạng thái âm thanh
   const audioContextRef = useRef(null); // Audio context để phân tích âm thanh
   const analyserRef = useRef(null); // Analyser để kiểm tra âm thanh
   const audioDataRef = useRef(new Uint8Array(0)); // Dữ liệu âm thanh
+  const remoteStreamRef = useRef(null);
 
   useEffect(() => {
     if (!socket) return;
@@ -125,7 +125,11 @@ const CallModel = ({ isOpen, onClose, id }) => {
     try {
       const userStream = await navigator.mediaDevices.getUserMedia({
         video: true,
-        audio: true,
+        audio: {
+          noiseSuppression: true,
+          echoCancellation: true,
+          autoGainControl: true,
+        },
       });
       setStream(userStream);
       if (myVideoRef.current) myVideoRef.current.srcObject = userStream;
@@ -172,7 +176,11 @@ const CallModel = ({ isOpen, onClose, id }) => {
     try {
       const userStream = await navigator.mediaDevices.getUserMedia({
         video: true,
-        audio: true,
+        audio: {
+          noiseSuppression: true,
+          echoCancellation: true,
+          autoGainControl: true,
+        },
       });
       setStream(userStream);
       fetchProfile();
@@ -190,12 +198,16 @@ const CallModel = ({ isOpen, onClose, id }) => {
         socket.emit("answer", { target: incomingCall.caller, sdp: data });
       });
 
+      // peerRef.current.on("stream", (remoteStream) => {
+      //   setIsLoadingVideo(false); // Video loaded
+      //   if (partnerVideoRef.current)
+      //     partnerVideoRef.current.srcObject = remoteStream;
+      // });
       peerRef.current.on("stream", (remoteStream) => {
-        setIsLoadingVideo(false); // Video loaded
-        if (partnerVideoRef.current)
-          partnerVideoRef.current.srcObject = remoteStream;
+        setIsLoadingVideo(false);
+        remoteStreamRef.current = remoteStream; // Lưu stream của đối phương
+        partnerVideoRef.current.srcObject = remoteStream;
       });
-
       peerRef.current.on("error", (err) => {
         console.error("WebRTC Error:", err);
         toast.error("Lỗi kết nối, vui lòng thử lại!");
@@ -271,7 +283,9 @@ const CallModel = ({ isOpen, onClose, id }) => {
 
     // Cleanup AudioContext if it exists
     if (audioContextRef.current) {
-      audioContextRef.current.close().catch((err) => console.error("Error closing audio context:", err));
+      audioContextRef.current
+        .close()
+        .catch((err) => console.error("Error closing audio context:", err));
       audioContextRef.current = null;
     }
 
@@ -286,59 +300,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
     audioDataRef.current = new Uint8Array(0);
 
     onClose?.();
-};
-
-  // const cleanupCall = () => {
-  //   // Reset all states
-  //   setIsAccept(null);
-  //   setIncomingCall(null);
-  //   setCallId(null);
-  //   setIsVideo(false);
-  //   setCameraOn(true);
-  //   setIsPartnerVideoOn(true);
-  //   setProfileRender(null);
-
-  //   // Notify server to end call
-  //   endCallHand();
-
-  //   // Destroy peer connection
-  //   if (peerRef.current) {
-  //     peerRef.current.removeAllListeners();
-  //     peerRef.current.destroy();
-  //     peerRef.current = null;
-  //   }
-
-  //   // Stop media stream
-  //   if (stream) {
-  //     stream.getTracks().forEach((track) => {
-  //       try {
-  //         track.stop();
-  //         stream.removeTrack(track);
-  //       } catch (err) {
-  //         console.warn("Lỗi khi stop/remove track:", err);
-  //       }
-  //     });
-  //     setStream(null);
-  //   }
-
-  //   // Clear video elements
-  //   if (myVideoRef.current) {
-  //     myVideoRef.current.srcObject = null;
-  //   }
-  //   if (partnerVideoRef.current) {
-  //     partnerVideoRef.current.srcObject = null;
-  //   }
-
-  //   // Extra cleanup for possible ghost media stream
-  //   navigator.mediaDevices
-  //     .getUserMedia({ video: true, audio: true })
-  //     .then((tempStream) => {
-  //       tempStream.getTracks().forEach((track) => track.stop());
-  //     })
-  //     .catch(() => {});
-
-  //   onClose?.();
-  // };
+  }; 
   const endCallHand = async () => {
     if (socket && id) {
       return socket.emit("end-call", { target: id });
@@ -364,91 +326,57 @@ const CallModel = ({ isOpen, onClose, id }) => {
   useEffect(() => {
     if (!stream) return;
 
-    // Create the audio context and analyser for self
-    const audioContext = new (window.AudioContext ||
-      window.AudioContext)();
+    const audioContext = new AudioContext();
     const analyser = audioContext.createAnalyser();
-
-    // Connect the analyser to the audio context
     const source = audioContext.createMediaStreamSource(stream);
     source.connect(analyser);
 
-    // Set up the analyser
-    analyser.fftSize = 256; // FFT size
+    analyser.fftSize = 256;
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
 
-    // Function to check audio activity
     const checkAudioActivity = () => {
       analyser.getByteFrequencyData(dataArray);
-      let isAudioDetected = false;
-
-      // Check if any frequency bin has a value above the threshold
-      for (let i = 0; i < bufferLength; i++) {
-        if (dataArray[i] > 100) {
-          // You can adjust this threshold
-          isAudioDetected = true;
-          break;
-        }
-      }
-
-      setIsSpeakingSelf(isAudioDetected); // Update speaking state for self
+      const isDetected = dataArray.some((value) => value > 100); // giảm ngưỡng
+      setIsSpeakingSelf(isDetected);
     };
 
-    // Continuously check for audio activity every 100ms
-    const intervalId = setInterval(checkAudioActivity, 1);
+    const intervalId = setInterval(checkAudioActivity, 100); // giảm xuống 100ms
 
-    // Clean up when the component unmounts
     return () => {
       clearInterval(intervalId);
-      if (audioContext) {
-        audioContext.close(); // Close the audio context
-      }
+      audioContext.close();
     };
   }, [stream]);
+
   const [isSpeakingPartner, setIsSpeakingPartner] = useState(false);
 
   useEffect(() => {
-    if (!stream || !peerRef.current) return;
-    if (isLoadingVideo) return;
-    // Create AudioContext and Analyser for partner
-    const partnerAudioContext = new (window.AudioContext ||
-      window.AudioContext)();
-    const partnerAnalyser = partnerAudioContext.createAnalyser();
+    const remoteStream = remoteStreamRef.current;
+    if (!remoteStream) return;
 
-    // Create MediaStreamSource for partner's stream
-    const partnerSource = partnerAudioContext.createMediaStreamSource(stream);
-    partnerSource.connect(partnerAnalyser);
+    const audioContext = new AudioContext();
+    const analyser = audioContext.createAnalyser();
+    const source = audioContext.createMediaStreamSource(remoteStream);
+    source.connect(analyser);
 
-    partnerAnalyser.fftSize = 256;
-    const bufferLength = partnerAnalyser.frequencyBinCount;
-    const partnerDataArray = new Uint8Array(bufferLength);
+    analyser.fftSize = 256;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
 
-    const checkPartnerAudioActivity = () => {
-      partnerAnalyser.getByteFrequencyData(partnerDataArray);
-      let isPartnerAudioDetected = false;
-
-      // Check if any frequency bin has a value above the threshold
-      for (let i = 0; i < bufferLength; i++) {
-        if (partnerDataArray[i] > 100) {
-          isPartnerAudioDetected = true;
-          break;
-        }
-      }
-
-      setIsSpeakingPartner(isPartnerAudioDetected); // Update speaking state for partner
+    const checkAudioActivity = () => {
+      analyser.getByteFrequencyData(dataArray);
+      const isDetected = dataArray.some((value) => value > 100);
+      setIsSpeakingPartner(isDetected);
     };
 
-    // Continuously check for audio activity every 100ms
-    const partnerAudioIntervalId = setInterval(checkPartnerAudioActivity, 1);
+    const intervalId = setInterval(checkAudioActivity, 100);
 
-    // Clean up when the component unmounts
     return () => {
-      clearInterval(partnerAudioIntervalId);
-      if (partnerAudioContext) partnerAudioContext.close();
+      clearInterval(intervalId);
+      audioContext.close();
     };
-  }, [stream, isLoadingVideo]);
-
+  }, [remoteStreamRef.current, isLoadingVideo]); // chạy lại khi remote stream được set
   if (!id || !isAccept) return null;
   return (
     <>
