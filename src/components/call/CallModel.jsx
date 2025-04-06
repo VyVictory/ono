@@ -33,7 +33,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
     isVideo,
     setIsVideo,
   } = useCall();
-  const [stream, setStream] = useState(null); 
+  const [stream, setStream] = useState(null);
   const [profileRender, setProfileRender] = useState(null);
   const [cameraOn, setCameraOn] = useState(true); // Camera state
   const myVideoRef = useRef(null);
@@ -426,10 +426,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
                     } ${
                       cameraOn
                         ? "bg-black border  border-gray-600"
-                        : `bg-transparent ${
-                            isSpeaking &&
-                            "border-4 rounded-full border-green-400"
-                          }` //border-4 rounded-full border-green-400
+                        : `bg-transparent ` //border-4 rounded-full border-green-400
                     }   aspect-square absolute  z-40  flex   items-center justify-center overflow-hidden rounded `}
                   >
                     {!cameraOn && (
@@ -437,8 +434,10 @@ const CallModel = ({ isOpen, onClose, id }) => {
                         userId={profile?._id}
                         userData={{ avatar: profile?.avatar }}
                         css={`aspect-square  ${
-                          isSelfVideoMaximized ? " w-[40%]" : "h-full"
-                        } rounded-full`}
+                          isSelfVideoMaximized ? " w-[40%]" : "h-full "
+                        } rounded-full ${
+                          isSpeaking && "border-4 rounded-full border-green-400"
+                        }`}
                         styler={{ badge: { size: "14px" } }}
                       />
                     )}
