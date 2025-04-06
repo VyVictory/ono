@@ -9,7 +9,8 @@ import {
   VideoCameraIcon,
   VideoCameraSlashIcon,
 } from "@heroicons/react/24/outline"; // Đảm bảo bạn đã import các icon cần thiết
-
+import ZoomInIcon from "@mui/icons-material/ZoomIn";
+import ZoomOutIcon from "@mui/icons-material/ZoomOut";
 import { useCall } from "../context/CallProvider";
 import { useSocketContext } from "../context/socketProvider";
 import { useConfirm } from "../context/ConfirmProvider";
@@ -17,6 +18,7 @@ import { PhoneXMarkIcon } from "@heroicons/react/24/outline";
 import { getCurrentUser } from "../../service/user";
 import UserStatusIndicator from "../UserStatusIndicator";
 import { useAuth } from "../context/AuthProvider";
+
 const CallModel = ({ isOpen, onClose, id }) => {
   const { socket } = useSocketContext();
   const { profile } = useAuth();
@@ -41,6 +43,10 @@ const CallModel = ({ isOpen, onClose, id }) => {
   const [isPartnerVideoOn, setIsPartnerVideoOn] = useState(true);
   const [isLoadingVideo, setIsLoadingVideo] = useState(true);
   const [isSelfVideoMaximized, setIsSelfVideoMaximized] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false); // Kiểm tra trạng thái âm thanh
+  const audioContextRef = useRef(null); // Audio context để phân tích âm thanh
+  const analyserRef = useRef(null); // Analyser để kiểm tra âm thanh
+  const audioDataRef = useRef(new Uint8Array(0)); // Dữ liệu âm thanh
 
   useEffect(() => {
     if (!socket) return;
@@ -87,7 +93,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
       }
     };
   }, []);
-
+  useEffect(() => {}, [stream]);
   const handleEndCall = () => {
     if (isAccept || peerRef.current) {
       toast.error("Cuộc gọi kết thúc", { autoClose: 500 });
@@ -290,6 +296,52 @@ const CallModel = ({ isOpen, onClose, id }) => {
       setCameraOn(true);
     }
   };
+  useEffect(() => {
+    if (!stream) return;
+
+    // Create the audio context and analyser
+    audioContextRef.current = new (window.AudioContext ||
+      window.webkitAudioContext)();
+    analyserRef.current = audioContextRef.current.createAnalyser();
+
+    // Connect the analyser to the audio context
+    const source = audioContextRef.current.createMediaStreamSource(stream);
+    source.connect(analyserRef.current);
+
+    // Set up the analyser
+    analyserRef.current.fftSize = 256; // FFT size
+    const bufferLength = analyserRef.current.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    // Function to check audio activity
+    const checkAudioActivity = () => {
+      analyserRef.current.getByteFrequencyData(dataArray);
+      let isAudioDetected = false;
+
+      // Check if any frequency bin has a value above the threshold
+      for (let i = 0; i < bufferLength; i++) {
+        if (dataArray[i] > 10) {
+          // You can adjust this threshold
+          isAudioDetected = true;
+          break;
+        }
+      }
+
+      setIsSpeaking(isAudioDetected); // Update speaking state
+    };
+
+    // Continuously check for audio activity every 100ms
+    const intervalId = setInterval(checkAudioActivity, 100);
+
+    // Clean up when the component unmounts
+    return () => {
+      clearInterval(intervalId);
+      if (audioContextRef.current) {
+        audioContextRef.current.close(); // Close the audio context
+      }
+    };
+  }, [stream]);
+
   if (!id || !isAccept) return null;
 
   return (
@@ -315,7 +367,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
                 >
                   {/* Calling indicator */}
                   {!isVideo && (
-                    <div className="absolute top-4 left-1/2 z-40 -translate-x-1/2 transform rounded bg-black bg-opacity-50 px-4 py-2 text-lg font-semibold text-white">
+                    <div className="absolute top-4 left-1/2 z-40 -translate-x-1/2 transform rounded bg-black bg-opacity-50 px-4 py-2 text-lg font-semibold text-gray-500">
                       Đang gọi...
                     </div>
                   )}
@@ -323,7 +375,10 @@ const CallModel = ({ isOpen, onClose, id }) => {
                   {/* Loading */}
                   {isLoadingVideo && (
                     <div className="absolute top-0 left-0 flex h-full w-full items-center justify-center bg-black">
-                      <div className="spinner-border text-white" role="status">
+                      <div
+                        className="spinner-border text-gray-500"
+                        role="status"
+                      >
                         <span className="sr-only">
                           Đang lấy Camera người dùng...
                         </span>
@@ -346,12 +401,14 @@ const CallModel = ({ isOpen, onClose, id }) => {
 
                   {/* Fallback avatar if no video */}
                   {(!isPartnerVideoOn || !isVideo) && (
-                    <div className="absolute top-0 left-0 flex h-full w-full items-center justify-center bg-black">
+                    <div
+                      className={`absolute top-0 left-0 flex h-full w-full items-center justify-center bg-black }`}
+                    >
                       <div className="relative aspect-square w-[40%]">
                         <UserStatusIndicator
                           userId={profileRender?._id}
                           userData={{ avatar: profileRender?.avatar }}
-                          css="w-full h-full rounded-full"
+                          css={`w-full h-full rounded-full`}
                           styler={{ badge: { size: "14px" } }}
                         />
                       </div>
@@ -368,15 +425,24 @@ const CallModel = ({ isOpen, onClose, id }) => {
                     ref={draggableRef}
                     className={`${
                       isSelfVideoMaximized
-                        ? " w-full h-1/2  bottom-0 left-0"
-                        : "w-1/5 aspect-square cursor-grab top-2 left-2"
-                    }  absolute  z-40  flex   items-center justify-center overflow-hidden rounded border border-gray-500 bg-black`}
+                        ? " h-1/2 w-full  bottom-0 left-0"
+                        : "w-1/5  cursor-grab top-2 left-2"
+                    } ${
+                      cameraOn
+                        ? "bg-black border  border-gray-600"
+                        : `bg-transparent ${
+                            isSpeaking &&
+                            "border-4 rounded-full border-green-400"
+                          }` //border-4 rounded-full border-green-400
+                    }   aspect-square absolute  z-40  flex   items-center justify-center overflow-hidden rounded `}
                   >
                     {!cameraOn && (
                       <UserStatusIndicator
                         userId={profile?._id}
                         userData={{ avatar: profile?.avatar }}
-                        css="w-full h-full rounded-full"
+                        css={`aspect-square  ${
+                          isSelfVideoMaximized ? " w-[40%]" : "h-full"
+                        } rounded-full`}
                         styler={{ badge: { size: "14px" } }}
                       />
                     )}
@@ -392,8 +458,8 @@ const CallModel = ({ isOpen, onClose, id }) => {
                 </Draggable>
 
                 {/* Call controls */}
-                <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 transform">
-                  <div className="flex h-12 items-center gap-4">
+                <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 transform group">
+                  <div className="flex h-12 items-center gap-4 opacity-20 group-hover:opacity-100 transition duration-200">
                     {/* Toggle camera */}
                     <button
                       onClick={toggleCamera}
@@ -411,11 +477,15 @@ const CallModel = ({ isOpen, onClose, id }) => {
                       onClick={() =>
                         setIsSelfVideoMaximized(!isSelfVideoMaximized)
                       }
-                      className="flex h-12 w-12 items-center justify-center gap-2 rounded-full bg-gray-600 p-3 text-white shadow-md transition duration-200 hover:bg-gray-700"
+                      className="flex h-12 w-12 items-center justify-center gap-2 rounded-full bg-gray-300  p-3 text-black shadow-md transition duration-200 hover:bg-gray-400"
                       title="Phóng to video của bạn"
                     >
                       <span className="text-xs font-bold">
-                        {isSelfVideoMaximized ? "Thu" : "To"}
+                        {isSelfVideoMaximized ? (
+                          <ZoomInIcon />
+                        ) : (
+                          <ZoomOutIcon />
+                        )}
                       </span>
                     </button>
 
