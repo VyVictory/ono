@@ -84,10 +84,10 @@ export const SocketProvider = ({ children }) => {
 
   const showToast = (message) => {
     if (idUser === message?.sender?._id) {
-      console.log(
-        "Đang ở trang hội thoại của user này, không hiển thị thông báo.",
-        idUser
-      );
+      // console.log(
+      //   "Đang ở trang hội thoại của user này, không hiển thị thông báo.",
+      //   idUser
+      // );
       return;
     }
     if (toastIdsRef.current.length >= 3) {
@@ -126,8 +126,7 @@ export const SocketProvider = ({ children }) => {
     const handleNewNotifi = (data) => {
       setNewNotifi(data);
     };
-    const handleLoadProfile = (data) => {
-      console.log("Load profile data:", data);
+    const handleLoadProfile = (data) => { 
       setLoadProfile(data);
     };
     socket.on("notification", handleNewNotifi);

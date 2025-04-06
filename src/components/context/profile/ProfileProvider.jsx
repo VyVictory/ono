@@ -41,8 +41,7 @@ export const ProfileProvider = ({ children }) => {
     };
     idUser && fetchProfile();
   }, [idUser, reload]);
-  useEffect(() => {
-    console.log(loadProfile?._id, "loadProfile", id);
+  useEffect(() => { 
     if (loadProfile && loadProfile?._id === id) {
       setReload(!reload);
     }

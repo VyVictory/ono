@@ -17,8 +17,7 @@ const AddFollow = ({ profile }) => {
       setLoading(true);
       try {
         const res = await checkFollow(profile._id);
-        if (res.status == 200) {
-          console.log(res?.data?.following);
+        if (res.status == 200) { 
           setStatusFollow(res?.data?.following);
         }
       } catch (error) {

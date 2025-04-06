@@ -80,7 +80,7 @@ const NotificationDropDow = () => {
     };
 
     const notifications = await chaneFetch();
-    console.log(notifications);
+    // console.log(notifications);
     setNotifications(notifications);
     isFetchNotifi.current = true; // Cập nhật ref để tránh fetch lại
   };

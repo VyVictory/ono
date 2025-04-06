@@ -9,8 +9,7 @@ export const follow = async (idUser) => {
     if (!token) {
       nextLogin();
     }
-    const response = await api.post(`follow/${idUser}`);
-    console.log(response.data);
+    const response = await api.post(`follow/${idUser}`); 
     return response;
   } catch (error) {
     nextError(error);
@@ -22,8 +21,7 @@ export const unFollow = async (idUser) => {
     if (!token) {
       nextLogin();
     }
-    const response = await api.delete(`follow/${idUser}`);
-    console.log(response.data);
+    const response = await api.delete(`follow/${idUser}`); 
     return response;
   } catch (error) {
     nextError(error);
@@ -36,8 +34,7 @@ export const checkFollow = async (idUser) => {
     if (!token) {
       nextLogin();
     }
-    const response = await api.get(`follow/check/${idUser}`);
-    console.log(response);
+    const response = await api.get(`follow/check/${idUser}`); 
     return response;
   } catch (error) {
     nextError(error);
