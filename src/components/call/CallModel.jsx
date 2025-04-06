@@ -256,12 +256,12 @@ const CallModel = ({ isOpen, onClose, id }) => {
             >
               <div className=" relative h-full w-full bg-black">
                 <>
-                  {isAccept && !partnerVideoRef?.current && (
+                  {!partnerVideoRef?.current && (
                     <div className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-4 py-2 rounded text-lg font-semibold z-40">
                       Đang gọi...
                     </div>
                   )}
-                  {partnerVideoRef?.current ? (
+                  {partnerVideoRef ? (
                     <video
                       ref={partnerVideoRef}
                       autoPlay
@@ -286,7 +286,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
                   <Draggable bounds="parent" nodeRef={draggableRef}>
                     <div
                       ref={draggableRef}
-                      className="absolute bottom-0 left-0 flex justify-center items-center cursor-grab w-1/5 bg-black aspect-square border border-gray-200 rounded overflow-hidden"
+                      className="absolute bottom-0 left-0 flex justify-center items-center cursor-grab w-1/5 bg-black aspect-square border border-gray-200 rounded overflow-hidden z-50"
                     >
                       <video
                         ref={myVideoRef}
@@ -299,7 +299,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
 
                   <button
                     onClick={() => cleanupCall()}
-                    className="bg-red-500 p-4 rounded-full hover:bg-red-600 z-50 fixed bottom-5 left-1/2 transform -translate-x-1/2"
+                    className="bg-red-500 p-4 rounded-full hover:bg-red-600 z-40 fixed bottom-5 left-1/2 transform -translate-x-1/2"
                   >
                     <PhoneXMarkIcon className="w-12 h-12 text-white" />
                   </button>
