@@ -385,7 +385,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
 
       // Check if any frequency bin has a value above the threshold
       for (let i = 0; i < bufferLength; i++) {
-        if (dataArray[i] > 10) {
+        if (dataArray[i] > 100) {
           // You can adjust this threshold
           isAudioDetected = true;
           break;
@@ -430,7 +430,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
 
       // Check if any frequency bin has a value above the threshold
       for (let i = 0; i < bufferLength; i++) {
-        if (partnerDataArray[i] > 10) {
+        if (partnerDataArray[i] > 100) {
           isPartnerAudioDetected = true;
           break;
         }
