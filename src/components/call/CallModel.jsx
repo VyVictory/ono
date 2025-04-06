@@ -337,7 +337,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
 
     const checkAudioActivity = () => {
       analyser.getByteFrequencyData(dataArray);
-      const isDetected = dataArray.some((value) => value > 100); // giảm ngưỡng
+      const isDetected = dataArray.some((value) => value > 80); // giảm ngưỡng
       setIsSpeakingSelf(isDetected);
     };
 
@@ -366,7 +366,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
 
     const checkAudioActivity = () => {
       analyser.getByteFrequencyData(dataArray);
-      const isDetected = dataArray.some((value) => value > 100);
+      const isDetected = dataArray.some((value) => value > 80);
       setIsSpeakingPartner(isDetected);
     };
 
