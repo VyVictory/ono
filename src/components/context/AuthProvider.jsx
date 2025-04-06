@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const userData = await getProfile();
       // console.log("Profilee:", userData);
-      setProfile(userData);
+      setProfile(userData?.data);
     } catch (error) {
       // console.error("Fetch profile failed err:", error);
     } finally {

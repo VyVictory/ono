@@ -42,7 +42,7 @@ const Messages = () => {
       if (type == "inbox") {
         try {
           const response = await getCurrentUser(id);
-          setProfileUser(response);
+          setProfileUser(response.data);
           // console.log(response);
         } catch (error) {
           console.error("Get Profile Error:", error);

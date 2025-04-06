@@ -4,23 +4,20 @@ import {
   ChevronDownIcon,
   PencilIcon,
   ChatBubbleLeftEllipsisIcon,
-} from "@heroicons/react/24/solid";
-import avt from "../../img/DefaultAvatar.jpg";
+} from "@heroicons/react/24/solid"; 
 import "../../css/post.css";
 import ContentProfile from "./ContentProfile";
 import pictureBG from "../../img/sky.webp";
 import MenuProfile from "./MenuProfile";
 import { useProfile } from "../../components/context/profile/ProfileProvider";
-import AddFriend from "../../components/AddFriend";
-import PostLeft from "./post/PostLeft";
+import AddFriend from "../../components/AddFriend"; 
 import { useModule } from "../../components/context/Module";
 import { useNavigate } from "react-router-dom";
 import { getPostHome } from "../../service/post";
 import { Button, ButtonBase } from "@mui/material";
 import UserStatusIndicator from "../../components/UserStatusIndicator";
 import { getFriendsMess } from "../../service/friend";
-import DropdownChangeImage from "./DropdownChangeImage";
-import { FavoriteBorder, Add, Remove } from "@mui/icons-material";
+import DropdownChangeImage from "./DropdownChangeImage"; 
 import AddFollow from "./AddFollow";
 const Profile = () => {
   const { setZoomImg } = useModule();

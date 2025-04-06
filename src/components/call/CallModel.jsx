@@ -10,16 +10,26 @@ import { useCall } from "../context/CallProvider";
 import { useSocketContext } from "../context/socketProvider";
 import { useConfirm } from "../context/ConfirmProvider";
 import { PhoneXMarkIcon } from "@heroicons/react/24/outline";
-import { constrainedMemory } from "process";
+import { getCurrentUser } from "../../service/user";
+import UserStatusIndicator from "../UserStatusIndicator";
 
 const CallModel = ({ isOpen, onClose, id }) => {
   const { socket } = useSocketContext();
   const confirm = useConfirm();
-  const { incomingCall, setIncomingCall, isAccept, setIsAccept, setCallId } =
-    useCall();
+  const {
+    incomingCall,
+    setIncomingCall,
+    isAccept,
+    setIsAccept,
+    setCallId,
+    callId,
+  } = useCall();
   const [stream, setStream] = useState(null);
+  const [profileRender, setProfileRender] = useState(null);
   const myVideoRef = useRef(null);
   const partnerVideoRef = useRef(null);
+  const draggableRef = useRef(null);
+
   const peerRef = useRef(null);
   useEffect(() => {
     if (!socket) return;
@@ -36,6 +46,18 @@ const CallModel = ({ isOpen, onClose, id }) => {
       socket.off("end-call", handleEndCall);
     };
   }, [socket]);
+  useEffect(() => {
+    if (!callId) return;
+    const fetchProfile = async () => {
+      const response = await getCurrentUser(callId);
+      if (response && response.status === 200) {
+        setProfileRender(response.data);
+      } else {
+        toast.error("Không thể lấy thông tin người dùng!");
+      }
+    };
+    fetchProfile();
+  }, [callId]);
   useEffect(() => {
     if (!id || isAccept) return;
     startCall();
@@ -226,32 +248,64 @@ const CallModel = ({ isOpen, onClose, id }) => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2, ease: "linear" }}
-            className="fixed inset-0 flex items-center justify-center bg-opacity-50 bg-black lg:px-0 z-50"
+            className="fixed inset-0 flex items-center justify-center bg-opacity-50 bg-black px-0 z-50"
           >
-            <Paper
+            <div
               onClick={(e) => e.stopPropagation()}
-              className="max-w-[100dvh] lg:max-w-[90dvh] h-full max-h-[100dvh] border-2"
+              className="max-w-[100dvh] sm:max-w-[70dvh] h-full max-h-[100dvh] w-full relative"
             >
-              <div className=" relative h-full w-full bg-black ">
-                <video
-                  ref={partnerVideoRef}
-                  autoPlay
-                  muted
-                  className="w-full h-full border rounded"
-                />
-                <Draggable bounds="parent" nodeRef={myVideoRef}>
-                  <div className="absolute bottom-0 left-0 flex justify-center items-center cursor-grab w-1/5 bg-black aspect-square border rounded">
-                    <video ref={myVideoRef} autoPlay className=" " />
-                  </div>
-                </Draggable>
-                <button
-                  onClick={() => cleanupCall()}
-                  className="bg-red-500 p-4 rounded-full hover:bg-red-600 z-50 fixed bottom-5 left-1/2 transform -translate-x-1/2"
-                >
-                  <PhoneXMarkIcon className="w-12 h-12 text-white" />
-                </button>
+              <div className=" relative h-full w-full bg-black">
+                <>
+                  {isAccept && !partnerVideoRef?.current && (
+                    <div className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-4 py-2 rounded text-lg font-semibold z-40">
+                      Đang gọi...
+                    </div>
+                  )}
+                  {partnerVideoRef?.current ? (
+                    <video
+                      ref={partnerVideoRef}
+                      autoPlay
+                      className="w-full h-full rounded "
+                    />
+                  ) : (
+                    <div className="w-full h-full relative  flex justify-center items-center">
+                      <div className="-w-24 aspect-square w-[40%] relative">
+                        <UserStatusIndicator
+                          userId={profileRender?._id}
+                          userData={{ avatar: profileRender?.avatar }}
+                          css={`w-full h-full rounded-full`}
+                          styler={{
+                            badge: {
+                              size: "14px", // ✅ Badge lớn hơn
+                            },
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  <Draggable bounds="parent" nodeRef={draggableRef}>
+                    <div
+                      ref={draggableRef}
+                      className="absolute bottom-0 left-0 flex justify-center items-center cursor-grab w-1/5 bg-black aspect-square border border-gray-200 rounded overflow-hidden"
+                    >
+                      <video
+                        ref={myVideoRef}
+                        autoPlay
+                        muted
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </Draggable>
+
+                  <button
+                    onClick={() => cleanupCall()}
+                    className="bg-red-500 p-4 rounded-full hover:bg-red-600 z-50 fixed bottom-5 left-1/2 transform -translate-x-1/2"
+                  >
+                    <PhoneXMarkIcon className="w-12 h-12 text-white" />
+                  </button>
+                </>
               </div>
-            </Paper>
+            </div>
           </motion.div>
         </Dialog>
       )}

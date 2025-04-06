@@ -3,6 +3,7 @@ import { SocketProvider } from "../components/context/socketProvider";
 import { ConfirmProvider } from "../components/context/ConfirmProvider";
 import { ModuleProvider } from "../components/context/Module";
 import { CallProvider } from "../components/context/CallProvider";
+import { ProfileProvider } from "../components/context/profile/ProfileProvider";
 const MainContext = createContext();
 
 export const MainProvider = ({ children }) => {
@@ -11,9 +12,11 @@ export const MainProvider = ({ children }) => {
     <MainContext.Provider value={{ mainState, setMainState }}>
       <ConfirmProvider>
         <SocketProvider>
-          <ModuleProvider>
-            <CallProvider>{children}</CallProvider>
-          </ModuleProvider>
+          <ProfileProvider>
+            <ModuleProvider>
+              <CallProvider>{children}</CallProvider>
+            </ModuleProvider>
+          </ProfileProvider>
         </SocketProvider>
       </ConfirmProvider>
     </MainContext.Provider>

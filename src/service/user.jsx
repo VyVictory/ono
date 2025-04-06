@@ -12,7 +12,7 @@ export const getProfile = async () => {
       return null;
     }
     const response = await api.get("user/profile");
-    return response.data;
+    return response;
   } catch (error) {
     nextError(error);
     return null;
@@ -22,7 +22,7 @@ export const getCurrentUser = async (id) => {
   try {
     const response = await api.get("user/profile/" + id);
     // console.log(response)
-    return response.data;
+    return response;
   } catch (error) {
     // nextError(error);
     return null;
@@ -31,7 +31,7 @@ export const getCurrentUser = async (id) => {
 export const getSearchUser = async (name) => {
   try {
     const response = await api.get("user/finduser/" + name);
-    return response.data;
+    return response;
   } catch (error) {
     return null;
   }

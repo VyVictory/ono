@@ -71,8 +71,10 @@ const GroupSiderBar = () => {
               className="hover:bg-gray-200 w-full"
             >
               <div className="w-full flex items-center space-x-2 p-2 border-b border-gray-100 min-h-10">
-                <UserStatusIndicator userId={friend?._id} userData={friend} />
-                <strong className="font-medium text-start">
+                <div className="h-8 w-8">
+                  <UserStatusIndicator userId={friend?._id} userData={friend} />
+                </div>
+                <strong className="font-medium text-start text-xs">
                   {friend.firstName} {friend.lastName}
                 </strong>
               </div>

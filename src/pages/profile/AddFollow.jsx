@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { checkFollow, follow, unFollow } from "../../service/follow"; // ✅ Kiểm tra lại import này
 import { Box } from "@mui/material";
 import { FavoriteBorder, Add, Remove } from "@mui/icons-material";
+import LoadingAnimation from "../../components/LoadingAnimation";
 
 const AddFollow = ({ profile }) => {
   const [loading, setLoading] = useState(false);
@@ -87,31 +88,40 @@ const AddFollow = ({ profile }) => {
     >
       <Box display="flex" gap={2}>
         <Box position="relative" display="inline-block">
-          <FavoriteBorder fontSize="large" color="error" />
-          {statusFollow ? (
-            <Remove
-              fontSize="small"
-              color="secondary"
-              sx={{
-                position: "absolute",
-                bottom: 0,
-                right: -5,
-                backgroundColor: "white",
-                borderRadius: "50%",
-              }}
-            />
+          {loading ? (
+            <div className="w-full h-full">
+              <LoadingAnimation />
+            </div>
           ) : (
-            <Add
-              fontSize="small"
-              color="primary"
-              sx={{
-                position: "absolute",
-                bottom: 0,
-                right: -5,
-                backgroundColor: "white",
-                borderRadius: "50%",
-              }}
-            />
+            <>
+              {" "}
+              <FavoriteBorder fontSize="large" color="error" />{" "}
+              {statusFollow ? (
+                <Remove
+                  fontSize="small"
+                  color="secondary"
+                  sx={{
+                    position: "absolute",
+                    bottom: 0,
+                    right: -5,
+                    backgroundColor: "white",
+                    borderRadius: "50%",
+                  }}
+                />
+              ) : (
+                <Add
+                  fontSize="small"
+                  color="primary"
+                  sx={{
+                    position: "absolute",
+                    bottom: 0,
+                    right: -5,
+                    backgroundColor: "white",
+                    borderRadius: "50%",
+                  }}
+                />
+              )}
+            </>
           )}
         </Box>
       </Box>

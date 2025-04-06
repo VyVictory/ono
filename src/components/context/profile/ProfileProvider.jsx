@@ -2,15 +2,18 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom"; // Nếu dùng React Router
 import { getCurrentUser } from "../../../service/user";
 import { useAuth } from "../AuthProvider";
+import { useSocketContext } from "../socketProvider";
 const ProfileContext = createContext();
 
 export const ProfileProvider = ({ children }) => {
   const [content, setContent] = useState(null);
   const location = useLocation(); // Lấy URL hiện tại
+  const { loadProfile, setLoadProfile } = useSocketContext();
   const [idUser, setIdUser] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [profileRender, setProfileRender] = useState(null);
+  const [reload, setReload] = useState(true);
   const { isLoadingProfile, profile } = useAuth();
   const urlParams = new URLSearchParams(window.location.search);
   const id = urlParams.get("id");
@@ -31,13 +34,19 @@ export const ProfileProvider = ({ children }) => {
       try {
         const response = await getCurrentUser(idUser);
         setLoading(false);
-        setCurrentUser(response);
+        setCurrentUser(response?.data);
       } catch (error) {
         console.error("Get Profile Error:", error);
       }
     };
     idUser && fetchProfile();
-  }, [idUser]);
+  }, [idUser, reload]);
+  useEffect(() => {
+    console.log(loadProfile?._id, "loadProfile", id);
+    if (loadProfile && loadProfile?._id === id) {
+      setReload(!reload);
+    }
+  }, [loadProfile]);
   useEffect(() => {
     if (id != null && currentUser?._id != profile?._id) {
       setProfileRender({ myprofile: false, profile: currentUser });

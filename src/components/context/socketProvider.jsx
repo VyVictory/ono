@@ -8,7 +8,6 @@ import React, {
 import { useAuth } from "./AuthProvider";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "../../css/toastStyles.css";
 import { Button } from "@headlessui/react";
 import UserStatusIndicator from "../UserStatusIndicator";
 import { useNavigate } from "react-router-dom";
@@ -74,6 +73,7 @@ export const SocketProvider = ({ children }) => {
   const [newNotifi, setNewNotifi] = useState(null);
   const [recallMessId, setRecallMessId] = useState(null);
   const [idUser, setIdUser] = useState(null);
+  const [loadProfile, setLoadProfile] = useState(null);
   const location = useLocation();
   const toastIdsRef = useRef([]);
   useEffect(() => {
@@ -126,11 +126,17 @@ export const SocketProvider = ({ children }) => {
     const handleNewNotifi = (data) => {
       setNewNotifi(data);
     };
+    const handleLoadProfile = (data) => {
+      console.log("Load profile data:", data);
+      setLoadProfile(data);
+    };
     socket.on("notification", handleNewNotifi);
+    socket.on("loadProfile", handleLoadProfile);
     socket.on("messageRecalled", handleRecallMessage);
     return () => {
       socket.off("newMessage", handleNewMessage);
       socket.off("messageRecalled", handleRecallMessage);
+      socket.on("loadProfile", handleLoadProfile);
       // socket.off("messagesDelivered");
       // socket.off("messagesSeen");
     };
@@ -144,6 +150,8 @@ export const SocketProvider = ({ children }) => {
         setRecallMessId,
         socket,
         newNotifi,
+        loadProfile,
+        setLoadProfile,
         setNewNotifi,
         userId: profile?._id,
       }}
