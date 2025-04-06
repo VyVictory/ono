@@ -175,6 +175,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
         audio: true,
       });
       setStream(userStream);
+      fetchProfile();
       if (myVideoRef.current) myVideoRef.current.srcObject = userStream;
 
       peerRef.current = new SimplePeer({
