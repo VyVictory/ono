@@ -311,22 +311,24 @@ const CallModel = ({ isOpen, onClose, id }) => {
                   </div>
                 )}
 
-                {isLoadingVideo ? (
+                {isLoadingVideo && (
                   <div className="w-full h-full absolute top-0 left-0 flex justify-center items-center bg-black">
                     <div className="spinner-border text-white" role="status">
                       <span className="sr-only">Loading...</span>
                     </div>
                   </div>
-                ) : (
-                  <video
-                    ref={partnerVideoRef}
-                    autoPlay
-                    className="w-full h-full rounded"
-                    style={{
-                      display: isVideo && isPartnerVideoOn ? "block" : "none",
-                    }}
-                  />
                 )}
+                <video
+                  ref={partnerVideoRef}
+                  autoPlay
+                  className="w-full h-full rounded"
+                  style={{
+                    display:
+                      isVideo && isPartnerVideoOn && !isLoadingVideo
+                        ? "block"
+                        : "none",
+                  }}
+                />
                 {(!isPartnerVideoOn || !isVideo) && (
                   <div className="w-full h-full absolute top-0 left-0 flex justify-center items-center bg-black">
                     <div className="-w-24 aspect-square w-[40%] relative">
