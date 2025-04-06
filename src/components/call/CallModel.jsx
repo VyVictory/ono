@@ -365,7 +365,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
 
     // Create the audio context and analyser for self
     const audioContext = new (window.AudioContext ||
-      window.webkitAudioContext)();
+      window.AudioContext)();
     const analyser = audioContext.createAnalyser();
 
     // Connect the analyser to the audio context
@@ -395,7 +395,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
     };
 
     // Continuously check for audio activity every 100ms
-    const intervalId = setInterval(checkAudioActivity, 100);
+    const intervalId = setInterval(checkAudioActivity, 1);
 
     // Clean up when the component unmounts
     return () => {
@@ -412,7 +412,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
     if (isLoadingVideo) return;
     // Create AudioContext and Analyser for partner
     const partnerAudioContext = new (window.AudioContext ||
-      window.webkitAudioContext)();
+      window.AudioContext)();
     const partnerAnalyser = partnerAudioContext.createAnalyser();
 
     // Create MediaStreamSource for partner's stream
@@ -439,7 +439,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
     };
 
     // Continuously check for audio activity every 100ms
-    const partnerAudioIntervalId = setInterval(checkPartnerAudioActivity, 100);
+    const partnerAudioIntervalId = setInterval(checkPartnerAudioActivity, 1);
 
     // Clean up when the component unmounts
     return () => {

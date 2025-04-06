@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Dialog } from "@headlessui/react";
-import { Paper } from "@mui/material";
+import { Button, Dialog } from "@headlessui/react"; 
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import SimplePeer from "simple-peer";
@@ -9,16 +8,19 @@ import {
   VideoCameraIcon,
   VideoCameraSlashIcon,
 } from "@heroicons/react/24/outline"; // Đảm bảo bạn đã import các icon cần thiết
-
+import ZoomInIcon from "@mui/icons-material/ZoomIn";
+import ZoomOutIcon from "@mui/icons-material/ZoomOut";
 import { useCall } from "../context/CallProvider";
 import { useSocketContext } from "../context/socketProvider";
 import { useConfirm } from "../context/ConfirmProvider";
 import { PhoneXMarkIcon } from "@heroicons/react/24/outline";
 import { getCurrentUser } from "../../service/user";
 import UserStatusIndicator from "../UserStatusIndicator";
+import { useAuth } from "../context/AuthProvider";
 
 const CallModel = ({ isOpen, onClose, id }) => {
   const { socket } = useSocketContext();
+  const { profile } = useAuth();
   const confirm = useConfirm();
   const {
     incomingCall,
@@ -32,13 +34,18 @@ const CallModel = ({ isOpen, onClose, id }) => {
   } = useCall();
   const [stream, setStream] = useState(null);
   const [profileRender, setProfileRender] = useState(null);
-  const [isVideoReady, setIsVideoReady] = useState(false);
   const [cameraOn, setCameraOn] = useState(true); // Camera state
   const myVideoRef = useRef(null);
   const partnerVideoRef = useRef(null);
   const draggableRef = useRef(null);
   const peerRef = useRef(null);
   const [isPartnerVideoOn, setIsPartnerVideoOn] = useState(true);
+  const [isLoadingVideo, setIsLoadingVideo] = useState(true);
+  const [isSelfVideoMaximized, setIsSelfVideoMaximized] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false); // Kiểm tra trạng thái âm thanh
+  const audioContextRef = useRef(null); // Audio context để phân tích âm thanh
+  const analyserRef = useRef(null); // Analyser để kiểm tra âm thanh
+  const audioDataRef = useRef(new Uint8Array(0)); // Dữ liệu âm thanh
 
   useEffect(() => {
     if (!socket) return;
@@ -59,19 +66,6 @@ const CallModel = ({ isOpen, onClose, id }) => {
   }, [socket]);
 
   useEffect(() => {
-    if (!callId) return;
-    const fetchProfile = async () => {
-      const response = await getCurrentUser(callId);
-      if (response && response.status === 200) {
-        setProfileRender(response.data);
-      } else {
-        toast.error("Không thể lấy thông tin người dùng!");
-      }
-    };
-    fetchProfile();
-  }, [callId]);
-
-  useEffect(() => {
     if (!id || isAccept) return;
     startCall();
     return () => {
@@ -85,7 +79,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
       }
     };
   }, []);
-
+  useEffect(() => {}, [stream]);
   const handleEndCall = () => {
     if (isAccept || peerRef.current) {
       toast.error("Cuộc gọi kết thúc", { autoClose: 500 });
@@ -126,6 +120,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
       setCallId(null);
       return;
     }
+    fetchProfile();
     setIsAccept(true);
     try {
       const userStream = await navigator.mediaDevices.getUserMedia({
@@ -146,6 +141,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
       });
 
       peerRef.current.on("stream", (remoteStream) => {
+        setIsLoadingVideo(false); // Video loaded
         if (partnerVideoRef.current)
           partnerVideoRef.current.srcObject = remoteStream;
       });
@@ -161,7 +157,15 @@ const CallModel = ({ isOpen, onClose, id }) => {
       toast.error("Không thể truy cập camera/micro!");
     }
   };
-
+  const fetchProfile = async () => {
+    if (!callId) return;
+    const response = await getCurrentUser(callId);
+    if (response && response.status === 200) {
+      setProfileRender(response.data);
+    } else {
+      toast.error("Không thể lấy thông tin người dùng!");
+    }
+  };
   const acceptCall = async () => {
     if (!incomingCall) return;
 
@@ -186,6 +190,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
       });
 
       peerRef.current.on("stream", (remoteStream) => {
+        setIsLoadingVideo(false); // Video loaded
         if (partnerVideoRef.current)
           partnerVideoRef.current.srcObject = remoteStream;
       });
@@ -214,7 +219,6 @@ const CallModel = ({ isOpen, onClose, id }) => {
       peerRef.current.signal(candidate);
     }
   };
-
   const cleanupCall = () => {
     // Reset all states
     setIsAccept(null);
@@ -225,7 +229,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
     setIsPartnerVideoOn(true);
     setProfileRender(null);
 
-    // Notify server to end call
+    // Notify server to end the call
     endCallHand();
 
     // Destroy peer connection
@@ -242,7 +246,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
           track.stop();
           stream.removeTrack(track);
         } catch (err) {
-          console.warn("Lỗi khi stop/remove track:", err);
+          console.warn("Error stopping/removing track:", err);
         }
       });
       setStream(null);
@@ -264,8 +268,76 @@ const CallModel = ({ isOpen, onClose, id }) => {
       })
       .catch(() => {});
 
+    // Cleanup AudioContext if it exists
+    if (audioContextRef.current) {
+      audioContextRef.current.close().catch((err) => console.error("Error closing audio context:", err));
+      audioContextRef.current = null;
+    }
+
+    if (audioContextRef.current) {
+      const analyser = analyserRef.current;
+      if (analyser) {
+        analyser.disconnect();
+      }
+    }
+
+    // Clear AudioData
+    audioDataRef.current = new Uint8Array(0);
+
     onClose?.();
-  };
+};
+
+  // const cleanupCall = () => {
+  //   // Reset all states
+  //   setIsAccept(null);
+  //   setIncomingCall(null);
+  //   setCallId(null);
+  //   setIsVideo(false);
+  //   setCameraOn(true);
+  //   setIsPartnerVideoOn(true);
+  //   setProfileRender(null);
+
+  //   // Notify server to end call
+  //   endCallHand();
+
+  //   // Destroy peer connection
+  //   if (peerRef.current) {
+  //     peerRef.current.removeAllListeners();
+  //     peerRef.current.destroy();
+  //     peerRef.current = null;
+  //   }
+
+  //   // Stop media stream
+  //   if (stream) {
+  //     stream.getTracks().forEach((track) => {
+  //       try {
+  //         track.stop();
+  //         stream.removeTrack(track);
+  //       } catch (err) {
+  //         console.warn("Lỗi khi stop/remove track:", err);
+  //       }
+  //     });
+  //     setStream(null);
+  //   }
+
+  //   // Clear video elements
+  //   if (myVideoRef.current) {
+  //     myVideoRef.current.srcObject = null;
+  //   }
+  //   if (partnerVideoRef.current) {
+  //     partnerVideoRef.current.srcObject = null;
+  //   }
+
+  //   // Extra cleanup for possible ghost media stream
+  //   navigator.mediaDevices
+  //     .getUserMedia({ video: true, audio: true })
+  //     .then((tempStream) => {
+  //       tempStream.getTracks().forEach((track) => track.stop());
+  //     })
+  //     .catch(() => {});
+
+  //   onClose?.();
+  // };
   const endCallHand = async () => {
     if (socket && id) {
       return socket.emit("end-call", { target: id });
@@ -286,8 +358,97 @@ const CallModel = ({ isOpen, onClose, id }) => {
       setCameraOn(true);
     }
   };
-  if (!id || !isAccept) return null;
+  const [isSpeakingSelf, setIsSpeakingSelf] = useState(false);
 
+  useEffect(() => {
+    if (!stream) return;
+
+    // Create the audio context and analyser for self
+    const audioContext = new (window.AudioContext ||
+      window.webkitAudioContext)();
+    const analyser = audioContext.createAnalyser();
+
+    // Connect the analyser to the audio context
+    const source = audioContext.createMediaStreamSource(stream);
+    source.connect(analyser);
+
+    // Set up the analyser
+    analyser.fftSize = 256; // FFT size
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    // Function to check audio activity
+    const checkAudioActivity = () => {
+      analyser.getByteFrequencyData(dataArray);
+      let isAudioDetected = false;
+
+      // Check if any frequency bin has a value above the threshold
+      for (let i = 0; i < bufferLength; i++) {
+        if (dataArray[i] > 10) {
+          // You can adjust this threshold
+          isAudioDetected = true;
+          break;
+        }
+      }
+
+      setIsSpeakingSelf(isAudioDetected); // Update speaking state for self
+    };
+
+    // Continuously check for audio activity every 100ms
+    const intervalId = setInterval(checkAudioActivity, 10);
+
+    // Clean up when the component unmounts
+    return () => {
+      clearInterval(intervalId);
+      if (audioContext) {
+        audioContext.close(); // Close the audio context
+      }
+    };
+  }, [stream]);
+  const [isSpeakingPartner, setIsSpeakingPartner] = useState(false);
+
+  useEffect(() => {
+    if (!stream || !peerRef.current) return;
+    if (isLoadingVideo) return;
+    // Create AudioContext and Analyser for partner
+    const partnerAudioContext = new (window.AudioContext ||
+      window.webkitAudioContext)();
+    const partnerAnalyser = partnerAudioContext.createAnalyser();
+
+    // Create MediaStreamSource for partner's stream
+    const partnerSource = partnerAudioContext.createMediaStreamSource(stream);
+    partnerSource.connect(partnerAnalyser);
+
+    partnerAnalyser.fftSize = 256;
+    const bufferLength = partnerAnalyser.frequencyBinCount;
+    const partnerDataArray = new Uint8Array(bufferLength);
+
+    const checkPartnerAudioActivity = () => {
+      partnerAnalyser.getByteFrequencyData(partnerDataArray);
+      let isPartnerAudioDetected = false;
+
+      // Check if any frequency bin has a value above the threshold
+      for (let i = 0; i < bufferLength; i++) {
+        if (partnerDataArray[i] > 10) {
+          isPartnerAudioDetected = true;
+          break;
+        }
+      }
+
+      setIsSpeakingPartner(isPartnerAudioDetected); // Update speaking state for partner
+    };
+
+    // Continuously check for audio activity every 100ms
+    const partnerAudioIntervalId = setInterval(checkPartnerAudioActivity, 10);
+
+    // Clean up when the component unmounts
+    return () => {
+      clearInterval(partnerAudioIntervalId);
+      if (partnerAudioContext) partnerAudioContext.close();
+    };
+  }, [stream, isLoadingVideo]);
+
+  if (!id || !isAccept) return null;
   return (
     <>
       {isOpen && id && (
@@ -297,85 +458,163 @@ const CallModel = ({ isOpen, onClose, id }) => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2, ease: "linear" }}
-            className="fixed inset-0 flex items-center justify-center bg-opacity-50 bg-black px-0 z-50"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-0"
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="max-w-[100dvh] sm:max-w-[70dvh] h-full max-h-[100dvh] w-full relative"
+              className="relative h-full w-full max-h-[100dvh] max-w-[100dvh] sm:max-w-[70dvh] bg-black"
             >
               <div className="relative h-full w-full bg-black">
-                {!isVideo && (
-                  <div className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-4 py-2 rounded text-lg font-semibold z-40">
-                    Đang gọi...
-                  </div>
-                )}
-
-                <video
-                  ref={partnerVideoRef}
-                  autoPlay
-                  className="w-full h-full rounded"
-                  style={{
-                    display: isVideo && isPartnerVideoOn ? "block" : "none",
-                  }}
-                />
-
-                {(!isPartnerVideoOn || !isVideo) && (
-                  <div className="w-full h-full absolute top-0 left-0 flex justify-center items-center bg-black">
-                    <div className="-w-24 aspect-square w-[40%] relative">
-                      <UserStatusIndicator
-                        userId={profileRender?._id}
-                        userData={{ avatar: profileRender?.avatar }}
-                        css={`w-full h-full rounded-full`}
-                        styler={{
-                          badge: {
-                            size: "14px",
-                          },
-                        }}
-                      />
+                <div
+                  className={`relative w-full  ${
+                    isSelfVideoMaximized ? "h-1/2" : "h-full"
+                  }`}
+                >
+                  {/* Calling indicator */}
+                  {!isVideo && (
+                    <div className="absolute top-4 left-1/2 z-40 -translate-x-1/2 transform rounded bg-black bg-opacity-50 px-4 py-2 text-lg font-semibold text-gray-500">
+                      Đang gọi...
                     </div>
-                  </div>
-                )}
+                  )}
 
-                <Draggable bounds="parent" nodeRef={draggableRef}>
+                  {/* Loading */}
+                  {isLoadingVideo && (
+                    <div className="absolute top-0 left-0 flex h-full w-full items-center justify-center bg-black">
+                      <div
+                        className="spinner-border text-gray-500"
+                        role="status"
+                      >
+                        <span className="sr-only">
+                          Đang lấy Camera người dùng...
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Partner video */}
+                  <video
+                    ref={partnerVideoRef}
+                    autoPlay
+                    className="relative h-full w-full bg-black"
+                    style={{
+                      display:
+                        isVideo && isPartnerVideoOn && !isLoadingVideo
+                          ? "block"
+                          : "none",
+                    }}
+                  />
+
+                  {/* Fallback avatar if no video */}
+                  {(!isPartnerVideoOn || !isVideo) && (
+                    <div
+                      className={`absolute top-0 left-0 flex h-full w-full items-center justify-center bg-black }`}
+                    >
+                      <div
+                        className={`relative aspect-square w-[40%] ${
+                          isSpeakingPartner && !isPartnerVideoOn ? "" : ""
+                        }`}
+                      >
+                        {isSpeakingPartner && (
+                          <div className="absolute z-50 w-full h-full rounded-full border-4 border-green-500 animate-talkingEffect"></div>
+                        )}
+                        <UserStatusIndicator
+                          userId={profileRender?._id}
+                          userData={{ avatar: profileRender?.avatar }}
+                          css={`w-full h-full rounded-full`}
+                          styler={{ badge: { size: "14px" } }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {/* Self video (draggable) */}
+                <Draggable
+                  bounds="parent"
+                  nodeRef={draggableRef}
+                  disabled={isSelfVideoMaximized}
+                >
                   <div
                     ref={draggableRef}
-                    className="absolute bottom-0 left-0 flex justify-center items-center cursor-grab w-1/5 bg-black aspect-square border border-gray-200 rounded overflow-hidden z-50"
+                    className={`${
+                      isSelfVideoMaximized
+                        ? "h-1/2 w-full bottom-0 left-0"
+                        : "w-1/5 cursor-grab top-2 left-2"
+                    } ${
+                      cameraOn
+                        ? "bg-black border border-gray-600"
+                        : `bg-transparent`
+                    } aspect-square absolute z-40 flex items-center justify-center overflow-visible rounded`}
                   >
+                    {isSpeakingSelf && !cameraOn && (
+                      <div
+                        className={`absolute z-50 ${
+                          isSelfVideoMaximized ? "w-[40%]" : "w-full"
+                        } aspect-square rounded-full border-4 border-green-500 animate-talkingEffect`}
+                      ></div>
+                    )}
+                    {!cameraOn && (
+                      <UserStatusIndicator
+                        userId={profile?._id}
+                        userData={{ avatar: profile?.avatar }}
+                        css={`aspect-square ${
+                          isSelfVideoMaximized ? "w-[40%]" : "h-full"
+                        } rounded-full ${isSpeakingSelf ? "" : ""}`}
+                        styler={{ badge: { size: "14px" } }}
+                      />
+                    )}
+
                     <video
                       ref={myVideoRef}
                       autoPlay
                       muted
-                      className="w-full h-full object-cover"
+                      className="h-full w-full object-cover"
+                      style={{ display: cameraOn ? "block" : "none" }}
                     />
                   </div>
                 </Draggable>
-                <div className="z-40 fixed bottom-6 left-1/2 transform -translate-x-1/2">
-                  <div className="flex gap-4 h-12 items-center">
-                    {/* Toggle Camera Button */}
+
+                {/* Call controls */}
+                <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 transform group">
+                  <div className="flex h-12 items-center gap-4 opacity-20 group-hover:opacity-100 transition duration-200">
+                    {/* Toggle camera */}
                     <button
                       onClick={toggleCamera}
-                      className="flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium p-3 rounded-full shadow-md transition duration-200 w-12 h-12"
+                      className="flex h-12 w-12 items-center justify-center gap-2 rounded-full bg-blue-600 p-3 text-white shadow-md transition duration-200 hover:bg-blue-700"
                     >
-                      {/* Hiển thị icon tuỳ theo trạng thái camera */}
                       {cameraOn ? (
-                        <VideoCameraSlashIcon className="w-6 h-6" />
+                        <VideoCameraSlashIcon className="h-6 w-6" />
                       ) : (
-                        <VideoCameraIcon className="w-6 h-6" />
+                        <VideoCameraIcon className="h-6 w-6" />
                       )}
                     </button>
 
-                    {/* End Call Button */}
+                    {/* Zoom self video */}
+                    <button
+                      onClick={() =>
+                        setIsSelfVideoMaximized(!isSelfVideoMaximized)
+                      }
+                      className="flex h-12 w-12 items-center justify-center gap-2 rounded-full bg-gray-300  p-3 text-black shadow-md transition duration-200 hover:bg-gray-400"
+                      title="Phóng to video của bạn"
+                    >
+                      <span className="text-xs font-bold">
+                        {isSelfVideoMaximized ? (
+                          <ZoomInIcon />
+                        ) : (
+                          <ZoomOutIcon />
+                        )}
+                      </span>
+                    </button>
+
+                    {/* End call */}
                     <button
                       onClick={cleanupCall}
-                      className="bg-red-600 hover:bg-red-700 p-3 w-12 h-12 rounded-full shadow-md transition duration-200"
+                      className="h-12 w-12 rounded-full bg-red-600 p-3 shadow-md transition duration-200 hover:bg-red-700"
                       title="Kết thúc cuộc gọi"
                     >
-                      <PhoneXMarkIcon className="w-6 h-6 text-white" />
+                      <PhoneXMarkIcon className="h-6 w-6 text-white" />
                     </button>
                   </div>
                 </div>
-
-                {/* Toggle Camera Button */}
               </div>
             </div>
           </motion.div>
