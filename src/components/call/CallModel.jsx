@@ -292,26 +292,28 @@ const CallModel = ({ isOpen, onClose, id }) => {
       setCameraOn(true);
     }
   };
+  const [isSpeakingSelf, setIsSpeakingSelf] = useState(false);
+
   useEffect(() => {
     if (!stream) return;
 
-    // Create the audio context and analyser
-    audioContextRef.current = new (window.AudioContext ||
+    // Create the audio context and analyser for self
+    const audioContext = new (window.AudioContext ||
       window.webkitAudioContext)();
-    analyserRef.current = audioContextRef.current.createAnalyser();
+    const analyser = audioContext.createAnalyser();
 
     // Connect the analyser to the audio context
-    const source = audioContextRef.current.createMediaStreamSource(stream);
-    source.connect(analyserRef.current);
+    const source = audioContext.createMediaStreamSource(stream);
+    source.connect(analyser);
 
     // Set up the analyser
-    analyserRef.current.fftSize = 256; // FFT size
-    const bufferLength = analyserRef.current.frequencyBinCount;
+    analyser.fftSize = 256; // FFT size
+    const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
 
     // Function to check audio activity
     const checkAudioActivity = () => {
-      analyserRef.current.getByteFrequencyData(dataArray);
+      analyser.getByteFrequencyData(dataArray);
       let isAudioDetected = false;
 
       // Check if any frequency bin has a value above the threshold
@@ -323,7 +325,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
         }
       }
 
-      setIsSpeaking(isAudioDetected); // Update speaking state
+      setIsSpeakingSelf(isAudioDetected); // Update speaking state for self
     };
 
     // Continuously check for audio activity every 100ms
@@ -332,20 +334,23 @@ const CallModel = ({ isOpen, onClose, id }) => {
     // Clean up when the component unmounts
     return () => {
       clearInterval(intervalId);
-      if (audioContextRef.current) {
-        audioContextRef.current.close(); // Close the audio context
+      if (audioContext) {
+        audioContext.close(); // Close the audio context
       }
     };
   }, [stream]);
+  const [isSpeakingPartner, setIsSpeakingPartner] = useState(false);
+
   useEffect(() => {
     if (!stream || !peerRef.current) return;
 
-    // Tạo AudioContext và Analyser cho đối tác
+    // Create AudioContext and Analyser for partner
     const partnerAudioContext = new (window.AudioContext ||
       window.webkitAudioContext)();
     const partnerAnalyser = partnerAudioContext.createAnalyser();
 
-    const partnerSource = partnerAudioContext.createMediaStreamSource(stream); // stream từ đối tác
+    // Create MediaStreamSource for partner's stream
+    const partnerSource = partnerAudioContext.createMediaStreamSource(stream);
     partnerSource.connect(partnerAnalyser);
 
     partnerAnalyser.fftSize = 256;
@@ -356,21 +361,21 @@ const CallModel = ({ isOpen, onClose, id }) => {
       partnerAnalyser.getByteFrequencyData(partnerDataArray);
       let isPartnerAudioDetected = false;
 
-      // Kiểm tra nếu có âm thanh
+      // Check if any frequency bin has a value above the threshold
       for (let i = 0; i < bufferLength; i++) {
         if (partnerDataArray[i] > 10) {
-          // Threshold có thể điều chỉnh
           isPartnerAudioDetected = true;
           break;
         }
       }
 
-      setIsSpeaking(isPartnerAudioDetected); // Cập nhật trạng thái âm thanh đối tác
+      setIsSpeakingPartner(isPartnerAudioDetected); // Update speaking state for partner
     };
 
+    // Continuously check for audio activity every 100ms
     const partnerAudioIntervalId = setInterval(checkPartnerAudioActivity, 100);
 
-    // Clean up khi component unmount
+    // Clean up when the component unmounts
     return () => {
       clearInterval(partnerAudioIntervalId);
       if (partnerAudioContext) partnerAudioContext.close();
@@ -439,13 +444,17 @@ const CallModel = ({ isOpen, onClose, id }) => {
                     <div
                       className={`absolute top-0 left-0 flex h-full w-full items-center justify-center bg-black }`}
                     >
-                      <div className="relative aspect-square w-[40%]">
+                      <div
+                        className={`relative aspect-square w-[40%] ${
+                          isSpeakingPartner && !isPartnerVideoOn
+                            ? "border-4 border-green-400 rounded-full"
+                            : ""
+                        }`}
+                      >
                         <UserStatusIndicator
                           userId={profileRender?._id}
                           userData={{ avatar: profileRender?.avatar }}
-                          css={`w-full h-full rounded-full ${
-                            isSpeaking && "border-4 border-green-400"
-                          }`}
+                          css={`w-full h-full rounded-full `}
                           styler={{ badge: { size: "14px" } }}
                         />
                       </div>
@@ -477,7 +486,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
                         css={`aspect-square  ${
                           isSelfVideoMaximized ? " w-[40%]" : "h-full "
                         } rounded-full ${
-                          isSpeaking && "border-4 rounded-full border-green-400"
+                          isSpeakingSelf ? "border-4 border-green-400" : ""
                         }`}
                         styler={{ badge: { size: "14px" } }}
                       />
