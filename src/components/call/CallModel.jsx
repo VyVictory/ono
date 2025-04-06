@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Dialog } from "@headlessui/react";
-import { Paper } from "@mui/material";
+import { Button, Dialog } from "@headlessui/react"; 
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import SimplePeer from "simple-peer";
@@ -220,7 +219,6 @@ const CallModel = ({ isOpen, onClose, id }) => {
       peerRef.current.signal(candidate);
     }
   };
-
   const cleanupCall = () => {
     // Reset all states
     setIsAccept(null);
@@ -231,7 +229,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
     setIsPartnerVideoOn(true);
     setProfileRender(null);
 
-    // Notify server to end call
+    // Notify server to end the call
     endCallHand();
 
     // Destroy peer connection
@@ -248,7 +246,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
           track.stop();
           stream.removeTrack(track);
         } catch (err) {
-          console.warn("Lỗi khi stop/remove track:", err);
+          console.warn("Error stopping/removing track:", err);
         }
       });
       setStream(null);
@@ -270,8 +268,76 @@ const CallModel = ({ isOpen, onClose, id }) => {
       })
       .catch(() => {});
 
+    // Cleanup AudioContext if it exists
+    if (audioContextRef.current) {
+      audioContextRef.current.close().catch((err) => console.error("Error closing audio context:", err));
+      audioContextRef.current = null;
+    }
+
+    if (audioContextRef.current) {
+      const analyser = analyserRef.current;
+      if (analyser) {
+        analyser.disconnect();
+      }
+    }
+
+    // Clear AudioData
+    audioDataRef.current = new Uint8Array(0);
+
     onClose?.();
-  };
+};
+
+  // const cleanupCall = () => {
+  //   // Reset all states
+  //   setIsAccept(null);
+  //   setIncomingCall(null);
+  //   setCallId(null);
+  //   setIsVideo(false);
+  //   setCameraOn(true);
+  //   setIsPartnerVideoOn(true);
+  //   setProfileRender(null);
+
+  //   // Notify server to end call
+  //   endCallHand();
+
+  //   // Destroy peer connection
+  //   if (peerRef.current) {
+  //     peerRef.current.removeAllListeners();
+  //     peerRef.current.destroy();
+  //     peerRef.current = null;
+  //   }
+
+  //   // Stop media stream
+  //   if (stream) {
+  //     stream.getTracks().forEach((track) => {
+  //       try {
+  //         track.stop();
+  //         stream.removeTrack(track);
+  //       } catch (err) {
+  //         console.warn("Lỗi khi stop/remove track:", err);
+  //       }
+  //     });
+  //     setStream(null);
+  //   }
+
+  //   // Clear video elements
+  //   if (myVideoRef.current) {
+  //     myVideoRef.current.srcObject = null;
+  //   }
+  //   if (partnerVideoRef.current) {
+  //     partnerVideoRef.current.srcObject = null;
+  //   }
+
+  //   // Extra cleanup for possible ghost media stream
+  //   navigator.mediaDevices
+  //     .getUserMedia({ video: true, audio: true })
+  //     .then((tempStream) => {
+  //       tempStream.getTracks().forEach((track) => track.stop());
+  //     })
+  //     .catch(() => {});
+
+  //   onClose?.();
+  // };
   const endCallHand = async () => {
     if (socket && id) {
       return socket.emit("end-call", { target: id });
@@ -343,7 +409,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
 
   useEffect(() => {
     if (!stream || !peerRef.current) return;
-
+    if (isLoadingVideo) return;
     // Create AudioContext and Analyser for partner
     const partnerAudioContext = new (window.AudioContext ||
       window.webkitAudioContext)();
@@ -380,10 +446,9 @@ const CallModel = ({ isOpen, onClose, id }) => {
       clearInterval(partnerAudioIntervalId);
       if (partnerAudioContext) partnerAudioContext.close();
     };
-  }, [stream]);
+  }, [stream, isLoadingVideo]);
 
   if (!id || !isAccept) return null;
-
   return (
     <>
       {isOpen && id && (
@@ -446,15 +511,16 @@ const CallModel = ({ isOpen, onClose, id }) => {
                     >
                       <div
                         className={`relative aspect-square w-[40%] ${
-                          isSpeakingPartner && !isPartnerVideoOn
-                            ? "border-4 border-green-400 rounded-full"
-                            : ""
+                          isSpeakingPartner && !isPartnerVideoOn ? "" : ""
                         }`}
                       >
+                        {isSpeakingPartner && (
+                          <div className="absolute z-50 w-full h-full rounded-full border-4 border-green-500 animate-talkingEffect"></div>
+                        )}
                         <UserStatusIndicator
                           userId={profileRender?._id}
                           userData={{ avatar: profileRender?.avatar }}
-                          css={`w-full h-full rounded-full `}
+                          css={`w-full h-full rounded-full`}
                           styler={{ badge: { size: "14px" } }}
                         />
                       </div>
@@ -471,23 +537,28 @@ const CallModel = ({ isOpen, onClose, id }) => {
                     ref={draggableRef}
                     className={`${
                       isSelfVideoMaximized
-                        ? " h-1/2 w-full  bottom-0 left-0"
-                        : "w-1/5  cursor-grab top-2 left-2"
+                        ? "h-1/2 w-full bottom-0 left-0"
+                        : "w-1/5 cursor-grab top-2 left-2"
                     } ${
                       cameraOn
-                        ? "bg-black border  border-gray-600"
-                        : `bg-transparent ` //border-4 rounded-full border-green-400
-                    }   aspect-square absolute  z-40  flex   items-center justify-center overflow-hidden rounded `}
+                        ? "bg-black border border-gray-600"
+                        : `bg-transparent`
+                    } aspect-square absolute z-40 flex items-center justify-center overflow-visible rounded`}
                   >
+                    {isSpeakingSelf && !cameraOn && (
+                      <div
+                        className={`absolute z-50 ${
+                          isSelfVideoMaximized ? "w-[40%]" : "w-full"
+                        } aspect-square rounded-full border-4 border-green-500 animate-talkingEffect`}
+                      ></div>
+                    )}
                     {!cameraOn && (
                       <UserStatusIndicator
                         userId={profile?._id}
                         userData={{ avatar: profile?.avatar }}
-                        css={`aspect-square  ${
-                          isSelfVideoMaximized ? " w-[40%]" : "h-full "
-                        } rounded-full ${
-                          isSpeakingSelf ? "border-4 border-green-400" : ""
-                        }`}
+                        css={`aspect-square ${
+                          isSelfVideoMaximized ? "w-[40%]" : "h-full"
+                        } rounded-full ${isSpeakingSelf ? "" : ""}`}
                         styler={{ badge: { size: "14px" } }}
                       />
                     )}
