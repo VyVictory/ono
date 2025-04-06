@@ -314,7 +314,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
                 {isLoadingVideo && (
                   <div className="w-full h-full absolute top-0 left-0 flex justify-center items-center bg-black">
                     <div className="spinner-border text-white" role="status">
-                      <span className="sr-only">Loading...</span>
+                      <span className="sr-only">Đang lấy Camera người dùng...</span>
                     </div>
                   </div>
                 )}
