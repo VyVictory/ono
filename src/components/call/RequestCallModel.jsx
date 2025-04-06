@@ -7,7 +7,8 @@ import { useSocketContext } from "../context/socketProvider";
 import UserStatusIndicator from "../UserStatusIndicator";
 
 const RequestCallModel = ({ isOpen, onClose }) => {
-  const { incomingCall, setIncomingCall, setCallId, setIsAccept } = useCall();
+  const { incomingCall, setIncomingCall, setCallId, setIsAccept, setIsVideo } =
+    useCall();
   const { socket } = useSocketContext();
 
   if (!incomingCall) return null;
@@ -16,6 +17,7 @@ const RequestCallModel = ({ isOpen, onClose }) => {
     socket.emit("call-accept", { target: incomingCall.caller, status: true });
     setCallId(incomingCall.caller);
     setIsAccept(true);
+    setIsVideo(true);
     onClose();
   };
 
@@ -59,15 +61,23 @@ const RequestCallModel = ({ isOpen, onClose }) => {
               }}
             />
             {/* Viền phát sáng động */}
-            <motion.div
-              className="absolute w-full h-full rounded-full border-4 border-green-500"
-              animate={{ opacity: [1, 0.5, 0], scale: [1, 1.2] }}
-              transition={{
-                repeat: Infinity,
-                duration: 1.5,
-                ease: "easeInOut",
+            <div
+              className="absolute w-full h-full rounded-full border-4 border-green-500 ripple-green-soft"
+              initial={false}
+              animate="rippleLow"
+              variants={{
+                rippleLow: {
+                  scale: [1, 1.5],
+                  opacity: [1, 0],
+                },
               }}
-            />
+              transition={{
+                duration: 1.2,
+                ease: "easeInOut",
+                repeat: Infinity,
+                repeatType: "loop",
+              }}
+            ></div>
           </motion.div>
           <p className="text-lg font-semibold mt-4">Cuộc gọi đến...</p>
         </div>

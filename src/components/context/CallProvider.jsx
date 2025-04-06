@@ -16,6 +16,7 @@ export const CallProvider = ({ children }) => {
   const [callId, setCallId] = useState(null);
   const confirm = useConfirm();
   const [isAccept, setIsAccept] = useState(null);
+  const [isVideo, setIsVideo] = useState(null);
   const [openRequest, setOpenRequest] = useState(null);
   const [incomingCall, setIncomingCall] = useState(null);
 
@@ -31,13 +32,15 @@ export const CallProvider = ({ children }) => {
     return () => {
       socket.off("offer");
     };
-  }, [socket]); 
-  
+  }, [socket]);
+
   return (
     <CallContext.Provider
       value={{
         setCallId,
         callId,
+        isVideo,
+        setIsVideo,
         incomingCall,
         setIncomingCall,
         isAccept,
