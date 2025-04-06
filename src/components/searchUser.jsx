@@ -3,6 +3,7 @@ import { getSearchUser } from "../service/user";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import avt from "../img/DefaultAvatar.jpg";
 import { useNavigate } from "react-router-dom";
+import UserStatusIndicator from "./UserStatusIndicator";
 
 const SearchList = ({ value, close }) => {
   const [searchListUser, setSearchListUser] = useState([]);
@@ -21,7 +22,7 @@ const SearchList = ({ value, close }) => {
     const fetchUsers = async () => {
       const response = await getSearchUser(value);
       if (response) {
-        setSearchListUser(response);
+        setSearchListUser(response.data);
       } else {
         setSearchListUser([]);
       }
@@ -57,7 +58,11 @@ const SearchList = ({ value, close }) => {
     localStorage.removeItem("searchHistory");
     setSearchHistory([]);
   };
-
+  const avatarRender = (data) => {
+    return (
+      <UserStatusIndicator userId={data?._id} userData={data} css="h-10 w-10" />
+    );
+  };
   return (
     <div className=" p-4 pt-2 bg-white  shadow-md rounded-lg overflow-y-auto max-h-96">
       {!value ? (
@@ -84,11 +89,7 @@ const SearchList = ({ value, close }) => {
                   onClick={() => handleNextProfile(profile._id)}
                   className="flex items-center space-x-3 w-full"
                 >
-                  <img
-                    className="w-10 h-10 border border-gray-300 rounded-full"
-                    src={profile?.avatar || avt}
-                    alt="user avatar"
-                  />
+                  {avatarRender(profile)}
                   <div className="text-sm">
                     <div className="font-medium text-gray-800">
                       {profile.firstName} {profile.lastName}
@@ -118,11 +119,7 @@ const SearchList = ({ value, close }) => {
                 }}
                 className="flex items-center w-full py-3 bg-gray-50 hover:bg-gray-100 rounded-lg shadow-sm transition-all duration-150"
               >
-                <img
-                  className="w-10 h-10 border border-gray-300 rounded-full"
-                  src={profile?.avt || avt}
-                  alt="user avatar"
-                />
+                {avatarRender(profile)}
                 <div className="text-sm ml-3">
                   <div className="font-medium text-gray-800">
                     {profile.firstName} {profile.lastName}
