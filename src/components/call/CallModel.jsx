@@ -33,7 +33,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
     isVideo,
     setIsVideo,
   } = useCall();
-  const [stream, setStream] = useState(null);
+  const [stream, setStream] = useState(null); 
   const [profileRender, setProfileRender] = useState(null);
   const [cameraOn, setCameraOn] = useState(true); // Camera state
   const myVideoRef = useRef(null);
@@ -65,19 +65,6 @@ const CallModel = ({ isOpen, onClose, id }) => {
       socket.off("end-call", handleEndCall);
     };
   }, [socket]);
-
-  useEffect(() => {
-    if (!callId) return;
-    const fetchProfile = async () => {
-      const response = await getCurrentUser(callId);
-      if (response && response.status === 200) {
-        setProfileRender(response.data);
-      } else {
-        toast.error("Không thể lấy thông tin người dùng!");
-      }
-    };
-    fetchProfile();
-  }, [callId]);
 
   useEffect(() => {
     if (!id || isAccept) return;
@@ -134,6 +121,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
       setCallId(null);
       return;
     }
+    fetchProfile();
     setIsAccept(true);
     try {
       const userStream = await navigator.mediaDevices.getUserMedia({
@@ -170,7 +158,15 @@ const CallModel = ({ isOpen, onClose, id }) => {
       toast.error("Không thể truy cập camera/micro!");
     }
   };
-
+  const fetchProfile = async () => {
+    if (!callId) return;
+    const response = await getCurrentUser(callId);
+    if (response && response.status === 200) {
+      setProfileRender(response.data);
+    } else {
+      toast.error("Không thể lấy thông tin người dùng!");
+    }
+  };
   const acceptCall = async () => {
     if (!incomingCall) return;
 
