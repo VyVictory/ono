@@ -16,9 +16,10 @@ import { useConfirm } from "../context/ConfirmProvider";
 import { PhoneXMarkIcon } from "@heroicons/react/24/outline";
 import { getCurrentUser } from "../../service/user";
 import UserStatusIndicator from "../UserStatusIndicator";
-
+import { useAuth } from "../context/AuthProvider";
 const CallModel = ({ isOpen, onClose, id }) => {
   const { socket } = useSocketContext();
+  const { profile } = useAuth();
   const confirm = useConfirm();
   const {
     incomingCall,
@@ -39,6 +40,8 @@ const CallModel = ({ isOpen, onClose, id }) => {
   const peerRef = useRef(null);
   const [isPartnerVideoOn, setIsPartnerVideoOn] = useState(true);
   const [isLoadingVideo, setIsLoadingVideo] = useState(true);
+  const [isSelfVideoMaximized, setIsSelfVideoMaximized] = useState(false);
+
   useEffect(() => {
     if (!socket) return;
     socket.on("call-accept", handleCallAccept);
@@ -298,94 +301,134 @@ const CallModel = ({ isOpen, onClose, id }) => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2, ease: "linear" }}
-            className="fixed inset-0 flex items-center justify-center bg-opacity-50 bg-black px-0 z-50"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-0"
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="max-w-[100dvh] sm:max-w-[70dvh] h-full max-h-[100dvh] w-full relative"
+              className="relative h-full w-full max-h-[100dvh] max-w-[100dvh] sm:max-w-[70dvh] bg-black"
             >
               <div className="relative h-full w-full bg-black">
-                {!isVideo && (
-                  <div className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-4 py-2 rounded text-lg font-semibold z-40">
-                    Đang gọi...
-                  </div>
-                )}
-
-                {isLoadingVideo && (
-                  <div className="w-full h-full absolute top-0 left-0 flex justify-center items-center bg-black">
-                    <div className="spinner-border text-white" role="status">
-                      <span className="sr-only">Đang lấy Camera người dùng...</span>
+                <div
+                  className={`relative w-full  ${
+                    isSelfVideoMaximized ? "h-1/2" : "h-full"
+                  }`}
+                >
+                  {/* Calling indicator */}
+                  {!isVideo && (
+                    <div className="absolute top-4 left-1/2 z-40 -translate-x-1/2 transform rounded bg-black bg-opacity-50 px-4 py-2 text-lg font-semibold text-white">
+                      Đang gọi...
                     </div>
-                  </div>
-                )}
-                <video
-                  ref={partnerVideoRef}
-                  autoPlay
-                  className="w-full h-full rounded"
-                  style={{
-                    display:
-                      isVideo && isPartnerVideoOn && !isLoadingVideo
-                        ? "block"
-                        : "none",
-                  }}
-                />
-                {(!isPartnerVideoOn || !isVideo) && (
-                  <div className="w-full h-full absolute top-0 left-0 flex justify-center items-center bg-black">
-                    <div className="-w-24 aspect-square w-[40%] relative">
-                      <UserStatusIndicator
-                        userId={profileRender?._id}
-                        userData={{ avatar: profileRender?.avatar }}
-                        css={`w-full h-full rounded-full`}
-                        styler={{
-                          badge: {
-                            size: "14px",
-                          },
-                        }}
-                      />
-                    </div>
-                  </div>
-                )}
+                  )}
 
-                <Draggable bounds="parent" nodeRef={draggableRef}>
+                  {/* Loading */}
+                  {isLoadingVideo && (
+                    <div className="absolute top-0 left-0 flex h-full w-full items-center justify-center bg-black">
+                      <div className="spinner-border text-white" role="status">
+                        <span className="sr-only">
+                          Đang lấy Camera người dùng...
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Partner video */}
+                  <video
+                    ref={partnerVideoRef}
+                    autoPlay
+                    className="relative h-full w-full bg-black"
+                    style={{
+                      display:
+                        isVideo && isPartnerVideoOn && !isLoadingVideo
+                          ? "block"
+                          : "none",
+                    }}
+                  />
+
+                  {/* Fallback avatar if no video */}
+                  {(!isPartnerVideoOn || !isVideo) && (
+                    <div className="absolute top-0 left-0 flex h-full w-full items-center justify-center bg-black">
+                      <div className="relative aspect-square w-[40%]">
+                        <UserStatusIndicator
+                          userId={profileRender?._id}
+                          userData={{ avatar: profileRender?.avatar }}
+                          css="w-full h-full rounded-full"
+                          styler={{ badge: { size: "14px" } }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {/* Self video (draggable) */}
+                <Draggable
+                  bounds="parent"
+                  nodeRef={draggableRef}
+                  disabled={isSelfVideoMaximized}
+                >
                   <div
                     ref={draggableRef}
-                    className="absolute bottom-0 left-0 flex justify-center items-center cursor-grab w-1/5 bg-black aspect-square border border-gray-200 rounded overflow-hidden z-50"
+                    className={`${
+                      isSelfVideoMaximized
+                        ? " w-full h-1/2  bottom-0 left-0"
+                        : "w-1/5 aspect-square cursor-grab top-2 left-2"
+                    }  absolute  z-40  flex   items-center justify-center overflow-hidden rounded border border-gray-500 bg-black`}
                   >
+                    {!cameraOn && (
+                      <UserStatusIndicator
+                        userId={profile?._id}
+                        userData={{ avatar: profile?.avatar }}
+                        css="w-full h-full rounded-full"
+                        styler={{ badge: { size: "14px" } }}
+                      />
+                    )}
+
                     <video
                       ref={myVideoRef}
                       autoPlay
                       muted
-                      className="w-full h-full object-cover"
+                      className="h-full w-full object-cover"
+                      style={{ display: cameraOn ? "block" : "none" }}
                     />
                   </div>
                 </Draggable>
-                <div className="z-40 fixed bottom-6 left-1/2 transform -translate-x-1/2">
-                  <div className="flex gap-4 h-12 items-center">
-                    {/* Toggle Camera Button */}
+
+                {/* Call controls */}
+                <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 transform">
+                  <div className="flex h-12 items-center gap-4">
+                    {/* Toggle camera */}
                     <button
                       onClick={toggleCamera}
-                      className="flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium p-3 rounded-full shadow-md transition duration-200 w-12 h-12"
+                      className="flex h-12 w-12 items-center justify-center gap-2 rounded-full bg-blue-600 p-3 text-white shadow-md transition duration-200 hover:bg-blue-700"
                     >
-                      {/* Hiển thị icon tuỳ theo trạng thái camera */}
                       {cameraOn ? (
-                        <VideoCameraSlashIcon className="w-6 h-6" />
+                        <VideoCameraSlashIcon className="h-6 w-6" />
                       ) : (
-                        <VideoCameraIcon className="w-6 h-6" />
+                        <VideoCameraIcon className="h-6 w-6" />
                       )}
                     </button>
 
-                    {/* End Call Button */}
+                    {/* Zoom self video */}
+                    <button
+                      onClick={() =>
+                        setIsSelfVideoMaximized(!isSelfVideoMaximized)
+                      }
+                      className="flex h-12 w-12 items-center justify-center gap-2 rounded-full bg-gray-600 p-3 text-white shadow-md transition duration-200 hover:bg-gray-700"
+                      title="Phóng to video của bạn"
+                    >
+                      <span className="text-xs font-bold">
+                        {isSelfVideoMaximized ? "Thu" : "To"}
+                      </span>
+                    </button>
+
+                    {/* End call */}
                     <button
                       onClick={cleanupCall}
-                      className="bg-red-600 hover:bg-red-700 p-3 w-12 h-12 rounded-full shadow-md transition duration-200"
+                      className="h-12 w-12 rounded-full bg-red-600 p-3 shadow-md transition duration-200 hover:bg-red-700"
                       title="Kết thúc cuộc gọi"
                     >
-                      <PhoneXMarkIcon className="w-6 h-6 text-white" />
+                      <PhoneXMarkIcon className="h-6 w-6 text-white" />
                     </button>
                   </div>
                 </div>
-
-                {/* Toggle Camera Button */}
               </div>
             </div>
           </motion.div>
