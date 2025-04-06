@@ -337,6 +337,45 @@ const CallModel = ({ isOpen, onClose, id }) => {
       }
     };
   }, [stream]);
+  useEffect(() => {
+    if (!stream || !peerRef.current) return;
+
+    // Tạo AudioContext và Analyser cho đối tác
+    const partnerAudioContext = new (window.AudioContext ||
+      window.webkitAudioContext)();
+    const partnerAnalyser = partnerAudioContext.createAnalyser();
+
+    const partnerSource = partnerAudioContext.createMediaStreamSource(stream); // stream từ đối tác
+    partnerSource.connect(partnerAnalyser);
+
+    partnerAnalyser.fftSize = 256;
+    const bufferLength = partnerAnalyser.frequencyBinCount;
+    const partnerDataArray = new Uint8Array(bufferLength);
+
+    const checkPartnerAudioActivity = () => {
+      partnerAnalyser.getByteFrequencyData(partnerDataArray);
+      let isPartnerAudioDetected = false;
+
+      // Kiểm tra nếu có âm thanh
+      for (let i = 0; i < bufferLength; i++) {
+        if (partnerDataArray[i] > 10) {
+          // Threshold có thể điều chỉnh
+          isPartnerAudioDetected = true;
+          break;
+        }
+      }
+
+      setIsSpeaking(isPartnerAudioDetected); // Cập nhật trạng thái âm thanh đối tác
+    };
+
+    const partnerAudioIntervalId = setInterval(checkPartnerAudioActivity, 100);
+
+    // Clean up khi component unmount
+    return () => {
+      clearInterval(partnerAudioIntervalId);
+      if (partnerAudioContext) partnerAudioContext.close();
+    };
+  }, [stream]);
 
   if (!id || !isAccept) return null;
 
@@ -404,7 +443,9 @@ const CallModel = ({ isOpen, onClose, id }) => {
                         <UserStatusIndicator
                           userId={profileRender?._id}
                           userData={{ avatar: profileRender?.avatar }}
-                          css={`w-full h-full rounded-full`}
+                          css={`w-full h-full rounded-full ${
+                            isSpeaking && "border-4 border-green-400"
+                          }`}
                           styler={{ badge: { size: "14px" } }}
                         />
                       </div>
