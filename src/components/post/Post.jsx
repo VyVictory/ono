@@ -49,9 +49,7 @@ const Post = ({ data }) => {
 
   const handleCloseGallery = () => {
     setOpenGalleryIndex(null);
-  };
-
-  // console.log(posts);
+  }; 
   return (
     <>
       <div id="gallery" className="flex flex-col gap-4 min-w-full">
