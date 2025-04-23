@@ -6,7 +6,7 @@ const SiderBar = () => {
     <>
       <Paper
         elevation={2}
-        className="w-64 h-full relative overflow-y-auto hidden lg:block bg-gray-100 p-4 "
+        className="w-64 h-full relative overflow-y-auto bg-gray-100 p-4 "
       >
         <nav>
           <ContentSiderBar />

@@ -10,10 +10,10 @@ const HomeLayout = () => {
         {/* <FixedBottomNavigation /> */}
         <Outlet />
       </main>
-      <div className="absolute bottom-0 left-0 h-full NavbarUser">
+      <div className="absolute bottom-0 2xl:block hidden left-0 h-full NavbarUser">
         <SiderBar />
       </div>
-      <div className="absolute bottom-0 right-0 h-full NavbarUser mr-2">
+      <div className="absolute bottom-0 right-0 2xl:block hidden h-full NavbarUser mr-2">
         <RightBar />
       </div>
     </div>

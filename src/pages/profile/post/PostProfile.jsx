@@ -9,7 +9,7 @@ import { useAuth } from "../../../components/context/AuthProvider";
 import "../../../css/post.css";
 import PostLeft from "./PostLeft";
 import PostRight from "./PostRigh";
-import Post from "../../../components/post/Post";
+import Post from "../../post/Post";
 import HeadCreatePost from "./HeadCreatePost";
 const PostProfile = ({ data,profile }) => {
   const scrollRef = useRef(null);

@@ -2,17 +2,25 @@ import { UserGroupIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import pngTest from "../../img/post/post.png";
 import { Avatar, Button, ButtonBase, Modal, Paper } from "@mui/material";
 import { useState, useEffect } from "react";
-import UserStatusIndicator from "../UserStatusIndicator";
+import UserStatusIndicator from "../../components/UserStatusIndicator";
 import SecurityLabel from "./SecurityLabel";
-import FilePreview from "../FilePreview";
+import FilePreview from "../../components/FilePreview";
 import { Gallery } from "react-grid-gallery";
-import { useModule } from "../context/Module";
+import { useModule } from "../../components/context/Module";
 import { Link } from "react-router-dom";
+import { Comment } from "./comment";
+import {
+  BurstMode,
+  FavoriteBorder,
+  Share,
+  TrendingUpTwoTone,
+} from "@mui/icons-material";
 const MAX_VISIBLE_IMAGES = 3; // Hiển thị tối đa 6 ảnh
 const Post = ({ data }) => {
   const { addPost, setAddPost } = useModule();
   const postsData = data?.posts || []; // ✅ Đảm bảo luôn có giá trị mặc định
   const [openGalleryIndex, setOpenGalleryIndex] = useState(null); // index của post
+  const [openCmt, setOpenCmt] = useState(false); // index của post
 
   const [posts, setPosts] = useState([]);
   useEffect(() => {
@@ -49,7 +57,7 @@ const Post = ({ data }) => {
 
   const handleCloseGallery = () => {
     setOpenGalleryIndex(null);
-  }; 
+  };
   return (
     <>
       <div id="gallery" className="flex flex-col gap-4 min-w-full">
@@ -132,10 +140,73 @@ const Post = ({ data }) => {
                   </div>
                 )}
               </div>
+              <div className="border-t mx-2 flex flex-row justify-between p-2">
+                <div className="flex flex-row space-x-4">
+                  <button>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="size-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => {
+                      // setOpenCmt(!openCmt);
+                    }}
+                  >
+                    {" "}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="size-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z"
+                      />
+                    </svg>
+                  </button>
+                  <button>
+                    <Share className="" />
+                  </button>
+                </div>
+
+                <button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="size-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
+                    />
+                  </svg>
+                </button>
+              </div>
             </div>
+            <Comment open={openCmt} />
           </Paper>
         ))}
       </div>
+
       <Modal
         open={openGalleryIndex !== null}
         onClose={handleCloseGallery}
