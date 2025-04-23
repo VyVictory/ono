@@ -1,4 +1,8 @@
-import { UserGroupIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import {
+  Bars3Icon,
+  UserGroupIcon,
+  XCircleIcon,
+} from "@heroicons/react/24/outline";
 import pngTest from "../../img/post/post.png";
 import { Avatar, Button, ButtonBase, Modal, Paper } from "@mui/material";
 import { useState, useEffect } from "react";
@@ -10,6 +14,7 @@ import { useModule } from "../../components/context/Module";
 import { Link } from "react-router-dom";
 import { Comment } from "./comment";
 import {
+  BookmarkBorderSharp,
   BurstMode,
   FavoriteBorder,
   Share,
@@ -64,41 +69,44 @@ const Post = ({ data }) => {
         {posts?.map((_, index) => (
           <Paper key={index} className=" w-full">
             <div className=" mx-2 ">
-              <div className="flex flex-row space-x-2 items-center border-b p-1">
-                <div>
-                  <div className="w-10 h-10 rounded-full relative">
-                    <UserStatusIndicator
-                      userId={_?.author?._id}
-                      userData={_?.author}
-                      // onlineUsers={onlineUsers}
-                    />
+              <div className="flex flex-row  items-center border-b p-1 justify-between pr-3">
+                <div className="flex flex-row space-x-2">
+                  <div>
+                    <div className="w-10 h-10 rounded-full relative">
+                      <UserStatusIndicator
+                        userId={_?.author?._id}
+                        userData={_?.author}
+                        // onlineUsers={onlineUsers}
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="flex flex-col">
-                  <Link
-                    to={`/profile/posts?id=${_?.author?._id}`}
-                    className="text-sm font-semibold text-gray-600 hover:text-black"
-                  >
-                    {`${
-                      _?.author?.firstName
-                        ? _?.author?.firstName.charAt(0).toUpperCase() +
-                          _?.author?.firstName.slice(1)
-                        : "Unknown"
-                    } 
+                  <div className="flex flex-col">
+                    <Link
+                      to={`/profile/posts?id=${_?.author?._id}`}
+                      className="text-sm font-semibold text-gray-600 hover:text-black"
+                    >
+                      {`${
+                        _?.author?.firstName
+                          ? _?.author?.firstName.charAt(0).toUpperCase() +
+                            _?.author?.firstName.slice(1)
+                          : "Unknown"
+                      } 
                       ${
                         _?.author?.lastName
                           ? _?.author?.lastName.charAt(0).toUpperCase() +
                             _?.author?.lastName.slice(1)
                           : ""
                       }`}
-                  </Link>
-                  <div className="text-gray-500 flex flex-row flex-wrap items-center text-xs">
-                    <div className="">{formatDate(_?.createdAt)}</div>
-                    <div className="flex flex-row items-center">
-                      <SecurityLabel security={_?.security} />
+                    </Link>
+                    <div className="text-gray-500 flex flex-row flex-wrap items-center text-xs">
+                      <div className="">{formatDate(_?.createdAt)}</div>
+                      <div className="flex flex-row items-center">
+                        <SecurityLabel security={_?.security} />
+                      </div>
                     </div>
                   </div>
                 </div>
+                <Bars3Icon className="w-5 h-5" />
               </div>
               <div className="p-2 break-words break-all whitespace-pre-wrap w-full">
                 {_?.content}
@@ -185,20 +193,7 @@ const Post = ({ data }) => {
                 </div>
 
                 <button>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="size-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
-                    />
-                  </svg>
+                  <BookmarkBorderSharp className="text-gray-500" />
                 </button>
               </div>
             </div>
