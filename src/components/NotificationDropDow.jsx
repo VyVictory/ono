@@ -139,7 +139,7 @@ const NotificationDropDow = () => {
             transition={{ duration: 0.3, ease: "easeOut" }}
             className="absolute min-w-72  -right-6 mt-14 z-50 divide-y rounded-lg"
           >
-            <div>
+            <Paper elevation={3}>
               <button className="px-1  py-3 pb-1  flex w-full flex-col justify-center items-center space-x-2 border-b ">
                 <div className="text-sm max-w-72  hover:scale-110 duration-700">
                   <strong>Thông báo</strong>
@@ -192,7 +192,7 @@ const NotificationDropDow = () => {
                   ))
                 )}
               </ul>
-            </div>
+            </Paper>
           </motion.div>
         )}
       </AnimatePresence>
