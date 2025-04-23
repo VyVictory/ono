@@ -78,7 +78,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
         setStream(null);
       }
     };
-  }, []);
+  }, [isAccept]);
   useEffect(() => {}, [stream]);
   const handleEndCall = () => {
     if (isAccept || peerRef.current) {
@@ -88,8 +88,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
   };
 
   useEffect(() => {
-    if (!isAccept) return;
-    if (!id) return;
+    if (!isAccept) return; 
     acceptCall();
     return () => {
       if (peerRef.current) {
@@ -101,7 +100,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
         setStream(null);
       }
     };
-  }, [isAccept, id]);
+  }, [isAccept]);
 
   const handleCallAccept = ({ caller, status }) => {
     if (!status) {
@@ -196,13 +195,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
 
       peerRef.current.on("signal", (data) => {
         socket.emit("answer", { target: incomingCall.caller, sdp: data });
-      });
-
-      // peerRef.current.on("stream", (remoteStream) => {
-      //   setIsLoadingVideo(false); // Video loaded
-      //   if (partnerVideoRef.current)
-      //     partnerVideoRef.current.srcObject = remoteStream;
-      // });
+      }); 
       peerRef.current.on("stream", (remoteStream) => {
         setIsLoadingVideo(false);
         remoteStreamRef.current = remoteStream; // Lưu stream của đối phương
@@ -347,7 +340,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
       clearInterval(intervalId);
       audioContext.close();
     };
-  }, [stream]);
+  }, [stream, isLoadingVideo, isAccept]);
 
   const [isSpeakingPartner, setIsSpeakingPartner] = useState(false);
 
@@ -376,7 +369,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
       clearInterval(intervalId);
       audioContext.close();
     };
-  }, [remoteStreamRef.current, isLoadingVideo]); // chạy lại khi remote stream được set
+  }, [remoteStreamRef.current, isLoadingVideo, isAccept]); // chạy lại khi remote stream được set
   if (!id || !isAccept) return null;
   return (
     <>
