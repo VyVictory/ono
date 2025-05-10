@@ -87,14 +87,10 @@ const SearchList = ({ value, close }) => {
               >
                 <button
                   onClick={() => handleNextProfile(profile._id)}
-                  className="flex items-center space-x-3 w-full"
+                  className="flex items-center gap-2 w-full"
                 >
                   {avatarRender(profile)}
-                  <div className="text-sm">
-                    <div className="font-medium text-gray-800">
-                      {profile.firstName} {profile.lastName}
-                    </div>
-                  </div>
+                  <UserRender data={profile}/>
                 </button>
                 <button
                   onClick={() => handleRemoveHistory(profile._id)}
@@ -117,17 +113,10 @@ const SearchList = ({ value, close }) => {
                 onClick={() => {
                   handleSaveSearch(profile), handleNextProfile(profile._id);
                 }}
-                className="flex items-center w-full py-3 bg-gray-50 hover:bg-gray-100 rounded-lg shadow-sm transition-all duration-150"
+                className="flex items-center w-full py-3 bg-gray-50 hover:bg-gray-100 rounded-lg shadow-sm transition-all duration-150 gap-2"
               >
                 {avatarRender(profile)}
-                <div className="text-sm ml-3">
-                  <div className="font-medium text-gray-800">
-                    {profile.firstName} {profile.lastName}
-                  </div>
-                  <div className="text-gray-600 text-xs truncate">
-                    {profile.email}
-                  </div>
-                </div>
+                <UserRender data={profile} />
               </button>
             ))
           ) : (
@@ -140,5 +129,13 @@ const SearchList = ({ value, close }) => {
     </div>
   );
 };
-
+const UserRender = ({ data }) => {
+  return (
+    <div className="text-sm">
+      <div className="font-medium text-gray-800 text-start">
+        {data?.firstName} {data?.lastName}
+      </div>
+    </div>
+  );
+};
 export default SearchList;

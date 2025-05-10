@@ -7,22 +7,22 @@ import {
   Cog6ToothIcon,
   LockClosedIcon,
 } from "@heroicons/react/24/solid";
-import ThemeToggle from "./ThemeToggle";
+import ThemeToggle from "../../components/ThemeToggle";
 import { Avatar, Button, ButtonBase, Paper } from "@mui/material";
-import WaterBubbleButton from "./button/WaterBubbleButton";
+import WaterBubbleButton from "../../components/button/WaterBubbleButton";
 import { BellIcon } from "@heroicons/react/24/outline";
 import Badge from "@mui/material/Badge";
-import { useAuth } from "./context/AuthProvider";
+import { useAuth } from "../../components/context/AuthProvider";
 import {
   getNotifications,
   getNotificationsFollow,
   readNotification,
-} from "../service/notification";
-import UserStatusIndicator from "./UserStatusIndicator";
+} from "../../service/notification";
+import UserStatusIndicator from "../../components/UserStatusIndicator";
 import { useNavigate } from "react-router-dom";
 import { UserPlusIcon, UserGroupIcon } from "@heroicons/react/24/solid";
 
-import { useSocketContext } from "./context/socketProvider";
+import { useSocketContext } from "../../components/context/socketProvider";
 
 const NotificationDropDow = () => {
   const [isOpen, setIsOpen] = useState(false);

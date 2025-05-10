@@ -424,9 +424,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
                           ? "block"
                           : "none",
                     }}
-                  />
-
-                  {/* Fallback avatar if no video */}
+                  /> 
                   {(!isPartnerVideoOn || !isVideo) && (
                     <div
                       className={`absolute top-0 left-0 flex h-full w-full items-center justify-center bg-black }`}

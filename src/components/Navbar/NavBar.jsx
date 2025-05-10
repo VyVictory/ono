@@ -25,7 +25,7 @@ import MiniMenuCenter from "./miniMenuCenter";
 import WaterBubbleButton from "../button/WaterBubbleButton";
 import { Button, Paper } from "@mui/material";
 import { useModule } from "../context/Module";
-import NotificationDropDow from "../NotificationDropDow";
+import NotificationDropDow from "../../pages/notification/NotificationDropDow";
 const NavBar = () => {
   const { showLogin, setShowLogin, profile, isLoadingProfile } = useAuth();
   const { setUsecase, usecase } = useModule();

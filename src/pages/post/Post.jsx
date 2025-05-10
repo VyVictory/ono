@@ -1,25 +1,14 @@
-import {
-  Bars3Icon,
-  UserGroupIcon,
-  XCircleIcon,
-} from "@heroicons/react/24/outline";
-import pngTest from "../../img/post/post.png";
-import { Avatar, Button, ButtonBase, Modal, Paper } from "@mui/material";
+import { Bars3Icon, XCircleIcon } from "@heroicons/react/24/outline";
+import { ButtonBase, Modal, Paper } from "@mui/material";
 import { useState, useEffect } from "react";
 import UserStatusIndicator from "../../components/UserStatusIndicator";
 import SecurityLabel from "./SecurityLabel";
 import FilePreview from "../../components/FilePreview";
-import { Gallery } from "react-grid-gallery";
 import { useModule } from "../../components/context/Module";
 import { Link } from "react-router-dom";
-import { Comment } from "./comment";
-import {
-  BookmarkBorderSharp,
-  BurstMode,
-  FavoriteBorder,
-  Share,
-  TrendingUpTwoTone,
-} from "@mui/icons-material";
+import { Comment } from "./Comment";
+import { BookmarkBorderSharp, Share } from "@mui/icons-material";
+import LikeDislike from "./LikeDislike";
 const MAX_VISIBLE_IMAGES = 3; // Hiển thị tối đa 6 ảnh
 const Post = ({ data }) => {
   const { addPost, setAddPost } = useModule();
@@ -108,92 +97,79 @@ const Post = ({ data }) => {
                 </div>
                 <Bars3Icon className="w-5 h-5" />
               </div>
-              <div className="p-2 break-words break-all whitespace-pre-wrap w-full">
-                {_?.content}
-              </div>
+              {_?.content?.trim() && (
+                <div className="p-2 break-words break-all whitespace-pre-wrap w-full a">
+                  {_?.content}
+                </div>
+              )}
             </div>
             {/* Bố cục hiển thị ảnh */}
-            <div id={`gallery-${index}`} className="w-full">
-              <div
-                className={`grid gap-2  p-2
-                        ${_.media.length === 1 ? "grid-cols-1" : ""} 
-                        ${_.media.length === 2 ? "grid-cols-2" : ""} 
-                        ${_.media.length >= 3 ? "grid-cols-3" : ""}`}
-              >
-                {_.media.map((file, i) =>
-                  i > MAX_VISIBLE_IMAGES - 2 ? (
-                    ""
-                  ) : (
-                    <button
-                      key={i}
-                      className=" flex justify-center  items-center rounded-md overflow-hidden"
-                    >
-                      <FilePreview
-                        fileUrl={file.url}
-                        pop="w-full h-auto max-h-60 object-cover"
-                      />
-                    </button>
-                  )
-                )}
+            <div className="w-full">
+              <div className="w-full">
+                <div
+                  className={`grid gap-2 p-2 ${
+                    _.media.length === 1
+                      ? "grid-cols-1"
+                      : _.media.length === 2
+                      ? "grid-cols-2"
+                      : "grid-cols-3"
+                  }`}
+                >
+                  {_.media.slice(0, MAX_VISIBLE_IMAGES).map((file, i) => {
+                    const isLastVisible = i === MAX_VISIBLE_IMAGES - 1;
+                    const remaining = _.media.length - MAX_VISIBLE_IMAGES;
 
-                {/* Hiển thị ô "+ số ảnh còn lại" nếu có ảnh dư */}
-                {_.media.length - MAX_VISIBLE_IMAGES > 0 && (
-                  <div
-                    onClick={() => handleOpenGallery(index)}
-                    className="relative cursor-pointer flex items-center justify-center bg-gray-200 rounded-md overflow-hidden"
-                  >
-                    <span className="absolute text-xl font-bold text-white bg-black bg-opacity-50 px-4 py-2 rounded-md">
-                      +{_.media.length - MAX_VISIBLE_IMAGES}
-                    </span>
-                  </div>
-                )}
+                    return (
+                      <div
+                        key={i}
+                        onClick={() =>
+                          isLastVisible &&
+                          remaining > 0 &&
+                          handleOpenGallery(index)
+                        }
+                        className="relative cursor-pointer rounded-md overflow-hidden group"
+                      >
+                        <FilePreview
+                          fileUrl={file.url}
+                          pop="w-full h-auto max-h-[100dvh] object-cover group-hover:brightness-90 transition"
+                        />
+                        {isLastVisible && remaining > 0 && (
+                          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                            <span className="text-white text-xl font-bold">
+                              +{remaining}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-              <div className="border-t mx-2 flex flex-row justify-between p-2">
-                <div className="flex flex-row space-x-4">
-                  <button>
+              <div className="border-t mx-2 flex justify-between items-center p-2">
+                <div className="flex items-center space-x-4 text-gray-600">
+                  <LikeDislike />
+                  <button className="hover:text-blue-500 transition">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
+                      className="w-6 h-6"
                       fill="none"
                       viewBox="0 0 24 24"
-                      strokeWidth={1.5}
                       stroke="currentColor"
-                      className="size-6"
                     >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
-                      />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => {
-                      // setOpenCmt(!openCmt);
-                    }}
-                  >
-                    {" "}
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="size-6"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
+                        strokeWidth={1.5}
                         d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z"
                       />
                     </svg>
                   </button>
-                  <button>
-                    <Share className="" />
+                  <button className="hover:text-blue-500 transition">
+                    <Share className="w-6 h-6" />
                   </button>
                 </div>
-
-                <button>
-                  <BookmarkBorderSharp className="text-gray-500" />
+                <button className="hover:text-yellow-500 transition">
+                  <BookmarkBorderSharp />
                 </button>
               </div>
             </div>
@@ -210,11 +186,11 @@ const Post = ({ data }) => {
       >
         <div
           onClick={handleCloseGallery}
-          className="flex items-center justify-center min-h-screen p-4 bg-black bg-opacity-80"
+          className="flex items-center justify-center min-h-screen p-0 sm:p-4 bg-black bg-opacity-80"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative bg-gray-100 rounded-lg w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden shadow-lg"
+            className="relative bg-gray-100 rounded-lg w-full max-w-5xl max-h-[90vh]  flex flex-col overflow-hidden shadow-lg"
           >
             {/* Header */}
             <div className="sticky top-0 z-10 bg-white p-2 border-b flex justify-between items-center">
@@ -226,14 +202,13 @@ const Post = ({ data }) => {
               </ButtonBase>
             </div>
 
-            {/* Nội dung ảnh */}
-            <div className="p-4 overflow-y-auto">
+            <div className="p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 {openGalleryIndex !== null &&
                   posts[openGalleryIndex]?.media.map((file, i) => (
                     <div
                       key={i}
-                      className="rounded-md overflow-hidden flex justify-center items-center"
+                      className="rounded-lg overflow-hidden hover:brightness-110 transition"
                     >
                       <FilePreview
                         fileUrl={file.url}
