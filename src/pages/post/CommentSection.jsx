@@ -1,36 +1,15 @@
-import { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { Avatar, IconButton, Menu, MenuItem, TextField } from "@mui/material";
 import {
+  Reply as ReplyIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
-  Reply as ReplyIcon,
-  ExpandMore,
-  ExpandLess,
-  ArrowBack,
+  MoreVert as MoreVertIcon, // Icon ba chấm dọc
+  Send as SendIcon,
+  Close as CloseIcon,
 } from "@mui/icons-material";
-
 import { formatDistanceToNow } from "date-fns";
 import viLocale from "date-fns/locale/vi";
-import { Avatar, Button, Collapse, TextField } from "@mui/material";
-const buildTree = (flat) => {
-  const map = {},
-    roots = [];
-  flat.forEach((c) => (map[c.id] = { ...c, replies: [] }));
-  flat.forEach((c) =>
-    c.replies && map[c.replies]
-      ? map[c.replies].replies.push(map[c.id])
-      : roots.push(map[c.id])
-  );
-  return roots;
-};
-
-const findById = (nodes, id) => {
-  for (const n of nodes) {
-    if (n.id === id) return n;
-    const found = findById(n.replies, id);
-    if (found) return found;
-  }
-  return null;
-};
 
 const CommentItem = ({
   comment,
@@ -38,286 +17,348 @@ const CommentItem = ({
   onDelete,
   onEdit,
   depth = 0,
-  focusOnThread,
+  onViewMore,
+  replyTo,
+  setReplyTo,
+  text,
+  setText,
+  handleSubmit,
 }) => {
-  const [showReplies, setShowReplies] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editContent, setEditContent] = useState(comment.content);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-  const toggleReplies = () =>
-    depth >= 3 ? focusOnThread(comment) : setShowReplies((p) => !p);
-
-  const handleSaveEdit = () => {
-    if (editContent.trim()) {
-      onEdit(comment.id, editContent);
-      setIsEditing(false);
-    }
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   return (
-    <div className="flex space-x-3 mb-4">
-      <Avatar src={comment.user.avatar} alt={comment.user.name} />
-      <div className="flex-1">
-        <div className="bg-gray-100 p-3 rounded-lg relative">
+    <div
+      className={`${
+        comment.parentId ? "" : ""
+      } py-2 border-b border-gray-200 last:border-b-0`}
+    >
+      <div className="flex items-start space-x-4">
+        <Avatar src={comment.user.avatar} className="w-10 h-10" />
+        <div className="flex-1">
           <div className="flex justify-between items-center mb-1">
-            <span className="font-semibold text-gray-800 text-sm">
+            <div className="text-sm font-medium text-gray-900">
+              {depth + "|"}
               {comment.user.name}
-            </span>
-            <span className="text-xs text-gray-500">
-              {formatDistanceToNow(new Date(comment.createdAt), {
-                locale: viLocale,
-                addSuffix: true,
-              })}
-            </span>
-          </div>
-
-          {isEditing ? (
-            <>
-              <TextField
-                multiline
-                fullWidth
+              <span className="ml-2 text-gray-500 font-normal">
+                •{" "}
+                {formatDistanceToNow(new Date(comment.createdAt), {
+                  locale: viLocale,
+                  addSuffix: true,
+                })}
+              </span>
+            </div>
+            <div>
+              <IconButton
                 size="small"
-                value={editContent}
-                onChange={(e) => setEditContent(e.target.value)}
-              />
-              <div className="mt-2 space-x-2">
-                <Button
-                  size="small"
-                  variant="contained"
-                  onClick={handleSaveEdit}
+                onClick={handleClick}
+                className="text-gray-500 hover:text-gray-700"
+                aria-label="more options"
+              >
+                <MoreVertIcon fontSize="small" />
+              </IconButton>
+              <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+                <MenuItem
+                  onClick={() => {
+                    onReply(comment);
+                    handleClose();
+                  }}
                 >
-                  Lưu
-                </Button>
-                <Button size="small" onClick={() => setIsEditing(false)}>
-                  Hủy
-                </Button>
+                  <ReplyIcon fontSize="small" className="mr-2" /> Trả lời
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    onEdit(comment);
+                    handleClose();
+                  }}
+                >
+                  <EditIcon fontSize="small" className="mr-2" /> Chỉnh sửa
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    onDelete(comment.id);
+                    handleClose();
+                  }}
+                >
+                  <DeleteIcon fontSize="small" className="mr-2" /> Xóa
+                </MenuItem>
+              </Menu>
+            </div>
+          </div>
+          <p className="text-gray-800 text-sm whitespace-pre-wrap break-words">
+            {comment.content}
+          </p>
+          {replyTo?.id === comment.id && (
+            <> 
+              <div className="mt-2 flex items-start space-x-2">
+                <Avatar
+                  src="https://i.pravatar.cc/300?u=you"
+                  className="w-8 h-8"
+                />
+                <TextField
+                  fullWidth
+                  placeholder={`Phản hồi ${comment.user.name}...`}
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  size="small"
+                  variant="outlined"
+                  className="flex-grow"
+                />
+                <IconButton
+                  onClick={handleSubmit}
+                  disabled={!text.trim()}
+                  color="primary"
+                  aria-label="send reply"
+                >
+                  <SendIcon />
+                </IconButton>
+                <IconButton
+                  onClick={() => setReplyTo(null)}
+                  aria-label="cancel reply"
+                  className="text-gray-400 hover:text-red-500"
+                >
+                  <CloseIcon />
+                </IconButton>
               </div>
             </>
-          ) : (
-            <p className="text-gray-700 text-sm whitespace-pre-wrap">
-              {comment.content}
-            </p>
           )}
-        </div>
 
-        {!isEditing && (
-          <div className="flex items-center space-x-2 mt-1 ml-2 text-sm text-gray-600">
-            {comment.replies.length > 0 && (
-              <Button
-                size="small"
-                onClick={toggleReplies}
-                startIcon={
-                  depth >= 3 ? (
-                    <ArrowBack />
-                  ) : showReplies ? (
-                    <ExpandLess />
-                  ) : (
-                    <ExpandMore />
-                  )
-                }
-              >
-                {depth >= 3
-                  ? "Xem chuỗi thảo luận"
-                  : showReplies
-                  ? "Ẩn trả lời"
-                  : `Xem trả lời (${comment.replies.length})`}
-              </Button>
-            )}
-            <Button
-              size="small"
-              onClick={() => onReply(comment)}
-              startIcon={<ReplyIcon />}
-            >
-              Trả lời
-            </Button>
-            <Button
-              size="small"
-              onClick={() => setIsEditing(true)}
-              startIcon={<EditIcon />}
-            >
-              Sửa
-            </Button>
-            <Button
-              size="small"
-              onClick={() => onDelete(comment.id)}
-              startIcon={<DeleteIcon />}
-              color="error"
-            >
-              Xóa
-            </Button>
-          </div>
-        )}
-
-        {depth < 3 && (
-          <Collapse in={showReplies} className="ml-8 mt-2">
-            {comment.replies.map((rep) => (
+          {depth === 2 ? (
+            <button onClick={() => onViewMore(comment.id)}>
+              <span className="text-blue-500 text-sm font-semibold">
+                Xem thêm phản hồi
+              </span>
+            </button>
+          ) : (
+            comment.replies.map((child) => (
               <CommentItem
-                key={rep.id}
-                comment={rep}
+                key={child.id}
+                comment={child}
                 onReply={onReply}
                 onDelete={onDelete}
                 onEdit={onEdit}
-                depth={depth + 1}
-                focusOnThread={focusOnThread}
+                replyTo={replyTo}
+                setReplyTo={setReplyTo}
+                text={text}
+                setText={setText}
+                handleSubmit={handleSubmit}
+                depth={depth + 1} // Tăng depth khi render reply
+                onViewMore={onViewMore}
               />
-            ))}
-          </Collapse>
-        )}
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
-export const CommentSection = ({
-  postId,
-  open,
-  focusCommentId,
-  onReplyGlobal,
-}) => {
-  const [flatComments, setFlatComments] = useState([]);
-  const [newContent, setNewContent] = useState("");
+// Build flat array to tree (giữ nguyên)
+const buildTree = (flat) => {
+  const map = {},
+    roots = [];
+  flat.forEach((c) => (map[c.id] = { ...c, replies: [] }));
+  flat.forEach((c) =>
+    c.parentId && map[c.parentId]
+      ? map[c.parentId].replies.push(map[c.id])
+      : roots.push(map[c.id])
+  );
+  return roots;
+};
+
+export const CommentSection = ({ postId, open, cmtId }) => {
+  const [comments, setComments] = useState([]);
+  const [text, setText] = useState("");
+  const [cmt, setCMT] = useState("");
   const [replyTo, setReplyTo] = useState(null);
-  const [focusedThread, setFocusedThread] = useState(null);
-
-  const treeComments = useMemo(() => buildTree(flatComments), [flatComments]);
-
   useEffect(() => {
-    if (focusCommentId) {
-      const target = findById(treeComments, focusCommentId);
-      if (target) setFocusedThread(target);
-    }
-  }, [focusCommentId, treeComments]);
+    if (!open) return;
+    // TODO: Replace with API call
+    setComments(dataCMT);
+  }, [open]);
 
-  useEffect(() => {
-    if (focusedThread) {
-      const updated = findById(treeComments, focusedThread.id);
-      if (updated) setFocusedThread(updated);
-    }
-  }, [flatComments, treeComments]);
-
-  useEffect(() => {
-    if (!open || !postId) return;
-    setFocusedThread(null);
-    setFlatComments([
-      {
-        id: "c1",
-        user: { name: "Minh Nguyễn", avatar: "" },
-        content: "Bài viết rất hữu ích!",
-        createdAt: new Date().toISOString(),
-        replies: null,
-      },
-      {
-        id: "c2",
-        user: { name: "Hòa", avatar: "" },
-        content: "bình luận hữu ích!",
-        createdAt: new Date().toISOString(),
-        replies: "c1",
-      },
-      {
-        id: "c3",
-        user: { name: "Nghĩa", avatar: "" },
-        content: "Chào Hòa!",
-        createdAt: new Date().toISOString(),
-        replies: "c2",
-      },
-      {
-        id: "c4",
-        user: { name: "Oo", avatar: "" },
-        content: "Chào Nghĩa!",
-        createdAt: new Date().toISOString(),
-        replies: "c3",
-      },
-    ]);
-  }, [postId, open]);
+  const tree = useMemo(() => buildTree(comments), [comments]);
 
   const handleSubmit = () => {
-    if (!newContent.trim()) return;
-    const id = Date.now().toString();
-    const parentId = replyTo?.id || null;
+    if (!text.trim()) return;
     const newCmt = {
-      id,
-      user: { name: "Bạn", avatar: "" },
-      content: newContent,
+      id: Date.now().toString(),
+      parentId: replyTo?.id || null,
+      user: { name: "Bạn", avatar: "https://i.pravatar.cc/300?u=you" },
+      content: text,
       createdAt: new Date().toISOString(),
-      replies: parentId,
     };
-    setFlatComments((prev) => [newCmt, ...prev]);
-    setNewContent("");
+    setComments([newCmt, ...comments]);
+    setText("");
     setReplyTo(null);
-    onReplyGlobal?.(newCmt, parentId);
   };
-  const handleDelete = (id) => {
-    setFlatComments((prev) => prev.filter((c) => c.id !== id));
+  const handleSubmitCmt = () => {
+    if (!cmt.trim()) return;
+    const newCmt = {
+      id: Date.now().toString(),
+      parentId: null,
+      user: { name: "Bạn", avatar: "https://i.pravatar.cc/300?u=you" },
+      content: cmt,
+      createdAt: new Date().toISOString(),
+    };
+    setComments([newCmt, ...comments]);
+    setCMT("");
+  };
+  const handleDelete = (id) => setComments((c) => c.filter((x) => x.id !== id));
+  const handleEdit = (comment) => {
+    const newText = prompt("Chỉnh sửa bình luận", comment.content);
+    if (newText != null)
+      setComments((c) =>
+        c.map((x) => (x.id === comment.id ? { ...x, content: newText } : x))
+      );
   };
 
-  const handleEdit = (id, newContent) => {
-    setFlatComments((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, content: newContent } : c))
-    );
-  };
-
+  if (!open) return null;
   return (
-    open && (
-      <div className="px-4 py-3">
-        <div className="max-h-[100dvh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 pr-2">
-          {focusedThread ? (
-            <>
-              <Button
-                size="small"
-                onClick={() => setFocusedThread(null)}
-                className="mb-2"
-              >
-                ← Quay lại tất cả bình luận
-              </Button>
-              <CommentItem
-                comment={focusedThread}
-                onReply={setReplyTo}
-                focusOnThread={setFocusedThread}
-                onDelete={handleDelete}
-                onEdit={handleEdit}
-              />
-            </>
-          ) : (
-            treeComments.map((cmt) => (
-              <CommentItem
-                key={cmt.id}
-                comment={cmt}
-                onReply={setReplyTo}
-                focusOnThread={setFocusedThread}
-                onDelete={handleDelete}
-                onEdit={handleEdit}
-              />
-            ))
-          )}
-        </div>
-
-        {replyTo && (
-          <div className="text-sm text-gray-600 mb-1">
-            Đang trả lời{" "}
-            <span className="font-semibold">{replyTo.user.name}</span>
-            <button
-              className="ml-2 text-red-500"
-              onClick={() => setReplyTo(null)}
-            >
-              Hủy
-            </button>
-          </div>
-        )}
-
-        <div className="flex items-center space-x-2 border-t pt-3">
-          <TextField
-            fullWidth
-            size="small"
-            variant="outlined"
-            placeholder={replyTo ? "Viết trả lời..." : "Viết bình luận..."}
-            value={newContent}
-            onChange={(e) => setNewContent(e.target.value)}
+    <div className="">
+      <h2 className="text-xl font-semibold text-gray-400 py-2 w-full text-center border-t">Bình luận</h2>
+      <div className="max-h-[400px] overflow-y-auto pr-3 custom-scrollbar mb-4 md:px-4 px-2">
+        {tree.map((c) => (
+          <CommentItem
+            key={c.id}
+            comment={c}
+            onReply={setReplyTo}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+            onViewMore={(id) => {
+              // Có thể set vào state nếu muốn xem thêm cụ thể
+              // hoặc gọi hàm callback truyền từ props
+              window.scrollTo({ top: 0, behavior: "smooth" }); // scroll lên
+              console.log("Xem phản hồi của", id);
+              // Giả sử bạn cập nhật `cmtId` từ parent component
+            }}
+            replyTo={replyTo}
+            setReplyTo={setReplyTo}
+            text={text}
+            setText={setText}
+            handleSubmit={handleSubmit}
+            depth={0}
           />
-          <Button variant="contained" onClick={handleSubmit}>
-            Gửi
-          </Button>
-        </div>
+        ))}
+        {tree.length === 0 && (
+          <p className="text-gray-500 italic text-sm">Chưa có bình luận nào.</p>
+        )}
       </div>
-    )
+
+      <div className="flex items-center space-x-3 p-2 ">
+        <Avatar src="https://i.pravatar.cc/300?u=you" className="w-8 h-8" />
+        <TextField
+          fullWidth
+          placeholder="Thêm bình luận..."
+          value={cmt}
+          onChange={(e) => setCMT(e.target.value)}
+          size="small"
+          variant="outlined"
+          className="flex-grow"
+        />
+        <IconButton
+          onClick={handleSubmitCmt}
+          disabled={!cmt.trim()}
+          color="primary"
+          aria-label="send comment"
+        >
+          <SendIcon />
+        </IconButton>
+      </div>
+    </div>
   );
 };
+
+const dataCMT = [
+  {
+    id: "1",
+    parentId: null,
+    user: { name: "Alice", avatar: "https://i.pravatar.cc/300?u=alice" },
+    content: "Chào mọi người! Bài viết này thật thú vị.",
+    createdAt: new Date(Date.now() - 86400000 * 2).toISOString(), // 2 ngày trước
+  },
+  {
+    id: "2",
+    parentId: "1",
+    user: { name: "Bob", avatar: "https://i.pravatar.cc/300?u=bob" },
+    content: "Tôi hoàn toàn đồng ý với bạn!",
+    createdAt: new Date(Date.now() - 86400000 * 1.5).toISOString(), // 1 ngày rưỡi trước
+  },
+  {
+    id: "22",
+    parentId: "2",
+    user: { name: "Bob", avatar: "https://i.pravatar.cc/300?u=bob" },
+    content: "Tôi hoàn toàn đồng ý với bạn!",
+    createdAt: new Date(Date.now() - 86400000 * 1.5).toISOString(), // 1 ngày rưỡi trước
+  },
+  {
+    id: "222",
+    parentId: "22",
+    user: { name: "Bob", avatar: "https://i.pravatar.cc/300?u=bob" },
+    content: "Tôi hoàn toàn đồng ý với bạn!",
+    createdAt: new Date(Date.now() - 86400000 * 1.5).toISOString(), // 1 ngày rưỡi trước
+  },
+  {
+    id: "2222",
+    parentId: "222",
+    user: { name: "Charlie", avatar: "https://i.pravatar.cc/300?u=charlie" },
+    content: "Có ai biết thêm về chủ đề này không?",
+    createdAt: new Date(Date.now() - 86400000 * 1).toISOString(), // 1 ngày trước
+  },
+  {
+    id: "4",
+    parentId: "3",
+    user: { name: "Alice", avatar: "https://i.pravatar.cc/300?u=alice" },
+    content: "Tôi đã đọc một bài báo khác về nó, rất hay.",
+    createdAt: new Date(Date.now() - 3600000 * 12).toISOString(), // 12 tiếng trước
+  },
+  {
+    id: "5",
+    parentId: null,
+    user: { name: "David", avatar: "https://i.pravatar.cc/300?u=david" },
+    content: "Cảm ơn vì bài viết!",
+    createdAt: new Date(Date.now() - 3600000 * 6).toISOString(), // 6 tiếng trước
+  },
+  {
+    id: "6",
+    parentId: "5",
+    user: { name: "Eve", avatar: "https://i.pravatar.cc/300?u=eve" },
+    content: "Tôi cũng thấy nó rất hữu ích.",
+    createdAt: new Date(Date.now() - 3600000 * 3).toISOString(), // 3 tiếng trước
+  },
+  {
+    id: "7",
+    parentId: null,
+    user: { name: "Frank", avatar: "https://i.pravatar.cc/300?u=frank" },
+    content: "Mong chờ những bài viết tiếp theo!",
+    createdAt: new Date(Date.now() - 1800000 * 1).toISOString(), // 30 phút trước
+  },
+  {
+    id: "8",
+    parentId: "7",
+    user: { name: "Grace", avatar: "https://i.pravatar.cc/300?u=grace" },
+    content: "Tôi cũng vậy!",
+    createdAt: new Date(Date.now() - 60000 * 15).toISOString(), // 15 phút trước
+  },
+  {
+    id: "9",
+    parentId: null,
+    user: { name: "Heidi", avatar: "https://i.pravatar.cc/300?u=heidi" },
+    content: "Đây là một cộng đồng tuyệt vời.",
+    createdAt: new Date().toISOString(), // Bây giờ
+  },
+  {
+    id: "10",
+    parentId: "9",
+    user: { name: "Ivan", avatar: "https://i.pravatar.cc/300?u=ivan" },
+    content: "Tôi rất vui khi tham gia.",
+    createdAt: new Date(Date.now() - 60000 * 5).toISOString(), // 5 phút trước
+  },
+];
