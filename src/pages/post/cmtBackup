@@ -10,7 +10,6 @@ import {
 } from "@mui/icons-material";
 import { formatDistanceToNow } from "date-fns";
 import viLocale from "date-fns/locale/vi";
-import { PostComment } from "../../service/cmt";
 
 const CommentItem = ({
   comment,
@@ -114,8 +113,7 @@ const CommentItem = ({
         <div className="mt-2 relative">
           {/* Nhãn Đang phản hồi xuất hiện trên đường viền */}
           <div className="absolute -top-2 left-4 bg-white px-2 text-sm text-blue-500">
-            <span className="text-gray-500">Đang phản hồi:</span>{" "}
-            {comment.user.name}
+            <span className="text-gray-500">Đang phản hồi:</span> {comment.user.name}
           </div>
           <div className="flex items-start border-x-2 border-blue-100 p-3 pr-0 rounded-lg">
             <Avatar
@@ -185,26 +183,16 @@ const buildTree = (flat) => {
 };
 
 export const CommentSection = ({ postId, open, cmtId }) => {
-  useEffect(() => {
-    setTimeout(() => {
-      if (open) {
-        const element = document.getElementById(`post-${postId}`);
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth", block: "end" });
-        } else {
-        }
-      }
-    }, 100); // Đặt thời gian chờ để DOM cập nhật
-  }, [open]);
   const [comments, setComments] = useState([]);
   const [text, setText] = useState("");
   const [cmt, setCMT] = useState("");
   const [replyTo, setReplyTo] = useState(null);
   useEffect(() => {
-    if (!postId) return;
+    if (!open) return;
     // TODO: Replace with API call
     setComments(dataCMT);
-  }, [postId]);
+  }, [open]);
+
   const tree = useMemo(() => buildTree(comments), [comments]);
 
   const handleSubmit = () => {
@@ -222,8 +210,8 @@ export const CommentSection = ({ postId, open, cmtId }) => {
     setReplyTo(null);
     handleViewMore(id);
   };
-  const handleSubmitCmt = async () => {
-    if (!cmt.trim() || !postId) return;
+  const handleSubmitCmt = () => {
+    if (!cmt.trim()) return;
     let id = Date.now().toString();
     const newCmt = {
       id: id,
@@ -235,10 +223,6 @@ export const CommentSection = ({ postId, open, cmtId }) => {
     setComments([newCmt, ...comments]);
     setCMT("");
     handleViewMore(id);
-    const result = await PostComment({
-      postId: postId,
-      content: cmt,
-    });
   };
   const handleDelete = (id) => setComments((c) => c.filter((x) => x.id !== id));
   const handleEdit = (comment) => {
@@ -266,7 +250,7 @@ export const CommentSection = ({ postId, open, cmtId }) => {
       <h2 className="text-xl font-semibold text-gray-400 py-2 w-full text-center border-t">
         Bình luận
       </h2>
-      <div className="max-h-[68dvh] overflow-y-auto custom-scrollbar mb-4 md:px-4 px-2">
+      <div className="max-h-[400px] overflow-y-auto custom-scrollbar mb-4 md:px-4 px-2">
         {tree.map((c) => (
           <CommentItem
             key={c.id}
@@ -290,7 +274,7 @@ export const CommentSection = ({ postId, open, cmtId }) => {
         )}
       </div>
 
-      <div id={`post-${postId}`} className="flex items-center space-x-3 p-2 ">
+      <div className="flex items-center space-x-3 p-2 ">
         <Avatar src="https://i.pravatar.cc/300?u=you" className="w-8 h-8" />
         <TextField
           fullWidth
