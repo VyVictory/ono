@@ -6,7 +6,7 @@ import SecurityLabel from "./SecurityLabel";
 import FilePreview from "../../components/FilePreview";
 import { useModule } from "../../components/context/Module";
 import { Link } from "react-router-dom";
-import { CommentSection as Comment } from "./Comment";
+import { CommentSection as Comment } from "./CommentSection";
 import { BookmarkBorderSharp, Share } from "@mui/icons-material";
 import LikeDislike from "./LikeDislike";
 import { ChatBubbleLeftIcon } from "@heroicons/react/24/solid";

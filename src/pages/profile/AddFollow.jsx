@@ -17,7 +17,7 @@ const AddFollow = ({ profile }) => {
       setLoading(true);
       try {
         const res = await checkFollow(profile._id);
-        if (res.status == 200) { 
+        if (res.status == 200) {
           setStatusFollow(res?.data?.following);
         }
       } catch (error) {
@@ -83,7 +83,7 @@ const AddFollow = ({ profile }) => {
     <button
       onClick={handleFollow}
       disabled={loading}
-      className="bg-gray-50 px-2 py-2 rounded-md flex items-center transition-transform duration-200"
+      className=" hover:scale-110  flex items-center transition-transform duration-200"
     >
       <Box display="flex" gap={2}>
         <Box position="relative" display="inline-block">

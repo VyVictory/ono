@@ -4,20 +4,20 @@ import {
   ChevronDownIcon,
   PencilIcon,
   ChatBubbleLeftEllipsisIcon,
-} from "@heroicons/react/24/solid"; 
+} from "@heroicons/react/24/solid";
 import "../../css/post.css";
 import ContentProfile from "./ContentProfile";
 import pictureBG from "../../img/sky.webp";
 import MenuProfile from "./MenuProfile";
 import { useProfile } from "../../components/context/profile/ProfileProvider";
-import AddFriend from "../../components/AddFriend"; 
+import AddFriend from "../../components/AddFriend";
 import { useModule } from "../../components/context/Module";
 import { useNavigate } from "react-router-dom";
 import { getPostHome } from "../../service/post";
 import { Button, ButtonBase } from "@mui/material";
 import UserStatusIndicator from "../../components/UserStatusIndicator";
 import { getFriendsMess } from "../../service/friend";
-import DropdownChangeImage from "./DropdownChangeImage"; 
+import DropdownChangeImage from "./DropdownChangeImage";
 import AddFollow from "./AddFollow";
 const Profile = () => {
   const { setZoomImg } = useModule();
@@ -186,9 +186,9 @@ const Profile = () => {
                         `/messages/inbox?idUser=${userRender.profile._id}`
                       );
                     }}
-                    className="bg-gray-50 hover:bg-violet-50 min-w-16 justify-center px-2 py-1 rounded-md flex items-center transition-transform duration-200 hover:scale-110"
+                    className="  cursor-pointer hover:scale-110   justify-center   rounded-md flex items-center transition-transform duration-200"
                   >
-                    <ChatBubbleLeftEllipsisIcon className="w-8 h-8 text-gray-500 transition-transform duration-200 hover:scale-125 hover:text-violet-400" />
+                    <ChatBubbleLeftEllipsisIcon className="w-8 h-8 text-gray-500 transition-transform duration-200  hover:text-violet-400" />
                   </div>
                 </div>
               )}
