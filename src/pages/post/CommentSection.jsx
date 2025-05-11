@@ -42,8 +42,8 @@ const CommentItem = ({
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
-        if (maxDepthCmt === 5) return;
-        setMaxDepthCmt(5);
+        if (maxDepthCmt === 4) return;
+        setMaxDepthCmt(4);
       } else {
         if (maxDepthCmt === 3) return;
         setMaxDepthCmt(3);
@@ -251,7 +251,7 @@ export const CommentSection = ({ postId, open, cmtId }) => {
         } else {
         }
       }
-    }, 100); // Đặt thời gian chờ để DOM cập nhật
+    }, 500); // Đặt thời gian chờ để DOM cập nhật
   }, [open, comments]);
   useEffect(() => {
     if (!postId) return;
