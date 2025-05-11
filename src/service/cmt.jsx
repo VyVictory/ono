@@ -59,3 +59,48 @@ export const getCmt = async ({ postId, start, limit }) => {
     return null;
   }
 };
+
+export const deleteCmt = async (postId) => {
+  try {
+    const response = await api.delete(`/cmt/${postId}`);
+    return response;
+  } catch (error) {
+    // nextError(error);
+    return null;
+  }
+};
+export const UpdateComment = async ({ commentId, content, files, video }) => {
+  try {
+    const token = authToken.getToken();
+    if (!token) {
+      nextLogin();
+      return null;
+    }
+
+    if (!content && (!files || files.length === 0) && !video) return null;
+    const formData = new FormData();
+
+    formData.append("content", content?.trim() || "");
+
+    if (files?.length) {
+      files.forEach((file) => {
+        formData.append("media", file);
+      });
+    }
+
+    if (video) {
+      formData.append("media", video); // Nếu video là 1 File object
+    }
+
+    const response = await api.put(`/cmt/${commentId}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return response;
+  } catch (error) {
+    nextError(error);
+    return null;
+  }
+};
