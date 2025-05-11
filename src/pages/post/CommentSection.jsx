@@ -21,7 +21,7 @@ import { formatDistanceToNow } from "date-fns";
 import viLocale from "date-fns/locale/vi";
 import { getCmt, PostComment } from "../../service/cmt";
 import { useAuth } from "../../components/context/AuthProvider";
-const maxDepthCmt = 3;
+
 const CommentItem = ({
   comment,
   onReply,
@@ -37,6 +37,23 @@ const CommentItem = ({
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const { profile } = useAuth();
+  const [maxDepthCmt, setMaxDepthCmt] = useState(3);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        if (maxDepthCmt === 5) return;
+        setMaxDepthCmt(5);
+      } else {
+        if (maxDepthCmt === 3) return;
+        setMaxDepthCmt(3);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -207,7 +224,6 @@ const CommentItem = ({
 
 // Build flat array to tree (giữ nguyên)
 const buildTree = (flat) => {
-  console.log(flat);
   const map = {},
     roots = [];
   flat.forEach((c) => (map[c.id] = { ...c, replies: [] }));
@@ -243,10 +259,8 @@ export const CommentSection = ({ postId, open, cmtId }) => {
     const fetchData = async () => {
       try {
         const res = await getCmt({ postId }); // Gọi API
-        console.log("data nguyen", res);
         if (res?.comments) {
           const transformed = res.comments.map((c) => switchData(c));
-          console.log("setData");
           setComments(transformed);
         }
       } catch (error) {
@@ -283,9 +297,14 @@ export const CommentSection = ({ postId, open, cmtId }) => {
         container.scrollIntoView({ behavior: "smooth", block: "end" });
     }, 100);
   };
-
-  // to go back to the full list
-  const clearRoot = () => setRootId(null);
+  const clearRoot = () => {
+    setRootId(null);
+    setTimeout(() => {
+      const container = document.getElementById(`post-${postId}`);
+      if (container)
+        container.scrollIntoView({ behavior: "smooth", block: "end" });
+    }, 100);
+  };
   const handleSubmit = async () => {
     if (!text.trim() || !replyTo.id) return;
     const result = await PostComment({
@@ -308,7 +327,13 @@ export const CommentSection = ({ postId, open, cmtId }) => {
     setCMT("");
     const newSw = switchData(result);
     setComments([newSw, ...comments]);
-    handleViewMore(newSw?.id);
+    setTimeout(() => {
+      const el = document.getElementById(`comment-${newSw?.id}`);
+      const container = document.getElementById(`post-${postId}`);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (container)
+        container.scrollIntoView({ behavior: "smooth", block: "end" });
+    }, 100);
   };
   const handleDelete = (id) => setComments((c) => c.filter((x) => x.id !== id));
   const handleEdit = (comment) => {
@@ -322,18 +347,20 @@ export const CommentSection = ({ postId, open, cmtId }) => {
   if (!open) return null;
   return (
     <div className="">
-      <h2 className="relative text-xl font-semibold text-gray-400 py-2 w-full text-center border-t flex items-center justify-center">
-        {rootId && (
-          <button
-            onClick={clearRoot}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 flex items-center text-sm text-gray-500 italic"
-          >
-            <ArrowBack fontSize="small" className="mr-1" />
-            Xem tất cả bình luận
-          </button>
-        )}
-        Bình luận
-      </h2>
+      {rootId ? (
+        <button
+          onClick={clearRoot}
+          className=" flex items-center text-sm text-gray-500 italic p-2 md:p-3"
+        >
+          <ArrowBack fontSize="small" className="mr-1" />
+          Xem tất cả bình luận
+        </button>
+      ) : (
+        <h2 className="relative text-xl font-semibold text-gray-400 py-2 w-full text-center border-t flex items-center justify-center">
+          {" "}
+          Bình luận
+        </h2>
+      )}
 
       <div className="max-h-[68dvh] overflow-y-auto custom-scrollbar md:px-4 px-2">
         {displayTree.map((c) => (
