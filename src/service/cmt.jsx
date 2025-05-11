@@ -51,7 +51,7 @@ export const PostComment = async ({
 export const getCmt = async ({ postId, start, limit }) => {
   try {
     const response = await api.get(
-      `/cmt/byPost/${postId}?page=${start || 1}&limit=${limit || 10}`
+      `/cmt/byPost/${postId}?page=${start || 1}&limit=${limit || Infinity}`
     );
     return response.data;
   } catch (error) {

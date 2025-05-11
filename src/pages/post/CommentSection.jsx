@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Avatar, IconButton, Menu, MenuItem, TextField } from "@mui/material";
+import {
+  Avatar,
+  IconButton,
+  Menu,
+  MenuItem,
+  Paper,
+  TextField,
+} from "@mui/material";
 import {
   Reply as ReplyIcon,
   Edit as EditIcon,
@@ -7,13 +14,14 @@ import {
   MoreVert as MoreVertIcon, // Icon ba chấm dọc
   Send as SendIcon,
   Close as CloseIcon,
+  ArrowBack,
 } from "@mui/icons-material";
 import avt from "../../img/DefaultAvatar.jpg";
 import { formatDistanceToNow } from "date-fns";
 import viLocale from "date-fns/locale/vi";
 import { getCmt, PostComment } from "../../service/cmt";
 import { useAuth } from "../../components/context/AuthProvider";
-
+const maxDepthCmt = 3;
 const CommentItem = ({
   comment,
   onReply,
@@ -28,6 +36,7 @@ const CommentItem = ({
   handleSubmit,
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const { profile } = useAuth();
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -78,29 +87,33 @@ const CommentItem = ({
                   >
                     <ReplyIcon fontSize="small" className="mr-2" /> Trả lời
                   </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      onEdit(comment);
-                      handleClose();
-                    }}
-                  >
-                    <EditIcon fontSize="small" className="mr-2" /> Chỉnh sửa
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      onDelete(comment.id);
-                      handleClose();
-                    }}
-                  >
-                    <DeleteIcon fontSize="small" className="mr-2" /> Xóa
-                  </MenuItem>
+                  {comment?.user?.id === profile?._id && (
+                    <>
+                      <MenuItem
+                        onClick={() => {
+                          onEdit(comment);
+                          handleClose();
+                        }}
+                      >
+                        <EditIcon fontSize="small" className="mr-2" /> Chỉnh sửa
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          onDelete(comment.id);
+                          handleClose();
+                        }}
+                      >
+                        <DeleteIcon fontSize="small" className="mr-2" /> Xóa
+                      </MenuItem>
+                    </>
+                  )}
                 </Menu>
               </div>
             </div>
             <p className="text-gray-800 text-sm whitespace-pre-wrap break-words">
               {comment.content}
             </p>
-            {depth >= 2 && comment.replies.length > 0 && (
+            {depth >= maxDepthCmt && comment.replies.length > 0 && (
               <button
                 onClick={() => onViewMore(comment.id)}
                 className="text-blue-500 text-sm font-semibold mt-2"
@@ -112,43 +125,66 @@ const CommentItem = ({
         </div>
       </div>
       {replyTo?.id === comment.id && (
-        <div className="mt-2 relative">
-          {/* Nhãn Đang phản hồi xuất hiện trên đường viền */}
-          <div className="absolute -top-2 left-4 bg-white px-2 text-sm text-blue-500">
-            <span className="text-gray-500">Đang phản hồi:</span>{" "}
-            {comment.user.name}
-          </div>
-          <div className="flex items-start border-x-2 border-blue-100 p-3 pr-0 rounded-lg">
-            <Avatar src={comment.user.avatar || ""} className="w-8 h-8 mr-2" />
+        <Paper
+          elevation={2}
+          className="relative w-full max-w-5xl mx-auto p-3 rounded-xl border border-blue-200 bg-white"
+        >
+          {replyTo && (
+            <div className="absolute -top-4 left-6 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full text-xs text-blue-700 flex items-center gap-1 shadow-sm">
+              <ReplyIcon fontSize="small" />
+              Đang phản hồi:{" "}
+              <span className="font-semibold">{comment.user.name}</span>
+            </div>
+          )}
+
+          <div className="flex items-center space-x-2">
+            <Avatar
+              src={profile?.avatar || ""}
+              className="w-8 h-8 ring-2 ring-blue-200"
+            />
             <TextField
               fullWidth
-              placeholder={`Phản hồi ${comment.user.name}...`}
+              placeholder={
+                replyTo
+                  ? `Phản hồi ${comment.user.name}...`
+                  : "Viết bình luận..."
+              }
               value={text}
               onChange={(e) => setText(e.target.value)}
               size="small"
-              variant="outlined"
-              className="flex-grow"
+              variant="standard"
+              className=" rounded-full transition-all"
+              InputProps={{
+                className: "py-1.5 px-4 text-sm",
+                style: {
+                  height: "38px",
+                  borderRadius: "9999px", // full rounded
+                },
+              }}
             />
+
             <IconButton
               onClick={handleSubmit}
               disabled={!text.trim()}
-              color="primary"
-              aria-label="send reply"
+              aria-label="send"
+              className="bg-blue-500 hover:bg-blue-600 text-white p-1.5 rounded-md"
             >
-              <SendIcon />
+              <SendIcon fontSize="small" />
             </IconButton>
-            <IconButton
-              onClick={() => setReplyTo(null)}
-              aria-label="cancel reply"
-              className="text-gray-400 hover:text-red-500"
-            >
-              <CloseIcon />
-            </IconButton>
+            {replyTo && (
+              <IconButton
+                onClick={() => setReplyTo(null)}
+                aria-label="cancel"
+                className="text-gray-400 hover:text-red-500 p-1.5"
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            )}
           </div>
-        </div>
+        </Paper>
       )}
 
-      {depth < 2 &&
+      {depth < maxDepthCmt &&
         comment.replies.map((child) => (
           <CommentItem
             key={child.id}
@@ -185,6 +221,7 @@ const buildTree = (flat) => {
 
 export const CommentSection = ({ postId, open, cmtId }) => {
   const [comments, setComments] = useState([]);
+  const [rootId, setRootId] = useState(null); // ← NEW
   const [text, setText] = useState("");
   const [cmt, setCMT] = useState("");
   const [replyTo, setReplyTo] = useState(null);
@@ -220,7 +257,35 @@ export const CommentSection = ({ postId, open, cmtId }) => {
     fetchData(); // Gọi hàm async
   }, [postId]);
   const tree = useMemo(() => buildTree(comments), [comments]);
+  const displayTree = useMemo(() => {
+    if (!rootId) return tree;
+    // find the node in the tree matching rootId
+    const findNode = (nodes) => {
+      for (const node of nodes) {
+        if (node.id === rootId) return node;
+        const found = findNode(node.replies);
+        if (found) return found;
+      }
+      return null;
+    };
+    const rootNode = findNode(tree);
+    return rootNode ? [rootNode] : [];
+  }, [tree, rootId]);
+  // when you click “Xem thêm phản hồi”
+  const handleViewMore = (id) => {
+    setRootId(id);
+    // optionally scroll to it:
+    setTimeout(() => {
+      const el = document.getElementById(`comment-${id}`);
+      const container = document.getElementById(`post-${postId}`);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (container)
+        container.scrollIntoView({ behavior: "smooth", block: "end" });
+    }, 100);
+  };
 
+  // to go back to the full list
+  const clearRoot = () => setRootId(null);
   const handleSubmit = async () => {
     if (!text.trim() || !replyTo.id) return;
     const result = await PostComment({
@@ -228,22 +293,10 @@ export const CommentSection = ({ postId, open, cmtId }) => {
       content: text,
       idCmt: replyTo?.id,
     });
-
     const newSw = switchData(result);
-    console.log("add", newSw);
-    // setComments([newSw, ...comments]);
-
-    // const newCmt = {
-    //   id: id,
-    //   parentId: replyTo?.id || null,
-    //   user: { name: "Bạn", avatar: "https://i.pravatar.cc/300?u=you" },
-    //   content: text,
-    //   createdAt: new Date().toISOString(),
-    // };
     setComments([newSw, ...comments]);
     setReplyTo(null);
     setText("");
-    handleViewMore(newSw?.id);
   };
   const handleSubmitCmt = async () => {
     if (!cmt.trim() || !postId) return;
@@ -265,35 +318,32 @@ export const CommentSection = ({ postId, open, cmtId }) => {
         c.map((x) => (x.id === comment.id ? { ...x, content: newText } : x))
       );
   };
-  const handleViewMore = (id) => {
-    setTimeout(() => {
-      const element = document.getElementById(`comment-${id}`);
-      if (element) {
-        console.log("Element found:", element);
-        element.scrollIntoView({ behavior: "smooth", block: "start" });
-      } else {
-        console.log("Element not found", `comment-${id}`);
-      }
-    }, 100); // Đặt thời gian chờ để DOM cập nhật
-  };
 
   if (!open) return null;
   return (
     <div className="">
-      <h2 className="text-xl font-semibold text-gray-400 py-2 w-full text-center border-t">
+      <h2 className="relative text-xl font-semibold text-gray-400 py-2 w-full text-center border-t flex items-center justify-center">
+        {rootId && (
+          <button
+            onClick={clearRoot}
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 flex items-center text-sm text-gray-500 italic"
+          >
+            <ArrowBack fontSize="small" className="mr-1" />
+            Xem tất cả bình luận
+          </button>
+        )}
         Bình luận
       </h2>
-      <div className="max-h-[68dvh] overflow-y-auto custom-scrollbar mb-4 md:px-4 px-2">
-        {tree.map((c) => (
+
+      <div className="max-h-[68dvh] overflow-y-auto custom-scrollbar md:px-4 px-2">
+        {displayTree.map((c) => (
           <CommentItem
             key={c.id}
             comment={c}
             onReply={setReplyTo}
             onDelete={handleDelete}
             onEdit={handleEdit}
-            onViewMore={(id) => {
-              handleViewMore(id);
-            }}
+            onViewMore={handleViewMore}
             replyTo={replyTo}
             setReplyTo={setReplyTo}
             text={text}
@@ -302,12 +352,14 @@ export const CommentSection = ({ postId, open, cmtId }) => {
             depth={0}
           />
         ))}
-        {tree.length === 0 && (
-          <p className="text-gray-500 italic text-sm">Chưa có bình luận nào.</p>
+        {displayTree.length === 0 && (
+          <p className="text-gray-500 italic text-sm">
+            {rootId ? "Không tìm thấy phản hồi." : "Chưa có bình luận nào."}
+          </p>
         )}
       </div>
 
-      <div id={`post-${postId}`} className="flex items-center space-x-3 p-2 ">
+      <div id={`post-${postId}`} className="flex items-center space-x-3 p-2">
         <Avatar src={profile?.avatar || " "} className="w-8 h-8" />
 
         <TextField
