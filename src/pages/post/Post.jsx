@@ -1,4 +1,4 @@
-import { Bars3Icon, XCircleIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, ChatBubbleLeftRightIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { ButtonBase, Modal, Paper } from "@mui/material";
 import { useState, useEffect } from "react";
 import UserStatusIndicator from "../../components/UserStatusIndicator";
@@ -6,9 +6,10 @@ import SecurityLabel from "./SecurityLabel";
 import FilePreview from "../../components/FilePreview";
 import { useModule } from "../../components/context/Module";
 import { Link } from "react-router-dom";
-import { Comment } from "./Comment";
+import { CommentSection as Comment } from "./Comment";
 import { BookmarkBorderSharp, Share } from "@mui/icons-material";
 import LikeDislike from "./LikeDislike";
+import { ChatBubbleLeftIcon } from "@heroicons/react/24/solid";
 const MAX_VISIBLE_IMAGES = 3; // Hiển thị tối đa 6 ảnh
 const Post = ({ data }) => {
   const { addPost, setAddPost } = useModule();
@@ -148,22 +149,13 @@ const Post = ({ data }) => {
               <div className="border-t mx-2 flex justify-between items-center p-2">
                 <div className="flex items-center space-x-4 text-gray-600">
                   <LikeDislike />
-                  <button className="hover:text-blue-500 transition">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-6 h-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1.5}
-                        d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z"
-                      />
-                    </svg>
+                  <button
+                    onClick={() => setOpenCmt(openCmt === _._id ? null : _._id)}
+                    className="flex items-center space-x-1"
+                  >
+                    <ChatBubbleLeftRightIcon className="text-gray-500 w-6 aspect-square" /> 
                   </button>
+
                   <button className="hover:text-blue-500 transition">
                     <Share className="w-6 h-6" />
                   </button>
@@ -173,7 +165,7 @@ const Post = ({ data }) => {
                 </button>
               </div>
             </div>
-            <Comment open={openCmt} />
+            {openCmt === _._id && <Comment postId={_._id} open={true} />}
           </Paper>
         ))}
       </div>
