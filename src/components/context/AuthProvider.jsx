@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { getProfile } from "../../service/user";
 import authToken from "../../service/storage/authToken";
-
+import avt from "../../img/DefaultAvatar.jpg";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -14,7 +14,14 @@ export const AuthProvider = ({ children }) => {
     try {
       const userData = await getProfile();
       // console.log("Profilee:", userData);
-      setProfile(userData?.data);
+      const user = userData?.data;
+
+      // Nếu không có avatar, gán bằng ảnh mặc định
+      if (!user.avatar || user?.avatar.trim() === "") {
+        user.avatar = avt;
+      }
+
+      setProfile(user);
     } catch (error) {
       // console.error("Fetch profile failed err:", error);
     } finally {

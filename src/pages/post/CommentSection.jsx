@@ -8,9 +8,11 @@ import {
   Send as SendIcon,
   Close as CloseIcon,
 } from "@mui/icons-material";
+import avt from "../../img/DefaultAvatar.jpg";
 import { formatDistanceToNow } from "date-fns";
 import viLocale from "date-fns/locale/vi";
-import { PostComment } from "../../service/cmt";
+import { getCmt, PostComment } from "../../service/cmt";
+import { useAuth } from "../../components/context/AuthProvider";
 
 const CommentItem = ({
   comment,
@@ -41,7 +43,6 @@ const CommentItem = ({
         {Array.from({ length: depth }).map((_, i) => (
           <div key={i} className="w-2 sm:w-4 md:w-8 lg:w-10 flex-shrink-0" />
         ))}
-
         <div className="flex  w-full items-start space-x-4 border-t border-gray-200 py-3">
           <Avatar src={comment.user.avatar} className="w-10 h-10" />
           <div className="flex-1">
@@ -118,10 +119,7 @@ const CommentItem = ({
             {comment.user.name}
           </div>
           <div className="flex items-start border-x-2 border-blue-100 p-3 pr-0 rounded-lg">
-            <Avatar
-              src="https://i.pravatar.cc/300?u=you"
-              className="w-8 h-8 mr-2"
-            />
+            <Avatar src={comment.user.avatar || ""} className="w-8 h-8 mr-2" />
             <TextField
               fullWidth
               placeholder={`Phản hồi ${comment.user.name}...`}
@@ -173,6 +171,7 @@ const CommentItem = ({
 
 // Build flat array to tree (giữ nguyên)
 const buildTree = (flat) => {
+  console.log(flat);
   const map = {},
     roots = [];
   flat.forEach((c) => (map[c.id] = { ...c, replies: [] }));
@@ -185,9 +184,14 @@ const buildTree = (flat) => {
 };
 
 export const CommentSection = ({ postId, open, cmtId }) => {
+  const [comments, setComments] = useState([]);
+  const [text, setText] = useState("");
+  const [cmt, setCMT] = useState("");
+  const [replyTo, setReplyTo] = useState(null);
+  const { profile } = useAuth();
   useEffect(() => {
     setTimeout(() => {
-      if (open) {
+      if (open && comments) {
         const element = document.getElementById(`post-${postId}`);
         if (element) {
           element.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -195,50 +199,63 @@ export const CommentSection = ({ postId, open, cmtId }) => {
         }
       }
     }, 100); // Đặt thời gian chờ để DOM cập nhật
-  }, [open]);
-  const [comments, setComments] = useState([]);
-  const [text, setText] = useState("");
-  const [cmt, setCMT] = useState("");
-  const [replyTo, setReplyTo] = useState(null);
+  }, [open, comments]);
   useEffect(() => {
     if (!postId) return;
-    // TODO: Replace with API call
-    setComments(dataCMT);
+
+    const fetchData = async () => {
+      try {
+        const res = await getCmt({ postId }); // Gọi API
+        console.log("data nguyen", res);
+        if (res?.comments) {
+          const transformed = res.comments.map((c) => switchData(c));
+          console.log("setData");
+          setComments(transformed);
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy bình luận:", error);
+      }
+    };
+
+    fetchData(); // Gọi hàm async
   }, [postId]);
   const tree = useMemo(() => buildTree(comments), [comments]);
 
-  const handleSubmit = () => {
-    if (!text.trim()) return;
-    let id = Date.now().toString();
-    const newCmt = {
-      id: id,
-      parentId: replyTo?.id || null,
-      user: { name: "Bạn", avatar: "https://i.pravatar.cc/300?u=you" },
+  const handleSubmit = async () => {
+    if (!text.trim() || !replyTo.id) return;
+    const result = await PostComment({
+      postId: postId,
       content: text,
-      createdAt: new Date().toISOString(),
-    };
-    setComments([newCmt, ...comments]);
-    setText("");
+      idCmt: replyTo?.id,
+    });
+
+    const newSw = switchData(result);
+    console.log("add", newSw);
+    // setComments([newSw, ...comments]);
+
+    // const newCmt = {
+    //   id: id,
+    //   parentId: replyTo?.id || null,
+    //   user: { name: "Bạn", avatar: "https://i.pravatar.cc/300?u=you" },
+    //   content: text,
+    //   createdAt: new Date().toISOString(),
+    // };
+    setComments([newSw, ...comments]);
     setReplyTo(null);
-    handleViewMore(id);
+    setText("");
+    handleViewMore(newSw?.id);
   };
   const handleSubmitCmt = async () => {
     if (!cmt.trim() || !postId) return;
-    let id = Date.now().toString();
-    const newCmt = {
-      id: id,
-      parentId: null,
-      user: { name: "Bạn", avatar: "https://i.pravatar.cc/300?u=you" },
-      content: cmt,
-      createdAt: new Date().toISOString(),
-    };
-    setComments([newCmt, ...comments]);
-    setCMT("");
-    handleViewMore(id);
+
     const result = await PostComment({
       postId: postId,
       content: cmt,
     });
+    setCMT("");
+    const newSw = switchData(result);
+    setComments([newSw, ...comments]);
+    handleViewMore(newSw?.id);
   };
   const handleDelete = (id) => setComments((c) => c.filter((x) => x.id !== id));
   const handleEdit = (comment) => {
@@ -291,7 +308,8 @@ export const CommentSection = ({ postId, open, cmtId }) => {
       </div>
 
       <div id={`post-${postId}`} className="flex items-center space-x-3 p-2 ">
-        <Avatar src="https://i.pravatar.cc/300?u=you" className="w-8 h-8" />
+        <Avatar src={profile?.avatar || " "} className="w-8 h-8" />
+
         <TextField
           fullWidth
           placeholder="Thêm bình luận..."
@@ -314,89 +332,22 @@ export const CommentSection = ({ postId, open, cmtId }) => {
   );
 };
 
-const dataCMT = [
-  {
-    id: "1",
-    parentId: null,
-    user: { name: "Alice", avatar: "https://i.pravatar.cc/300?u=alice" },
-    content: "Chào mọi người! Bài viết này thật thú vị.",
-    createdAt: new Date(Date.now() - 86400000 * 2).toISOString(), // 2 ngày trước
-  },
-  {
-    id: "2",
-    parentId: "1",
-    user: { name: "Bob", avatar: "https://i.pravatar.cc/300?u=bob" },
-    content: "Tôi hoàn toàn đồng ý với bạn!",
-    createdAt: new Date(Date.now() - 86400000 * 1.5).toISOString(), // 1 ngày rưỡi trước
-  },
-  {
-    id: "22",
-    parentId: "2",
-    user: { name: "Bob", avatar: "https://i.pravatar.cc/300?u=bob" },
-    content: "Tôi hoàn toàn đồng ý với bạn!",
-    createdAt: new Date(Date.now() - 86400000 * 1.5).toISOString(), // 1 ngày rưỡi trước
-  },
-  {
-    id: "222",
-    parentId: "22",
-    user: { name: "Bob", avatar: "https://i.pravatar.cc/300?u=bob" },
-    content: "Tôi hoàn toàn đồng ý với bạn!",
-    createdAt: new Date(Date.now() - 86400000 * 1.5).toISOString(), // 1 ngày rưỡi trước
-  },
-  {
-    id: "2222",
-    parentId: "222",
-    user: { name: "Charlie", avatar: "https://i.pravatar.cc/300?u=charlie" },
-    content: "Có ai biết thêm về chủ đề này không?",
-    createdAt: new Date(Date.now() - 86400000 * 1).toISOString(), // 1 ngày trước
-  },
-  {
-    id: "4",
-    parentId: "3",
-    user: { name: "Alice", avatar: "https://i.pravatar.cc/300?u=alice" },
-    content: "Tôi đã đọc một bài báo khác về nó, rất hay.",
-    createdAt: new Date(Date.now() - 3600000 * 12).toISOString(), // 12 tiếng trước
-  },
-  {
-    id: "5",
-    parentId: null,
-    user: { name: "David", avatar: "https://i.pravatar.cc/300?u=david" },
-    content: "Cảm ơn vì bài viết!",
-    createdAt: new Date(Date.now() - 3600000 * 6).toISOString(), // 6 tiếng trước
-  },
-  {
-    id: "6",
-    parentId: "5",
-    user: { name: "Eve", avatar: "https://i.pravatar.cc/300?u=eve" },
-    content: "Tôi cũng thấy nó rất hữu ích.",
-    createdAt: new Date(Date.now() - 3600000 * 3).toISOString(), // 3 tiếng trước
-  },
-  {
-    id: "7",
-    parentId: null,
-    user: { name: "Frank", avatar: "https://i.pravatar.cc/300?u=frank" },
-    content: "Mong chờ những bài viết tiếp theo!",
-    createdAt: new Date(Date.now() - 1800000 * 1).toISOString(), // 30 phút trước
-  },
-  {
-    id: "8",
-    parentId: "7",
-    user: { name: "Grace", avatar: "https://i.pravatar.cc/300?u=grace" },
-    content: "Tôi cũng vậy!",
-    createdAt: new Date(Date.now() - 60000 * 15).toISOString(), // 15 phút trước
-  },
-  {
-    id: "9",
-    parentId: null,
-    user: { name: "Heidi", avatar: "https://i.pravatar.cc/300?u=heidi" },
-    content: "Đây là một cộng đồng tuyệt vời.",
-    createdAt: new Date().toISOString(), // Bây giờ
-  },
-  {
-    id: "10",
-    parentId: "9",
-    user: { name: "Ivan", avatar: "https://i.pravatar.cc/300?u=ivan" },
-    content: "Tôi rất vui khi tham gia.",
-    createdAt: new Date(Date.now() - 60000 * 5).toISOString(), // 5 phút trước
-  },
-];
+const switchData = (data) => {
+  return {
+    id: data._id,
+    post: data?.post,
+    parentId: data.idCmt,
+    user: {
+      id: data?.author?._id,
+      avatar: data?.author?.avatar || avt,
+      name: data?.author?.firstName + " " + data?.author?.lastName,
+    },
+    content: data.content,
+    reactionCounts: data?.reactionCounts,
+    mentions: data?.mentions,
+    media: data?.media?.media,
+    hashtags: data?.hashtags,
+    updatedAt: data?.updatedAt,
+    createdAt: data.createdAt,
+  };
+};

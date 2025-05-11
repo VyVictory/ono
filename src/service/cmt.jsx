@@ -15,8 +15,8 @@ export const PostComment = async ({
       nextLogin();
       return null;
     }
-    
-    if (!content && (!files || files.length === 0) && !video) return null; 
+
+    if (!content && (!files || files.length === 0) && !video) return null;
     const formData = new FormData();
 
     formData.append("content", content?.trim() || "");
@@ -34,7 +34,7 @@ export const PostComment = async ({
     if (video) {
       formData.append("media", video); // Nếu video là 1 File object
     }
- 
+
     const response = await api.post(`/cmt/${postId}/comment`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -48,10 +48,10 @@ export const PostComment = async ({
   }
 };
 
-export const getCmt = async (start, limit) => {
+export const getCmt = async ({ postId, start, limit }) => {
   try {
     const response = await api.get(
-      `/post/postByRange/?start=${start}&limit=${limit}`
+      `/cmt/byPost/${postId}?page=${start || 1}&limit=${limit || 10}`
     );
     return response.data;
   } catch (error) {
