@@ -35,127 +35,136 @@ const CommentItem = ({
   };
 
   return (
-    <div
-      className={`${
-        comment.parentId ? "" : ""
-      } py-2 border-b border-gray-200 last:border-b-0`}
-    >
-      <div className="flex items-start space-x-4">
-        <Avatar src={comment.user.avatar} className="w-10 h-10" />
-        <div className="flex-1">
-          <div className="flex justify-between items-center mb-1">
-            <div className="text-sm font-medium text-gray-900">
-              {depth + "|"}
-              {comment.user.name}
-              <span className="ml-2 text-gray-500 font-normal">
-                •{" "}
-                {formatDistanceToNow(new Date(comment.createdAt), {
-                  locale: viLocale,
-                  addSuffix: true,
-                })}
-              </span>
-            </div>
-            <div>
-              <IconButton
-                size="small"
-                onClick={handleClick}
-                className="text-gray-500 hover:text-gray-700"
-                aria-label="more options"
-              >
-                <MoreVertIcon fontSize="small" />
-              </IconButton>
-              <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-                <MenuItem
-                  onClick={() => {
-                    onReply(comment);
-                    handleClose();
-                  }}
-                >
-                  <ReplyIcon fontSize="small" className="mr-2" /> Trả lời
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    onEdit(comment);
-                    handleClose();
-                  }}
-                >
-                  <EditIcon fontSize="small" className="mr-2" /> Chỉnh sửa
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    onDelete(comment.id);
-                    handleClose();
-                  }}
-                >
-                  <DeleteIcon fontSize="small" className="mr-2" /> Xóa
-                </MenuItem>
-              </Menu>
-            </div>
-          </div>
-          <p className="text-gray-800 text-sm whitespace-pre-wrap break-words">
-            {comment.content}
-          </p>
-          {replyTo?.id === comment.id && (
-            <> 
-              <div className="mt-2 flex items-start space-x-2">
-                <Avatar
-                  src="https://i.pravatar.cc/300?u=you"
-                  className="w-8 h-8"
-                />
-                <TextField
-                  fullWidth
-                  placeholder={`Phản hồi ${comment.user.name}...`}
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  size="small"
-                  variant="outlined"
-                  className="flex-grow"
-                />
-                <IconButton
-                  onClick={handleSubmit}
-                  disabled={!text.trim()}
-                  color="primary"
-                  aria-label="send reply"
-                >
-                  <SendIcon />
-                </IconButton>
-                <IconButton
-                  onClick={() => setReplyTo(null)}
-                  aria-label="cancel reply"
-                  className="text-gray-400 hover:text-red-500"
-                >
-                  <CloseIcon />
-                </IconButton>
-              </div>
-            </>
-          )}
+    <div className={``}>
+      <div className={` flex flex-row items-start space-x-4 `}>
+        {Array.from({ length: depth }).map((_, i) => (
+          <div key={i} className="w-2 sm:w-4 md:w-8 lg:w-10 flex-shrink-0" />
+        ))}
 
-          {depth === 2 ? (
-            <button onClick={() => onViewMore(comment.id)}>
-              <span className="text-blue-500 text-sm font-semibold">
+        <div className="flex  w-full items-start space-x-4 border-t border-gray-200 py-3">
+          <Avatar src={comment.user.avatar} className="w-10 h-10" />
+          <div className="flex-1">
+            <div
+              id={`comment-${comment.id}`}
+              className="flex justify-between items-center mb-1"
+            >
+              <div className="text-sm font-medium text-gray-900">
+                {comment.user.name}
+                <span className="ml-2 text-gray-500 font-normal">
+                  •{" "}
+                  {formatDistanceToNow(new Date(comment.createdAt), {
+                    locale: viLocale,
+                    addSuffix: true,
+                  })}
+                </span>
+              </div>
+              <div>
+                <IconButton
+                  size="small"
+                  onClick={handleClick}
+                  className="text-gray-500 hover:text-gray-700"
+                  aria-label="more options"
+                >
+                  <MoreVertIcon fontSize="small" />
+                </IconButton>
+                <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+                  <MenuItem
+                    onClick={() => {
+                      onReply(comment);
+                      handleClose();
+                    }}
+                  >
+                    <ReplyIcon fontSize="small" className="mr-2" /> Trả lời
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      onEdit(comment);
+                      handleClose();
+                    }}
+                  >
+                    <EditIcon fontSize="small" className="mr-2" /> Chỉnh sửa
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      onDelete(comment.id);
+                      handleClose();
+                    }}
+                  >
+                    <DeleteIcon fontSize="small" className="mr-2" /> Xóa
+                  </MenuItem>
+                </Menu>
+              </div>
+            </div>
+            <p className="text-gray-800 text-sm whitespace-pre-wrap break-words">
+              {comment.content}
+            </p>
+            {depth >= 2 && comment.replies.length > 0 && (
+              <button
+                onClick={() => onViewMore(comment.id)}
+                className="text-blue-500 text-sm font-semibold mt-2"
+              >
                 Xem thêm phản hồi
-              </span>
-            </button>
-          ) : (
-            comment.replies.map((child) => (
-              <CommentItem
-                key={child.id}
-                comment={child}
-                onReply={onReply}
-                onDelete={onDelete}
-                onEdit={onEdit}
-                replyTo={replyTo}
-                setReplyTo={setReplyTo}
-                text={text}
-                setText={setText}
-                handleSubmit={handleSubmit}
-                depth={depth + 1} // Tăng depth khi render reply
-                onViewMore={onViewMore}
-              />
-            ))
-          )}
+              </button>
+            )}
+          </div>
         </div>
       </div>
+      {replyTo?.id === comment.id && (
+        <div className="mt-2 relative">
+          {/* Nhãn Đang phản hồi xuất hiện trên đường viền */}
+          <div className="absolute -top-2 left-4 bg-white px-2 text-sm text-blue-500">
+            <span className="text-gray-500">Đang phản hồi:</span> {comment.user.name}
+          </div>
+          <div className="flex items-start border-x-2 border-blue-100 p-3 pr-0 rounded-lg">
+            <Avatar
+              src="https://i.pravatar.cc/300?u=you"
+              className="w-8 h-8 mr-2"
+            />
+            <TextField
+              fullWidth
+              placeholder={`Phản hồi ${comment.user.name}...`}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              size="small"
+              variant="outlined"
+              className="flex-grow"
+            />
+            <IconButton
+              onClick={handleSubmit}
+              disabled={!text.trim()}
+              color="primary"
+              aria-label="send reply"
+            >
+              <SendIcon />
+            </IconButton>
+            <IconButton
+              onClick={() => setReplyTo(null)}
+              aria-label="cancel reply"
+              className="text-gray-400 hover:text-red-500"
+            >
+              <CloseIcon />
+            </IconButton>
+          </div>
+        </div>
+      )}
+
+      {depth < 2 &&
+        comment.replies.map((child) => (
+          <CommentItem
+            key={child.id}
+            comment={child}
+            onReply={onReply}
+            onDelete={onDelete}
+            onEdit={onEdit}
+            onViewMore={onViewMore}
+            replyTo={replyTo}
+            setReplyTo={setReplyTo}
+            text={text}
+            setText={setText}
+            handleSubmit={handleSubmit}
+            depth={depth + 1}
+          />
+        ))}
     </div>
   );
 };
@@ -188,8 +197,9 @@ export const CommentSection = ({ postId, open, cmtId }) => {
 
   const handleSubmit = () => {
     if (!text.trim()) return;
+    let id = Date.now().toString();
     const newCmt = {
-      id: Date.now().toString(),
+      id: id,
       parentId: replyTo?.id || null,
       user: { name: "Bạn", avatar: "https://i.pravatar.cc/300?u=you" },
       content: text,
@@ -198,11 +208,13 @@ export const CommentSection = ({ postId, open, cmtId }) => {
     setComments([newCmt, ...comments]);
     setText("");
     setReplyTo(null);
+    handleViewMore(id);
   };
   const handleSubmitCmt = () => {
     if (!cmt.trim()) return;
+    let id = Date.now().toString();
     const newCmt = {
-      id: Date.now().toString(),
+      id: id,
       parentId: null,
       user: { name: "Bạn", avatar: "https://i.pravatar.cc/300?u=you" },
       content: cmt,
@@ -210,6 +222,7 @@ export const CommentSection = ({ postId, open, cmtId }) => {
     };
     setComments([newCmt, ...comments]);
     setCMT("");
+    handleViewMore(id);
   };
   const handleDelete = (id) => setComments((c) => c.filter((x) => x.id !== id));
   const handleEdit = (comment) => {
@@ -219,12 +232,25 @@ export const CommentSection = ({ postId, open, cmtId }) => {
         c.map((x) => (x.id === comment.id ? { ...x, content: newText } : x))
       );
   };
+  const handleViewMore = (id) => {
+    setTimeout(() => {
+      const element = document.getElementById(`comment-${id}`);
+      if (element) {
+        console.log("Element found:", element);
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else {
+        console.log("Element not found", `comment-${id}`);
+      }
+    }, 100); // Đặt thời gian chờ để DOM cập nhật
+  };
 
   if (!open) return null;
   return (
     <div className="">
-      <h2 className="text-xl font-semibold text-gray-400 py-2 w-full text-center border-t">Bình luận</h2>
-      <div className="max-h-[400px] overflow-y-auto pr-3 custom-scrollbar mb-4 md:px-4 px-2">
+      <h2 className="text-xl font-semibold text-gray-400 py-2 w-full text-center border-t">
+        Bình luận
+      </h2>
+      <div className="max-h-[400px] overflow-y-auto custom-scrollbar mb-4 md:px-4 px-2">
         {tree.map((c) => (
           <CommentItem
             key={c.id}
@@ -233,11 +259,7 @@ export const CommentSection = ({ postId, open, cmtId }) => {
             onDelete={handleDelete}
             onEdit={handleEdit}
             onViewMore={(id) => {
-              // Có thể set vào state nếu muốn xem thêm cụ thể
-              // hoặc gọi hàm callback truyền từ props
-              window.scrollTo({ top: 0, behavior: "smooth" }); // scroll lên
-              console.log("Xem phản hồi của", id);
-              // Giả sử bạn cập nhật `cmtId` từ parent component
+              handleViewMore(id);
             }}
             replyTo={replyTo}
             setReplyTo={setReplyTo}
