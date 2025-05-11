@@ -15,7 +15,6 @@ import {
   Send as SendIcon,
   Close as CloseIcon,
   ArrowBack,
-  HealingOutlined,
 } from "@mui/icons-material";
 import avt from "../../img/DefaultAvatar.jpg";
 import { formatDistanceToNow } from "date-fns";
@@ -27,7 +26,6 @@ import {
   UpdateComment,
 } from "../../service/cmt";
 import { useAuth } from "../../components/context/AuthProvider";
-import LikeDislike from "./LikeDislike";
 import { FaThumbsUp } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useConfirm } from "../../components/context/ConfirmProvider";
@@ -159,7 +157,6 @@ const CommentItem = ({
               <button onClick={() => onReply(comment)}>Trả lời</button>
             </div>
           </div>
-
           {depth >= maxDepthCmt && comment.replies.length > 0 && (
             <div className="ml-12 mt-2">
               <button
@@ -362,7 +359,9 @@ export const CommentSection = ({ postId, open, cmtId }) => {
     }, 100);
   };
   const handleDelete = async (id) => {
-    const isConfirmed = await confirm("Bạn có chắc muốn xóa bình luận này chứ?");
+    const isConfirmed = await confirm(
+      "Bạn có chắc muốn xóa bình luận này chứ?"
+    );
     if (!isConfirmed) return;
     try {
       const res = await deleteCmt(id);
