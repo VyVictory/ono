@@ -28,7 +28,7 @@ import { useAuth } from "./context/AuthProvider";
 import FilePreview from "./FilePreview";
 import { useModule } from "./context/Module";
 export default function PostForm({ children }) {
-  const { setZoomImg, setAddPost } = useModule();
+  const { setZoomImg, setAddPost , setPostUpdateData} = useModule();
   const { profile } = useAuth();
   const confirm = useConfirm();
   const [isOpen, setIsOpen] = useState(false);

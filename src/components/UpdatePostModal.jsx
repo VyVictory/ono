@@ -28,7 +28,8 @@ import { useAuth } from "./context/AuthProvider";
 import FilePreview from "./FilePreview";
 import { useModule } from "./context/Module";
 export default function UpdatePostModal({ postId }) {
-  const { setZoomImg, setAddPost, setUpdatePost } = useModule();
+  const { setZoomImg, setAddPost, setUpdatePost, setPostUpdateData } =
+    useModule();
   const { profile } = useAuth();
   const confirm = useConfirm();
   const [post, setPost] = useState({ content: "", images: [], video: null });
@@ -136,6 +137,7 @@ export default function UpdatePostModal({ postId }) {
       if (response?.status === 200) {
         toast.success("Sửa bài viết thành công", { autoClose: 500 });
         setPost({ content: "", images: [], video: null });
+        setPostUpdateData(response.data);
       }
 
       setUpdatePost(null);

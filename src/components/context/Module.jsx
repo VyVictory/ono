@@ -7,6 +7,7 @@ const ModuleContext = createContext();
 export const ModuleProvider = ({ children }) => {
   const [usecase, setUsecase] = useState(null);
   const [updatePost, setUpdatePost] = useState(null);
+  const [postUpdateData, setPostUpdateData] = useState(null);
   const [usecase1, setUsecase1] = useState(null);
   const [zoomImg, setZoomImg] = useState(null);
   const [addPost, setAddPost] = useState(null);
@@ -22,6 +23,8 @@ export const ModuleProvider = ({ children }) => {
         setAddPost,
         updatePost,
         setUpdatePost,
+        postUpdateData,
+        setPostUpdateData,
       }}
     >
       {children}

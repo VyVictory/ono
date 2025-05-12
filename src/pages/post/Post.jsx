@@ -18,7 +18,8 @@ import MenuPost from "./MenuPost";
 import { useAuth } from "../../components/context/AuthProvider";
 const MAX_VISIBLE_IMAGES = 3; // Hiển thị tối đa 6 ảnh
 const Post = ({ data }) => {
-  const { addPost, setAddPost } = useModule();
+  const { addPost, setAddPost, postUpdateData, setPostUpdateData } =
+    useModule();
   const { profile } = useAuth();
   const postsData = data?.posts || []; // ✅ Đảm bảo luôn có giá trị mặc định
   const [openGalleryIndex, setOpenGalleryIndex] = useState(null); // index của post
@@ -28,6 +29,14 @@ const Post = ({ data }) => {
   useEffect(() => {
     setPosts(postsData);
   }, [data]); // ✅ Cập nhật lại posts khi data thay đổi
+  useEffect(() => {
+    if (postUpdateData) {
+      setPosts((prev) =>
+        prev.map((p) => (p._id === postUpdateData._id ? postUpdateData : p))
+      );
+      setPostUpdateData(null);
+    }
+  }, [postUpdateData, setPosts, setPostUpdateData]);
 
   useEffect(() => {
     if (addPost) {
