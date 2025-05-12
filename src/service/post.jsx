@@ -44,6 +44,17 @@ export const Post = async (content, files, video, privacy) => {
 export const getPostHome = async (start, limit) => {
   try {
     const response = await api.get(
+      `/post/getAllVisiblePost/?start=${start}&limit=${Infinity}`
+    );
+    return response.data;
+  } catch (error) {
+    // nextError(error);
+    return null;
+  }
+};
+export const getAllPostOld = async (start, limit) => {
+  try {
+    const response = await api.get(
       `/post/postByRange/?start=${start}&limit=${Infinity}`
     );
     return response.data;

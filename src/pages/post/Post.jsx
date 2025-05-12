@@ -1,4 +1,8 @@
-import { Bars3Icon, ChatBubbleLeftRightIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import {
+  Bars3Icon,
+  ChatBubbleLeftRightIcon,
+  XCircleIcon,
+} from "@heroicons/react/24/outline";
 import { ButtonBase, Modal, Paper } from "@mui/material";
 import { useState, useEffect } from "react";
 import UserStatusIndicator from "../../components/UserStatusIndicator";
@@ -34,7 +38,20 @@ const Post = ({ data }) => {
   }, [addPost, setAddPost]);
   const formatDate = (isoString) => {
     if (!isoString) return "Không có ngày";
+
     const date = new Date(isoString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHour = Math.floor(diffMin / 60);
+    const diffDay = Math.floor(diffHour / 24);
+
+    if (diffMin < 1) return "Vừa xong";
+    if (diffMin < 60) return `${diffMin} phút trước`;
+    if (diffHour < 24) return `${diffHour} giờ trước`;
+    if (diffDay === 1) return "Hôm qua";
+
     return date
       .toLocaleString("vi-VN", {
         day: "2-digit",
@@ -42,10 +59,11 @@ const Post = ({ data }) => {
         year: "numeric",
         hour: "2-digit",
         minute: "2-digit",
-        hour12: false, // 24h format
+        hour12: false,
       })
       .replace(",", " lúc");
   };
+
   const handleOpenGallery = (index) => {
     setOpenGalleryIndex(index);
   };
@@ -153,7 +171,7 @@ const Post = ({ data }) => {
                     onClick={() => setOpenCmt(openCmt === _._id ? null : _._id)}
                     className="flex items-center space-x-1"
                   >
-                    <ChatBubbleLeftRightIcon className="text-gray-500 w-6 aspect-square" /> 
+                    <ChatBubbleLeftRightIcon className="text-gray-500 w-6 aspect-square" />
                   </button>
 
                   <button className="hover:text-blue-500 transition">
