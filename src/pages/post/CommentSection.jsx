@@ -175,7 +175,7 @@ const CommentItem = ({
           elevation={2}
           className="relative mt-2 max-w-3xl p-3 rounded-xl border border-blue-100 bg-blue-50"
         >
-          <div className="absolute -top-3 left-6 px-3 py-1 bg-white border border-blue-300 rounded-full text-xs text-blue-700 flex items-center gap-1 shadow-sm">
+          <div className="absolute -top-3 left-6 px-3 py-1 bg-white border z-10 border-blue-300 rounded-full text-xs text-blue-700 flex items-center gap-1 shadow-sm">
             <ReplyIcon fontSize="small" />
             Đang phản hồi:{" "}
             <span className="font-semibold">{comment.user.name}</span>
