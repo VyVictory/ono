@@ -22,42 +22,132 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import { useConfirm } from "./context/ConfirmProvider";
 import { toast } from "react-toastify";
-import { Post } from "../service/post";
+import { getPostById, Post, updatePost } from "../service/post";
 import LoadingAnimation from "./LoadingAnimation";
 import { useAuth } from "./context/AuthProvider";
 import FilePreview from "./FilePreview";
 import { useModule } from "./context/Module";
-export default function PostForm({ children }) {
-  const { setZoomImg, setAddPost } = useModule();
+export default function UpdatePostModal({ postId }) {
+  const { setZoomImg, setAddPost, setUpdatePost } = useModule();
   const { profile } = useAuth();
   const confirm = useConfirm();
-  const [isOpen, setIsOpen] = useState(false);
   const [post, setPost] = useState({ content: "", images: [], video: null });
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showGallery, setShowGallery] = useState(false);
   const [selectedImages, setSelectedImages] = useState([]);
   const [direction, setDirection] = useState("next");
   const [isLoadingPost, setIsLoadingPost] = useState(false);
-  const [privacy, setPrivacy] = useState("Public"); // Default to public
+  const [privacy, setPrivacy] = useState("Public");
+  useEffect(() => {
+    const fetchPostData = async () => {
+      try {
+        const data = await getPostById(postId);
+        const images = data.media
+          .filter((m) => m.type === "image")
+          .map((m) => ({
+            // file để upload lại khi update, hoặc null nếu chỉ hiển thị
+            file: null,
+            url: m.url,
+            publicId: m.publicId,
+            _id: m._id,
+          }));
+        const videoItem = data.media.find((m) => m.type === "video");
+        const video = videoItem
+          ? {
+              file: null,
+              url: videoItem.url,
+              publicId: videoItem.publicId,
+              _id: videoItem._id,
+            }
+          : null;
+        setPost({
+          content: data.content,
+          images,
+          video,
+        });
+        setPrivacy(data.security);
+      } catch (err) {
+        console.error(err);
+        toast.error("Không thể tải dữ liệu bài viết.");
+      }
+    };
+    if (postId) fetchPostData();
+  }, [postId]);
   const handleSubmit = async () => {
     setIsLoadingPost(true);
-    const imageFiles = post.images.map((img) => img.file);
-    const videoFile = post.video ? post.video.file : null; // Extract video file
-    console.log(post.video);
-    try {
-      const response = await Post(post.content, imageFiles, videoFile, privacy);
-      if (response?.status === 201) {
-        toast.success("Đăng bài viết thành công", { autoClose: 500 });
-        setPost({ content: "", images: [], video: null }); // Reset form
-        setAddPost(response.data);
+
+    // 1. Tách ảnh cũ vs ảnh mới
+    const existingImages = []; // mảng media cũ
+    const newImageFiles = []; // mảng file mới
+
+    post.images.forEach((img) => {
+      if (img.file) {
+        newImageFiles.push(img.file);
+      } else {
+        // Mỗi object img ban đầu từ API phải chứa publicId, url, type…
+        existingImages.push({
+          url: img.url,
+          publicId: img.publicId,
+          type: img.type,
+          _id: img._id,
+        });
       }
-      setIsOpen(false);
-      console.log("Post success:", response);
-    } catch (error) {
-      console.error("Error posting:", error);
+    });
+
+    // 2. Tương tự với video
+    let existingVideo = null;
+    let newVideoFile = null;
+    if (post.video) {
+      if (post.video.file) {
+        newVideoFile = post.video.file;
+      } else {
+        existingVideo = {
+          url: post.video.url,
+          publicId: post.video.publicId,
+          type: post.video.type,
+          _id: post.video._id,
+        };
+      }
     }
-    setIsLoadingPost(false);
+
+    console.log({
+      content: post.content,
+      newImageFiles,
+      newVideoFile,
+      privacy,
+      postId,
+      existingMedia: [
+        ...existingImages,
+        ...(existingVideo ? [existingVideo] : []),
+      ],
+    });
+
+    try {
+      const response = await updatePost(
+        post.content,
+        newImageFiles,
+        newVideoFile,
+        privacy,
+        postId,
+        // truyền thêm mảng existingMedia
+        [...existingImages, ...(existingVideo ? [existingVideo] : [])]
+      );
+
+      if (response?.status === 200) {
+        toast.success("Sửa bài viết thành công", { autoClose: 500 });
+        setPost({ content: "", images: [], video: null });
+      }
+
+      setUpdatePost(null);
+      console.log("Update success:", response);
+    } catch (error) {
+      console.error("Error updating post:", error);
+      toast.error("Lỗi khi sửa bài viết");
+    } finally {
+      setIsLoadingPost(false);
+    }
   };
+
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
     const maxImages = 20; // Đặt giới hạn tối đa là 50 ảnh
@@ -100,7 +190,7 @@ export default function PostForm({ children }) {
       }));
     }
   };
-  if (!profile && isOpen) {
+  if (!profile && postId) {
     return <Navigate to="/login" replace />; // Chuyển hướng đến trang login
   }
   const handleVideoUpload = (e) => {
@@ -142,17 +232,13 @@ export default function PostForm({ children }) {
   };
   return (
     <>
-      <div onClick={() => setIsOpen(true)} className="cursor-pointer w-full">
-        {children}
-      </div>
-
-      <Modal open={isOpen} onClose={() => setIsOpen(false)}>
+      <Modal open={postId} onClose={() => setUpdatePost(null)}>
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 px-4 lg:px-0"
-          onClick={() => setIsOpen(false)} // Khi bấm vào nền đen, đóng modal
+          onClick={() => setUpdatePost(null)} // Khi bấm vào nền đen, đóng modal
         >
           <div
             onClick={(e) => e.stopPropagation()} // Ngăn chặn đóng modal khi click vào bên trong
@@ -171,7 +257,7 @@ export default function PostForm({ children }) {
                 )}
               </div>
               <XCircleIcon
-                onClick={() => setIsOpen(false)}
+                onClick={() => setUpdatePost(null)}
                 className="w-8 h-8 text-gray-500 hover:text-red-700 cursor-pointer"
               />
             </div>
@@ -408,7 +494,7 @@ export default function PostForm({ children }) {
                 className=""
               >
                 <div className="w-full py-2 text-white font-semibold rounded-lg bg-gradient-to-r from-purple-500 to-orange-500 hover:from-purple-600 hover:to-orange-600 transition-all duration-300">
-                  Đăng bài
+                  Xác nhận sửa
                 </div>
               </ButtonBase>
             ) : (

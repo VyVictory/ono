@@ -63,6 +63,76 @@ export const getAllPostOld = async (start, limit) => {
     return null;
   }
 };
+
+export const updatePost = async (
+  content,
+  files = [],
+  video = null,
+  privacy,
+  postId,
+  existingMedia = []
+) => {
+  try {
+    const token = authToken.getToken();
+    if (!token) {
+      nextLogin();
+      return null;
+    }
+
+    // Nếu không có gì để gửi thì dừng
+    if (
+      (content == null || content === "") &&
+      files.length === 0 &&
+      !video &&
+      existingMedia.length === 0
+    ) {
+      return null;
+    }
+
+    const formData = new FormData();
+    formData.append("security", privacy);
+
+    if (content != null) {
+      formData.append("content", content);
+    }
+
+    // stringify existingMedia array
+    if (existingMedia.length > 0) {
+      // Chỉ lấy trường _id của mỗi media
+      const keepIds = existingMedia.map((m) => m._id.toString());
+      formData.append("existingMedia", JSON.stringify(keepIds));
+    }
+    // đính kèm file ảnh mới
+    files.forEach((file) => {
+      formData.append("media", file);
+    });
+
+    // đính kèm file video mới (nếu có)
+    if (video) {
+      formData.append("media", video);
+    }
+
+    console.log("FormData contents:", formData);
+    const response = await api.put(`/post/${postId}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response;
+  } catch (error) {
+    nextError(error);
+    return null;
+  }
+};
+
+export const getPostById = async (id) => {
+  try {
+    const response = await api.get(`/post/getpost/${id}`);
+    return response.data;
+  } catch (error) {
+    // nextError(error);
+    return null;
+  }
+};
+
 export const getMyPost = async (start, limit) => {
   try {
     const response = await api.get(

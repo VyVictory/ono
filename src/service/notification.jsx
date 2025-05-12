@@ -11,7 +11,7 @@ export const getNotifications = async ({ start, limit }) => {
       //   nextLogin();
     }
     const response = await api.get(
-      `/noti/notifications/?start=${start}&limit=${limit}`
+      `/noti/notifications/?start=${start}&limit=${Infinity}`
     );
     return response.data;
   } catch (error) {
@@ -26,7 +26,7 @@ export const getNotificationsFollow = async ({ start, limit }) => {
       //   nextLogin();
     }
     const response = await api.get(
-      `/noti/notifications/follow?start=${start}&limit=${limit}`
+      `/noti/notifications/follow?start=${start}&limit=${Infinity}`
     );
     return response.data;
   } catch (error) {

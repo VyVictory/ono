@@ -31,7 +31,6 @@ const Profile = () => {
   const [posts, setPosts] = useState(null);
   useEffect(() => {
     setPosts(null);
-    console.log(profileRender);
     const getPost = () => {
       if (profileRender?.myProfile) {
         return getMyPost(0, 10);

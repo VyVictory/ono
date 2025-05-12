@@ -55,7 +55,7 @@ const LeftMess = ({ onClose }) => {
 
       // After the new data is set, scroll back to the previous position
       setTimeout(() => {
-        if (listRef.current.scrollTop) {
+        if (listRef?.current?.scrollTop) {
           listRef.current.scrollTop = currentScrollPos;
         }
       }, 500); // Add a slight delay to ensure that the render has completed before restoring the scroll position

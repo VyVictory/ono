@@ -1,8 +1,7 @@
 import {
   UserPlusIcon,
   VideoCameraIcon,
-  PhotoIcon,
-  UserGroupIcon,
+  PhotoIcon, 
 } from "@heroicons/react/24/outline";
 import avt from "../../../img/DefaultAvatar.jpg";
 import { useAuth } from "../../../components/context/AuthProvider";

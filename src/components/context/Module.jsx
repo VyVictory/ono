@@ -1,23 +1,27 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import Privacy from "../Auth/Privacy";
 import EditProfile from "../Auth/EditProfile/EditProfile";
-import ImageZoomModal from "../ImageZoomModal"; 
+import ImageZoomModal from "../ImageZoomModal";
+import UpdatePostModal from "../UpdatePostModal";
 const ModuleContext = createContext();
 export const ModuleProvider = ({ children }) => {
-  const [usecase, setUsecase] = useState(null); 
+  const [usecase, setUsecase] = useState(null);
+  const [updatePost, setUpdatePost] = useState(null);
   const [usecase1, setUsecase1] = useState(null);
   const [zoomImg, setZoomImg] = useState(null);
-  const [addPost, setAddPost] = useState(null); 
+  const [addPost, setAddPost] = useState(null);
   return (
     <ModuleContext.Provider
       value={{
         usecase,
-        setUsecase, 
+        setUsecase,
         usecase1,
         setUsecase1,
         setZoomImg,
         addPost,
         setAddPost,
+        updatePost,
+        setUpdatePost,
       }}
     >
       {children}
@@ -25,7 +29,9 @@ export const ModuleProvider = ({ children }) => {
       <EditProfile
         isOpen={usecase == "EditProfile"}
         onClose={() => setUsecase(null)}
-      /> 
+      />
+      {updatePost && <UpdatePostModal postId={updatePost} />}
+
       {zoomImg && (
         <ImageZoomModal imageUrl={zoomImg} onClose={() => setZoomImg(null)} />
       )}

@@ -9,14 +9,17 @@ import UserStatusIndicator from "../../components/UserStatusIndicator";
 import SecurityLabel from "./SecurityLabel";
 import FilePreview from "../../components/FilePreview";
 import { useModule } from "../../components/context/Module";
-import { Link } from "react-router-dom";
+import { Link, useActionData } from "react-router-dom";
 import { CommentSection as Comment } from "./CommentSection";
 import { BookmarkBorderSharp, Share } from "@mui/icons-material";
 import LikeDislike from "./LikeDislike";
 import { ChatBubbleLeftIcon } from "@heroicons/react/24/solid";
+import MenuPost from "./MenuPost";
+import { useAuth } from "../../components/context/AuthProvider";
 const MAX_VISIBLE_IMAGES = 3; // Hiển thị tối đa 6 ảnh
 const Post = ({ data }) => {
   const { addPost, setAddPost } = useModule();
+  const { profile } = useAuth();
   const postsData = data?.posts || []; // ✅ Đảm bảo luôn có giá trị mặc định
   const [openGalleryIndex, setOpenGalleryIndex] = useState(null); // index của post
   const [openCmt, setOpenCmt] = useState(false); // index của post
@@ -77,7 +80,7 @@ const Post = ({ data }) => {
         {posts?.map((_, index) => (
           <Paper key={index} className=" w-full">
             <div className=" mx-2 ">
-              <div className="flex flex-row  items-center border-b p-1 justify-between pr-3">
+              <div className="flex flex-row  items-center border-b p-1 pr-0 justify-between">
                 <div className="flex flex-row space-x-2">
                   <div>
                     <div className="w-10 h-10 rounded-full relative">
@@ -114,7 +117,7 @@ const Post = ({ data }) => {
                     </div>
                   </div>
                 </div>
-                <Bars3Icon className="w-5 h-5" />
+                {_?.author?._id === profile?._id && <MenuPost data={_} />}
               </div>
               {_?.content?.trim() && (
                 <div className="p-2 break-words break-all whitespace-pre-wrap w-full a">
