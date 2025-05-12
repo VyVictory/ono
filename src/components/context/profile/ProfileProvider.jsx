@@ -1,58 +1,67 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { useLocation } from "react-router-dom"; // Nếu dùng React Router
+import { useLocation } from "react-router-dom";
 import { getCurrentUser } from "../../../service/user";
 import { useAuth } from "../AuthProvider";
 import { useSocketContext } from "../socketProvider";
+
 const ProfileContext = createContext();
 
 export const ProfileProvider = ({ children }) => {
-  const [content, setContent] = useState(null);
-  const location = useLocation(); // Lấy URL hiện tại
+  const location = useLocation();
+  const { profile: authProfile, isLoadingProfile } = useAuth();
   const { loadProfile, setLoadProfile } = useSocketContext();
+
+  const [content, setContent] = useState(null);
   const [idUser, setIdUser] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
+  const [profileRender, setProfileRender] = useState({
+    myProfile: true,
+    profile: null,
+  });
   const [loading, setLoading] = useState(true);
-  const [profileRender, setProfileRender] = useState(null);
-  const [reload, setReload] = useState(true);
-  const { isLoadingProfile, profile } = useAuth();
-  const urlParams = new URLSearchParams(window.location.search);
-  const id = urlParams.get("id");
+
+  // Update content based on URL path
   useEffect(() => {
-    if (id) {
-      setIdUser(id);
-    } else {
+    const parts = location.pathname.split("/");
+    setContent(parts.length > 2 ? parts[2] : null);
+  }, [location.pathname]);
+
+  // Extract user ID from query string whenever location.search changes
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const idParam = params.get("id");
+    setIdUser(idParam ?? authProfile?._id);
+  }, [location.search, authProfile]);
+
+  // Fetch profile when idUser changes (and after authProfile loads)
+  useEffect(() => {
+    if (isLoadingProfile || !idUser) return;
+    fetchProfile();
+  }, [idUser, isLoadingProfile, loadProfile]);
+
+  const fetchProfile = async () => {
+    setLoading(true);
+    try {
+      // If viewing own profile, use authProfile
+      if (idUser === authProfile?._id) {
+        setCurrentUser(authProfile);
+        setProfileRender({ myProfile: true, profile: authProfile });
+      } else {
+        // Fetch other user's profile
+        const response = await getCurrentUser(idUser);
+        setCurrentUser(response?.data);
+        setProfileRender({ myProfile: false, profile: response?.data });
+      }
+      // If using sockets to load profile updates:
+      if (loadProfile) {
+        setLoadProfile(false);
+      }
+    } catch (error) {
+      console.error("Get Profile Error:", error);
+    } finally {
       setLoading(false);
     }
-  }, [id]);
-  useEffect(() => {
-    const parts = location.pathname.split("/"); // Tách URL thành mảng
-    setContent(parts.length > 2 ? parts[2] : null); // Gán content nếu có
-  }, [location.pathname]); // Chạy lại khi URL thay đổi
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await getCurrentUser(idUser);
-        setLoading(false);
-        setCurrentUser(response?.data);
-      } catch (error) {
-        console.error("Get Profile Error:", error);
-      }
-    };
-    idUser && fetchProfile();
-  }, [idUser, reload]);
-  useEffect(() => { 
-    if (loadProfile && loadProfile?._id === id) {
-      setReload(!reload);
-    }
-  }, [loadProfile]);
-  useEffect(() => {
-    if (id != null && currentUser?._id != profile?._id) {
-      setProfileRender({ myprofile: false, profile: currentUser });
-    } else {
-      setProfileRender({ myprofile: true, profile: profile });
-    }
-  }, [currentUser, isLoadingProfile, id, profile]);
+  };
   return (
     <ProfileContext.Provider
       value={{

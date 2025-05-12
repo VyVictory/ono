@@ -17,7 +17,6 @@ export const Post = async (content, files, video, privacy) => {
     if (content) {
       formData.append("content", content);
     }
-    console.log("dawdvaudaywdaw");
     if (files?.length) {
       console.log("co hinh", files);
       files.forEach((file) => {
@@ -45,8 +44,31 @@ export const Post = async (content, files, video, privacy) => {
 export const getPostHome = async (start, limit) => {
   try {
     const response = await api.get(
-      `/post/postByRange/?start=${start}&limit=${limit}`
-    ); 
+      `/post/postByRange/?start=${start}&limit=${Infinity}`
+    );
+    return response.data;
+  } catch (error) {
+    // nextError(error);
+    return null;
+  }
+};
+export const getMyPost = async (start, limit) => {
+  try {
+    const response = await api.get(
+      `/post/myPostByRange/?start=${start}&limit=${Infinity}`
+    );
+    return response.data;
+  } catch (error) {
+    // nextError(error);
+    return null;
+  }
+};
+export const getOrderPost = async ({ userId, start, limit }) => {
+  if (!userId) return;
+  try {
+    const response = await api.get(
+      `/post/postByUser/${userId}?start=${start}&limit=${Infinity}`
+    );
     return response.data;
   } catch (error) {
     // nextError(error);

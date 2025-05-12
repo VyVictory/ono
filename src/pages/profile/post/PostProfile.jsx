@@ -11,7 +11,7 @@ import PostLeft from "./PostLeft";
 import PostRight from "./PostRigh";
 import Post from "../../post/Post";
 import HeadCreatePost from "./HeadCreatePost";
-const PostProfile = ({ data,profile }) => {
+const PostProfile = ({ data, profile }) => {
   const scrollRef = useRef(null);
   const targetRef = useRef(null);
   const targetRefH = useRef(null);
@@ -95,7 +95,7 @@ const PostProfile = ({ data,profile }) => {
               style={{ pointerEvents: "auto" }}
             >
               <div className=" min-h-full  space-y-4">
-                <HeadCreatePost />
+                {profile && <HeadCreatePost />}
                 <PostRight data={data} />
               </div>
             </div>

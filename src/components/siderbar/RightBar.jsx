@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import FriendSiderBar from "./FriendSiderBar";
 import GroupSiderBar from "./GroupSiderBar";
 import { Paper } from "@mui/material";
+import authToken from "../../service/storage/authToken";
 const RightBar = () => {
+  if (!authToken.getToken()) return;
   return (
     <>
       {" "}

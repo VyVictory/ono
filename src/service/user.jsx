@@ -14,11 +14,12 @@ export const getProfile = async () => {
     const response = await api.get("user/profile");
     return response;
   } catch (error) {
-    nextError(error);
+    // nextError(error);
     return null;
   }
 };
 export const getCurrentUser = async (id) => {
+  if (!id) return;
   try {
     const response = await api.get("user/profile/" + id);
     // console.log(response)
@@ -52,7 +53,7 @@ export const getSearchUser = async (name) => {
 
 // email,
 // phoneNumber,
-export const editUser = async (userData) => { 
+export const editUser = async (userData) => {
   try {
     const response = await api.put("user/profile/update", userData, {
       headers: {

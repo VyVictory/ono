@@ -13,12 +13,13 @@ import { useProfile } from "../../components/context/profile/ProfileProvider";
 import AddFriend from "../../components/AddFriend";
 import { useModule } from "../../components/context/Module";
 import { useNavigate } from "react-router-dom";
-import { getPostHome } from "../../service/post";
+import { getMyPost, getOrderPost, getPostHome } from "../../service/post";
 import { Button, ButtonBase } from "@mui/material";
 import UserStatusIndicator from "../../components/UserStatusIndicator";
 import { getFriendsMess } from "../../service/friend";
 import DropdownChangeImage from "./DropdownChangeImage";
 import AddFollow from "./AddFollow";
+import LoadingAnimation from "../../components/LoadingAnimation";
 const Profile = () => {
   const { setZoomImg } = useModule();
   const { setUsecase } = useModule();
@@ -28,18 +29,28 @@ const Profile = () => {
   const [friends, setFrineds] = useState([]);
   const navigate = useNavigate();
   const [posts, setPosts] = useState(null);
-
-  // Gọi API lấy danh sách bài viết
   useEffect(() => {
+    setPosts(null);
+    console.log(profileRender);
+    const getPost = () => {
+      if (profileRender?.myProfile) {
+        return getMyPost(0, 10);
+      } else {
+        return getOrderPost({
+          userId: profileRender?.profile?._id,
+          start: 0,
+          limit: 10,
+        });
+      }
+    };
     const fetchPosts = async () => {
-      const data = await getPostHome(0, 10); // Lấy 10 bài viết đầu tiên
+      const data = await getPost();
       if (data) {
         setPosts(data);
       }
     };
-
     fetchPosts();
-  }, []);
+  }, [profileRender]);
   useEffect(() => {
     const fetchFriend = async () => {
       const response = await getFriendsMess(0, 6, "");
@@ -82,7 +93,6 @@ const Profile = () => {
       </div>
     );
   }
-  //console.log(profileRender);
   return (
     <div className="NavbarUser ">
       <div className="w-full  flex-col relative min-h-screen ">
@@ -162,7 +172,7 @@ const Profile = () => {
                 </div>
               </div>
               {/* lựa chọn  */}
-              {userRender.myprofile ? (
+              {userRender.myProfile ? (
                 <div className="flex flex-row md:flex-col md:items-center mb-2 md:mb-0 items-center justify-center space-y-0 md:space-y-2 space-x-2 md:space-x-0 ">
                   <button
                     onClick={() => {
