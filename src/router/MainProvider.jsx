@@ -4,6 +4,7 @@ import { ConfirmProvider } from "../components/context/ConfirmProvider";
 import { ModuleProvider } from "../components/context/Module";
 import { CallProvider } from "../components/context/CallProvider";
 import { ProfileProvider } from "../components/context/profile/ProfileProvider";
+import { DashboardProvider } from "../components/context/DashboardProvider";
 const MainContext = createContext();
 
 export const MainProvider = ({ children }) => {
@@ -14,7 +15,9 @@ export const MainProvider = ({ children }) => {
         <SocketProvider>
           <ProfileProvider>
             <ModuleProvider>
-              <CallProvider>{children}</CallProvider>
+              <DashboardProvider>
+                <CallProvider>{children}</CallProvider>
+              </DashboardProvider>
             </ModuleProvider>
           </ProfileProvider>
         </SocketProvider>

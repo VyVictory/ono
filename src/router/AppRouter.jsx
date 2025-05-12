@@ -18,6 +18,9 @@ import ProfileLayout from "../Layout/ProfileLayout.jsx";
 import HomeLayout from "../Layout/HomeLayout.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import { MainProvider } from "./MainProvider.jsx";
+import DashboardLayout from "../Layout/DashboardLayout.jsx";
+import Dashboard from "../pages/admin/Dashboard.jsx";
+import UserManagementPage from "../pages/admin/UserManagementPage.jsx";
 const AppRouter = () => (
   <Routes>
     <Route element={<Layout />}>
@@ -29,6 +32,12 @@ const AppRouter = () => (
         <Route path="/profile/*" element={<ProfileLayout />} />
       </Route>
       <Route path="/*" element={<HomeLayout />} />
+    </Route>
+    <Route path="/dashboard" element={<DashboardLayout />}>
+      <Route path="/dashboard/users" element={<UserManagementPage />} />
+      <Route path="/dashboard/posts" element={<Dashboard />} />
+      <Route path="/dashboard/comments" element={<Dashboard />} />
+      <Route path="/dashboard/reports" element={<Dashboard />} />
     </Route>
     {/* <Route path="/test" element={<Test />} /> */}
     <Route path="/login/*" element={<Auth />} />

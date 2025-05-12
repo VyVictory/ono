@@ -120,14 +120,16 @@ const UserDropDow = ({ avt }) => {
               </div>
             </button>
             <ul className="py-2 text-base px-2 ">
-              <li>
-                <Button
-                  href="#"
-                  className="block px-4 py-2 hover:bg-gray-100 rounded-md w-full"
-                >
-                  Dashboard
-                </Button>
-              </li>
+              {profile?.role == 1  && (
+                <li>
+                  <Button
+                    href="/dashboard"
+                    className="block px-4 py-2 hover:bg-gray-100 rounded-md w-full"
+                  >
+                    Dashboard
+                  </Button>
+                </li>
+              )}
               {menu.map((e, index) => (
                 <li key={index}>
                   <Button
