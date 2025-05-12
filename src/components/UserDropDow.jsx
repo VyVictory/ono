@@ -120,10 +120,10 @@ const UserDropDow = ({ avt }) => {
               </div>
             </button>
             <ul className="py-2 text-base px-2 ">
-              {profile?.role == 1  && (
+              {profile?.role == 1 && (
                 <li>
                   <Button
-                    href="/dashboard"
+                    href="/dashboard/users"
                     className="block px-4 py-2 hover:bg-gray-100 rounded-md w-full"
                   >
                     Dashboard
