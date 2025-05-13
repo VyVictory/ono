@@ -21,10 +21,10 @@ import {
 import UserStatusIndicator from "../../components/UserStatusIndicator";
 import { useNavigate } from "react-router-dom";
 import { UserPlusIcon, UserGroupIcon } from "@heroicons/react/24/solid";
-
 import { useSocketContext } from "../../components/context/socketProvider";
 import { OtherHousesOutlined } from "@mui/icons-material";
-
+import { getCmtById } from "../../service/cmt";
+import { useModule } from "../../components/context/Module";
 const NotificationDropDow = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [chane, setChane] = useState("Friend");
@@ -33,6 +33,7 @@ const NotificationDropDow = () => {
   const { profile } = useAuth();
   const [notifications, setNotifications] = useState([]); // đây là mảng {unreadCount, notifications[]}
   const containerRef = useRef(null);
+  const { setPostId, setCmtVisible } = useModule();
   // Đóng dropdown khi click bên ngoài container
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -67,17 +68,11 @@ const NotificationDropDow = () => {
       }));
     }
   }, [newNotifi, profile]);
+
   const fetchNotifications = async () => {
     if (isFetchNotifi.current) return; // Kiểm tra isFetchNotifi bằng ref
     const chaneFetch = async () => {
       return await getNotifications({ start: 0, limit: 10 });
-      // switch (chane) {
-      //   case "111":
-      //     return await getNotificationsFollow({ start: 0, limit: 20 });
-
-      //   default:
-      //     return await getNotifications({ start: 0, limit: 20 });
-      // }
     };
 
     const notifications = await chaneFetch();
@@ -85,11 +80,16 @@ const NotificationDropDow = () => {
     setNotifications(notifications);
     isFetchNotifi.current = true; // Cập nhật ref để tránh fetch lại
   };
-  // useEffect(() => {
-  //   if (profile) {
-  //     fetchNotifications();
-  //   }
-  // }, [chane]);
+  const handleComment = async (data) => {
+    if (data.referenceModel == "Comment") {
+      const res = await getCmtById(data.reference);
+      console.log(res);
+      console.log(data?.reference, "  ", res?.post);
+      setCmtVisible(data?.reference);
+      setPostId(res?.post);
+    }
+  };
+
   useEffect(() => {
     if (profile) {
       fetchNotifications();
@@ -196,7 +196,10 @@ const NotificationDropDow = () => {
                             noti?.referenceModel != "Follow" &&
                             chane == "Other" && (
                               <>
-                                <Other data={noti} />
+                                <Other
+                                  data={noti}
+                                  handleComment={handleComment}
+                                />
                               </>
                             )}
                         </li>
@@ -281,14 +284,13 @@ const Follow = ({ data }) => {
     </div>
   );
 };
-const Other = ({ data }) => {
+const Other = ({ data, handleComment }) => {
   const navigate = useNavigate();
-  console.log(data);
   return (
     <div
       onClick={() => {
         // navigate(`/profile/posts?id=${data?.sender?._id}`);
-        
+        handleComment(data);
       }}
       className={`transition-opacity  w-full cursor-pointer duration-300 ${
         data?.isRead ? "opacity-60" : "opacity-100"

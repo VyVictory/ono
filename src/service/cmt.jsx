@@ -59,6 +59,15 @@ export const getCmt = async ({ postId, start, limit }) => {
     return null;
   }
 };
+export const getCmtById = async (commentId) => {
+  try {
+    const response = await api.get(`/cmt/${commentId}`);
+    return response.data;
+  } catch (error) {
+    // nextError(error);
+    return null;
+  }
+};
 export const deleteCmt = async (cmtId) => {
   try {
     const response = await api.delete(`/cmt/${cmtId}`);
