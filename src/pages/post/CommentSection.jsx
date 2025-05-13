@@ -49,6 +49,13 @@ const CommentItem = ({
   const { profile } = useAuth();
   const [maxDepthCmt, setMaxDepthCmt] = useState(3);
   const { setReport } = useModule();
+  const [showFullContent, setShowFullContent] = useState(false);
+  const maxContentLength = 300; // bạn có thể điều chỉnh theo nhu cầu
+  const isContentLong = comment.content.length > maxContentLength;
+  const displayedContent = showFullContent
+    ? comment.content
+    : comment.content.slice(0, maxContentLength);
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
@@ -165,8 +172,17 @@ const CommentItem = ({
                 </div>
               </div>
               <p className="text-sm text-gray-800 whitespace-pre-wrap break-words">
-                {comment.content}
+                {displayedContent}
+                {isContentLong && !showFullContent && "..."}
               </p>
+              {isContentLong && (
+                <button
+                  onClick={() => setShowFullContent((prev) => !prev)}
+                  className="text-blue-600 text-sm font-medium mt-1 hover:underline"
+                >
+                  {showFullContent ? "Ẩn bớt" : "Xem thêm"}
+                </button>
+              )}
             </div>
           </div>
 

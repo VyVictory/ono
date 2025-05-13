@@ -24,6 +24,13 @@ const Post = ({ data }) => {
   const postsData = data?.posts || []; // ✅ Đảm bảo luôn có giá trị mặc định
   const [openGalleryIndex, setOpenGalleryIndex] = useState(null); // index của post
   const [openCmt, setOpenCmt] = useState(false); // index của post
+  const [expandedPosts, setExpandedPosts] = useState({});
+  const toggleExpand = (postId) => {
+    setExpandedPosts((prev) => ({
+      ...prev,
+      [postId]: !prev[postId],
+    }));
+  };
 
   const [posts, setPosts] = useState([]);
   useEffect(() => {
@@ -131,8 +138,18 @@ const Post = ({ data }) => {
                 <MenuPost data={_} setPosts={setPosts} />
               </div>
               {_?.content?.trim() && (
-                <div className="p-2 break-words break-all whitespace-pre-wrap w-full a">
-                  {_?.content}
+                <div className="p-2 break-words break-all whitespace-pre-wrap w-full text-gray-800">
+                  {expandedPosts[_._id] || _?.content.length <= 300
+                    ? _?.content
+                    : `${_?.content.slice(0, 300)}...`}
+                  {_?.content.length > 300 && (
+                    <button
+                      onClick={() => toggleExpand(_._id)}
+                      className="ml-1 text-blue-500 hover:underline font-medium"
+                    >
+                      {expandedPosts[_._id] ? "Ẩn bớt" : "Xem thêm"}
+                    </button>
+                  )}
                 </div>
               )}
             </div>
