@@ -87,3 +87,17 @@ export const editUserImage = async (formData) => {
     );
   }
 };
+export const getAllUser = async ({ page, limit, search }) => {
+  try {
+    if (!token) {
+      nextLogin();
+    }
+    const response = await api.get(
+      `/user/admin/users?page=${page}&limit=${limit}&search=${search}`
+    );
+    return response;
+  } catch (error) {
+    nextError(error);
+    return res(error);
+  }
+};

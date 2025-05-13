@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { UserPlusIcon, UserGroupIcon } from "@heroicons/react/24/solid";
 
 import { useSocketContext } from "../../components/context/socketProvider";
+import { OtherHousesOutlined } from "@mui/icons-material";
 
 const NotificationDropDow = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -141,12 +142,11 @@ const NotificationDropDow = () => {
           >
             <Paper elevation={3}>
               <button className="px-1  py-3 pb-1  flex w-full flex-col justify-center items-center space-x-2 border-b ">
-                <div className="text-sm max-w-72  hover:scale-110 duration-700">
+                <div className="text-sm max-w-96  hover:scale-110 duration-700">
                   <strong>Thông báo</strong>
                 </div>
 
-                <div className="w-full flex flex-row flex-wrap gap-2">
-                  {" "}
+                <div className="w-full flex flex-row">
                   <div onClick={() => setChane("Friend")}>
                     <div className="w-full h-full p-2 flex items-center gap-2 rounded-md bg-green-50 shadow-sm hover:scale-105 hover:bg-green-200">
                       <UserGroupIcon className="w-5 h-5 text-green-500" />
@@ -157,6 +157,12 @@ const NotificationDropDow = () => {
                     <div className="w-full h-full p-2 flex items-center gap-2 rounded-md bg-violet-50 shadow-sm hover:scale-105 hover:bg-violet-200">
                       <UserPlusIcon className="w-5 h-5 text-violet-500" />
                       <span>Follow</span>
+                    </div>
+                  </div>
+                  <div onClick={() => setChane("Other")}>
+                    <div className="w-full h-full p-2 flex items-center gap-2 rounded-md bg-violet-50 shadow-sm hover:scale-105 hover:bg-violet-200">
+                      <OtherHousesOutlined className="w-5 h-5 text-emerald-500" />
+                      <span>Other</span>
                     </div>
                   </div>
                 </div>
@@ -184,6 +190,13 @@ const NotificationDropDow = () => {
                             chane == "Follow" && (
                               <>
                                 <Follow data={noti} />
+                              </>
+                            )}
+                          {noti?.referenceModel != "Friendship" &&
+                            noti?.referenceModel != "Follow" &&
+                            chane == "Other" && (
+                              <>
+                                <Other data={noti} />
                               </>
                             )}
                         </li>
@@ -243,13 +256,44 @@ const Follow = ({ data }) => {
       onClick={() => {
         navigate(`/profile/posts?id=${data?.sender?._id}`);
       }}
-      className={`transition-opacity duration-300 ${
+      className={`transition-opacity w-full cursor-pointer duration-300 ${
         data?.isRead ? "opacity-60" : "opacity-100"
       }`}
     >
-      <div 
-        className="flex px-4 py-2 w-full rounded-md items-center hover:scale-105 hover:bg-gray-200 gap-1"
-      >
+      <div className="flex px-4 py-2 w-full rounded-md items-center hover:scale-105 hover:bg-gray-200 gap-1">
+        <UserStatusIndicator
+          userId={data?.sender?._id}
+          userData={data?.sender}
+          styler={{
+            button: { width: "40px", height: "40px" }, // ✅ Giới hạn kích thước
+            avatar: { width: "40px", height: "40px" }, // ✅ Avatar không bị to quá
+          }}
+        />
+        <p
+          className={`ml-2 text-xs line-clamp-2 max-w-[200px] ${
+            data?.isRead && "text-gray-500"
+          }`}
+        >
+          {data?.content}
+        </p>
+      </div>
+      <DetailTool />
+    </div>
+  );
+};
+const Other = ({ data }) => {
+  const navigate = useNavigate();
+  console.log(data);
+  return (
+    <div
+      onClick={() => {
+        navigate(`/profile/posts?id=${data?.sender?._id}`);
+      }}
+      className={`transition-opacity  w-full cursor-pointer duration-300 ${
+        data?.isRead ? "opacity-60" : "opacity-100"
+      }`}
+    >
+      <div className="flex px-4  py-2 w-full rounded-md items-center hover:scale-105 hover:bg-gray-200 gap-1">
         <UserStatusIndicator
           userId={data?.sender?._id}
           userData={data?.sender}

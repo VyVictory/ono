@@ -41,7 +41,7 @@ export default function UpdatePostModal({ postId }) {
   const [privacy, setPrivacy] = useState("Public");
   useEffect(() => {
     const fetchPostData = async () => {
-      try {
+      // try {
         const data = await getPostById(postId);
         const images = data.media
           .filter((m) => m.type === "image")
@@ -67,10 +67,10 @@ export default function UpdatePostModal({ postId }) {
           video,
         });
         setPrivacy(data.security);
-      } catch (err) {
-        console.error(err);
-        toast.error("Không thể tải dữ liệu bài viết.");
-      }
+      // } catch (err) {
+      //   console.error(err);
+      //   toast.error("Không thể tải dữ liệu bài viết.");
+      // }
     };
     if (postId) fetchPostData();
   }, [postId]);

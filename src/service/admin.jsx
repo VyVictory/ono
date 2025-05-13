@@ -19,6 +19,28 @@ export const getAllUser = async ({ page, limit, search }) => {
     return res(error);
   }
 };
+export const getAllPost = async ({ page, limit, search }) => {
+  try {
+    const response = await api.get(
+      `/post/all/?page=${page}&limit=${limit}&search=${search}`
+    );
+    return response.data;
+  } catch (error) {
+    // nextError(error);
+    return null;
+  }
+};
+export const getAllCmt = async ({ page, limit, search }) => {
+  try {
+    const response = await api.get(
+      `/cmt/admin/all/?page=${page}&limit=${limit}&search=${search}`
+    );
+    return response.data;
+  } catch (error) {
+    // nextError(error);
+    return null;
+  }
+};
 export const deleteUser = async (userId) => {
   try {
     if (!token) {

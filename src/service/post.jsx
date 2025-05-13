@@ -52,6 +52,7 @@ export const getPostHome = async (start, limit) => {
     return null;
   }
 };
+
 export const getAllPostOld = async (start, limit) => {
   try {
     const response = await api.get(
@@ -149,6 +150,18 @@ export const getOrderPost = async ({ userId, start, limit }) => {
   try {
     const response = await api.get(
       `/post/postByUser/${userId}?start=${start}&limit=${Infinity}`
+    );
+    return response.data;
+  } catch (error) {
+    // nextError(error);
+    return null;
+  }
+};
+export const deletePost = async (id) => {
+  if (!id) return;
+  try {
+    const response = await api.delete(
+      `/post/${id}`
     );
     return response.data;
   } catch (error) {

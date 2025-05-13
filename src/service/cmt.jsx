@@ -59,10 +59,18 @@ export const getCmt = async ({ postId, start, limit }) => {
     return null;
   }
 };
-
-export const deleteCmt = async (postId) => {
+export const deleteCmt = async (cmtId) => {
   try {
-    const response = await api.delete(`/cmt/${postId}`);
+    const response = await api.delete(`/cmt/${cmtId}`);
+    return response;
+  } catch (error) {
+    // nextError(error);
+    return null;
+  }
+};
+export const hiddenCmt = async (cmtId) => {
+  try {
+    const response = await api.put(`/cmt/hidden/${cmtId}`);
     return response;
   } catch (error) {
     // nextError(error);

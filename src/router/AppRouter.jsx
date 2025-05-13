@@ -21,6 +21,9 @@ import { MainProvider } from "./MainProvider.jsx";
 import DashboardLayout from "../Layout/DashboardLayout.jsx";
 import Dashboard from "../pages/admin/Dashboard.jsx";
 import UserManagementPage from "../pages/admin/UserManagementPage.jsx";
+import { PostManagementPage } from "../pages/admin/PostManagementPage.jsx";
+import { CommentManagementPage } from "../pages/admin/CommentManagementPage.jsx";
+import { RepostManagementPage } from "../pages/admin/RepostManagementPage.jsx";
 const AppRouter = () => (
   <Routes>
     <Route element={<Layout />}>
@@ -35,9 +38,9 @@ const AppRouter = () => (
     </Route>
     <Route path="/dashboard" element={<DashboardLayout />}>
       <Route path="/dashboard/users" element={<UserManagementPage />} />
-      <Route path="/dashboard/posts" element={<Dashboard />} />
-      <Route path="/dashboard/comments" element={<Dashboard />} />
-      <Route path="/dashboard/reports" element={<Dashboard />} />
+      <Route path="/dashboard/posts" element={<PostManagementPage />} />
+      <Route path="/dashboard/comments" element={<CommentManagementPage />} />
+      <Route path="/dashboard/reports" element={<RepostManagementPage />} />
     </Route>
     {/* <Route path="/test" element={<Test />} /> */}
     <Route path="/login/*" element={<Auth />} />

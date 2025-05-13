@@ -27,10 +27,10 @@ import { useAuth } from "../components/context/AuthProvider";
 import { Outlet, useNavigate } from "react-router-dom";
 import UserDropDow from "../components/UserDropDow";
 import logo from "../img/logo.gif";
-import {
-  useDashboard,
-} from "../components/context/DashboardProvider";
+import { useDashboard } from "../components/context/DashboardProvider";
 import { FaSearchLocation } from "react-icons/fa";
+import { toast } from "react-toastify";
+
 const drawerWidth = 240;
 
 const navItems = [
@@ -53,13 +53,19 @@ export default function DashboardLayout() {
   const { searchTerm, setSearchTerm } = useDashboard();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const { profile } = useAuth();
+  const { profile, isLoadingProfile } = useAuth();
   const navigate = useNavigate();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-
+  if (profile?.role != 1) {
+    if (!isLoadingProfile) {
+      toast.error("Cảnh báo : Bạn không được phép vào đây");
+      navigate("/"); // chuyển hướng về trang chủ
+    }
+    return;
+  }
   const drawer = (
     <div>
       <Toolbar sx={{ justifyContent: "start", py: 2 }}>
@@ -96,110 +102,113 @@ export default function DashboardLayout() {
   );
 
   return (
-
-      <Box sx={{ display: "flex" }}>
-        <CssBaseline />
-        <AppBar
-          position="fixed"
-          elevation={1}
-          sx={{
-            backgroundColor: "#ffffff",
-            color: "#000",
-            width: { sm: `calc(100% - ${drawerWidth}px)` },
-            ml: { sm: `${drawerWidth}px` },
-          }}
-        >
-          <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              {isMobile && (
-                <IconButton
-                  color="inherit"
-                  aria-label="open drawer"
-                  edge="start"
-                  onClick={handleDrawerToggle}
-                  sx={{ mr: 2 }}
-                >
-                  <MenuIcon />
-                </IconButton>
-              )}
-              <Paper
-                component="form"
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  width: 300,
-                  height: 40,
-                  px: 2,
-                  borderRadius: 5,
-                  backgroundColor: "#f1f3f4",
-                }}
-                elevation={0}
-                onSubmit={(e) => e.preventDefault()}
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+      <AppBar
+        position="fixed"
+        elevation={1}
+        sx={{
+          zIndex: 10,
+          backgroundColor: "#ffffff",
+          color: "#000",
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          ml: { sm: `${drawerWidth}px` },
+        }}
+      >
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            {isMobile && (
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                edge="start"
+                onClick={handleDrawerToggle}
+                sx={{ mr: 2 }}
               >
-                <FaSearchLocation sx={{ color: "gray", mr: 1 }} />
-                <InputBase
-                  placeholder="Tìm kiếm..."
-                  className="pl-2"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  fullWidth
-                  sx={{ fontSize: 14 }}
-                />
-              </Paper>
-            </Box>
-            {profile && (
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <Typography variant="body1" className="text-nowrap">
-                  {profile.firstName} {profile.lastName}
-                </Typography>
-                <UserDropDow avt={profile?.avt} />
-              </Box>
+                <MenuIcon />
+              </IconButton>
             )}
-          </Toolbar>
-        </AppBar>
+            <Paper
+              component="form"
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                height: 40,
+                px: 2,
+                borderRadius: 5,
+                backgroundColor: "#f1f3f4",
+              }}
+              elevation={0}
+              onSubmit={(e) => e.preventDefault()}
+            >
+              <FaSearchLocation sx={{ color: "gray", mr: 1 }} />
+              <InputBase
+                placeholder="Tìm kiếm..."
+                className="pl-2"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                fullWidth
+                sx={{ fontSize: 14 }}
+              />
+            </Paper>
+          </Box>
+          {profile && (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography
+                variant="body1"
+                className="text-nowrap hidden sm:block"
+              >
+                <strong className="text-blue-500 uppercase">
+                  {profile.firstName} {profile.lastName}
+                </strong>
+              </Typography>
+              <UserDropDow avt={profile?.avt} />
+            </Box>
+          )}
+        </Toolbar>
+      </AppBar>
 
-        <Box
-          component="nav"
-          sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        >
-          <Drawer
-            variant="temporary"
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            ModalProps={{ keepMounted: true }}
-            sx={{
-              display: { xs: "block", sm: "none" },
-              "& .MuiDrawer-paper": { width: drawerWidth },
-            }}
-          >
-            {drawer}
-          </Drawer>
-
-          <Drawer
-            variant="permanent"
-            sx={{
-              display: { xs: "none", sm: "block" },
-              "& .MuiDrawer-paper": { width: drawerWidth },
-            }}
-            open
-          >
-            {drawer}
-          </Drawer>
-        </Box>
-
-        <Box
-          component="main"
+      <Box
+        component="nav"
+        sx={{ width: { sm: drawerWidth }, zIndex: 20, flexShrink: { sm: 0 } }}
+      >
+        <Drawer
+          variant="temporary"
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{ keepMounted: true }}
           sx={{
-            flexGrow: 1,
-            p: 3,
-            backgroundColor: "#f9f9f9",
-            minHeight: "100vh",
-            width: { sm: `calc(100% - ${drawerWidth}px)` },
+            display: { xs: "block", sm: "none" },
+            "& .MuiDrawer-paper": { width: drawerWidth },
           }}
         >
-          <Toolbar />
-          <Outlet />
-        </Box>
+          {drawer}
+        </Drawer>
+
+        <Drawer
+          variant="permanent"
+          sx={{
+            display: { xs: "none", sm: "block" },
+            "& .MuiDrawer-paper": { width: drawerWidth },
+          }}
+          open
+        >
+          {drawer}
+        </Drawer>
       </Box>
+
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          backgroundColor: "#f9f9f9",
+          minHeight: "100vh",
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+        }}
+      >
+        <Toolbar />
+        <Outlet />
+      </Box>
+    </Box>
   );
 }

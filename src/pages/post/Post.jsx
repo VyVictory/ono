@@ -18,7 +18,7 @@ import MenuPost from "./MenuPost";
 import { useAuth } from "../../components/context/AuthProvider";
 const MAX_VISIBLE_IMAGES = 3; // Hiển thị tối đa 6 ảnh
 const Post = ({ data }) => {
-  const { addPost, setAddPost, postUpdateData, setPostUpdateData } =
+  const { addPost, setAddPost, postUpdateData, setPostUpdateData, cmtVisible } =
     useModule();
   const { profile } = useAuth();
   const postsData = data?.posts || []; // ✅ Đảm bảo luôn có giá trị mặc định
@@ -37,7 +37,9 @@ const Post = ({ data }) => {
       setPostUpdateData(null);
     }
   }, [postUpdateData, setPosts, setPostUpdateData]);
-
+  useEffect(() => {
+    posts.length == 1 && cmtVisible && setOpenCmt(posts[0]._id);
+  }, [cmtVisible, posts]);
   useEffect(() => {
     if (addPost) {
       console.log(addPost);
@@ -126,7 +128,7 @@ const Post = ({ data }) => {
                     </div>
                   </div>
                 </div>
-                {_?.author?._id === profile?._id && <MenuPost data={_} />}
+                <MenuPost data={_} setPosts={setPosts} />
               </div>
               {_?.content?.trim() && (
                 <div className="p-2 break-words break-all whitespace-pre-wrap w-full a">
@@ -178,7 +180,7 @@ const Post = ({ data }) => {
               </div>
               <div className="border-t mx-2 flex justify-between items-center p-2">
                 <div className="flex items-center space-x-4 text-gray-600">
-                  <LikeDislike />
+                  <LikeDislike data={_} />
                   <button
                     onClick={() => setOpenCmt(openCmt === _._id ? null : _._id)}
                     className="flex items-center space-x-1"

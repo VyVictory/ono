@@ -202,7 +202,7 @@ const Profile = () => {
                 </div>
               )}
             </div>
-            <MenuProfile />
+            <MenuProfile data={userRender} />
           </div>
         </div>
 

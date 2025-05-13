@@ -14,6 +14,8 @@ import {
   TextField,
   Avatar,
   MenuItem,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import BlockIcon from "@mui/icons-material/Block";
@@ -30,13 +32,15 @@ import Pagination from "@mui/material/Pagination";
 import { useDashboard } from "../../components/context/DashboardProvider";
 import UserStatusIndicator from "../../components/UserStatusIndicator";
 import { useConfirm } from "../../components/context/ConfirmProvider";
+import LoadingAnimation from "../../components/LoadingAnimation";
 
 const genderOptions = ["Male", "Female", "Other"];
 
 export default function UserManagementPage() {
   const { searchTerm, setSearchTerm } = useDashboard();
   const confirm = useConfirm();
-
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.down("sm"));
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
@@ -45,6 +49,7 @@ export default function UserManagementPage() {
   const [openModal, setOpenModal] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({});
+  const [isUpdate, setIsUpdate] = useState(true);
 
   useEffect(() => {
     fetchUsers();
@@ -78,11 +83,12 @@ export default function UserManagementPage() {
     }));
   };
   const handleSave = async () => {
+    setIsUpdate(false);
     try {
       const formDataToSend = formData; // Already prepared in the state
 
       const res = await updateUser(formData._id, formDataToSend); // Pass userId and data
-
+      setIsUpdate(true);
       setOpenModal(false);
       fetchUsers();
     } catch (err) {
@@ -122,7 +128,7 @@ export default function UserManagementPage() {
   };
 
   return (
-    <Box>
+    <Box sx={{ padding:{xs:2 , md:6}  }}>
       <Typography variant="h5" mb={2}>
         Quản lý người dùng
       </Typography>
@@ -131,7 +137,7 @@ export default function UserManagementPage() {
           <TableHead>
             <TableRow>
               <TableCell>Họ tên</TableCell>
-              <TableCell>Email</TableCell>
+              <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>Email</TableCell>
               <TableCell>Trạng thái</TableCell>
               <TableCell align="right">Hành động</TableCell>
             </TableRow>
@@ -155,7 +161,7 @@ export default function UserManagementPage() {
                   </div>
                 </TableCell>
 
-                <TableCell>{user.email}</TableCell>
+                <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>{user.email}</TableCell>
                 <TableCell>{user.banned ? "Bị cấm" : "Hoạt động"}</TableCell>
                 <TableCell align="right">
                   <IconButton onClick={() => handleView(user)}>
@@ -383,14 +389,20 @@ export default function UserManagementPage() {
                   </Box>
 
                   <Box mt={2} textAlign="right">
-                    <Button onClick={() => setOpenModal(false)}>Hủy</Button>
-                    <Button
-                      onClick={handleSave}
-                      variant="contained"
-                      sx={{ ml: 2 }}
-                    >
-                      Lưu
-                    </Button>
+                    {!isUpdate ? (
+                      <LoadingAnimation />
+                    ) : (
+                      <>
+                        <Button onClick={() => setOpenModal(false)}>Hủy</Button>
+                        <Button
+                          onClick={handleSave}
+                          variant="contained"
+                          sx={{ ml: 2 }}
+                        >
+                          Lưu
+                        </Button>
+                      </>
+                    )}
                   </Box>
                 </>
               ) : (

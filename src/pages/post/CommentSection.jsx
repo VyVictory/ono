@@ -29,6 +29,8 @@ import { useAuth } from "../../components/context/AuthProvider";
 import { FaThumbsUp } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useConfirm } from "../../components/context/ConfirmProvider";
+import { useModule } from "../../components/context/Module";
+import { FlagIcon } from "@heroicons/react/24/outline";
 
 const CommentItem = ({
   comment,
@@ -46,7 +48,7 @@ const CommentItem = ({
   const [anchorEl, setAnchorEl] = useState(null);
   const { profile } = useAuth();
   const [maxDepthCmt, setMaxDepthCmt] = useState(3);
-
+  const { setReport } = useModule();
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
@@ -95,53 +97,73 @@ const CommentItem = ({
                 <div className="text-sm font-semibold text-gray-900">
                   {comment.user.name}
                   <span className="ml-2 text-xs text-gray-500 font-normal">
-                    •{" "}
-                    {formatDistanceToNow(new Date(comment.createdAt), {
+                    •
+                    {formatDistanceToNow(new Date(comment?.createdAt), {
                       locale: viLocale,
                       addSuffix: true,
                     })}
                   </span>
                 </div>
 
-                {comment.user.id === profile?._id && (
-                  <div>
-                    <IconButton
-                      size="small"
-                      onClick={handleClick}
-                      className="text-gray-400 hover:text-gray-700"
+                <div>
+                  <IconButton
+                    size="small"
+                    onClick={handleClick}
+                    className="text-gray-400 hover:text-gray-700"
+                  >
+                    <MoreVertIcon fontSize="small" />
+                  </IconButton>
+                  <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+                    {" "}
+                    {comment.user.id === profile?._id ||
+                      (profile?.role == 1 && (
+                        <>
+                          {" "}
+                          <MenuItem
+                            onClick={() => {
+                              onReply(comment);
+                              handleClose();
+                            }}
+                          >
+                            <ReplyIcon fontSize="small" className="mr-2" /> Trả
+                            lời
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() => {
+                              onEdit(comment);
+                              handleClose();
+                            }}
+                          >
+                            <EditIcon fontSize="small" className="mr-2" /> Chỉnh
+                            sửa
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() => {
+                              onDelete(comment.id);
+                              handleClose();
+                            }}
+                          >
+                            <DeleteIcon fontSize="small" className="mr-2" /> Xóa
+                          </MenuItem>
+                        </>
+                      ))}
+                    <MenuItem
+                      onClick={() => {
+                        if (comment?.id) {
+                          setReport({ commentId: comment?.id });
+                        }
+                        handleClose();
+                      }}
                     >
-                      <MoreVertIcon fontSize="small" />
-                    </IconButton>
-                    <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-                      <MenuItem
-                        onClick={() => {
-                          onReply(comment);
-                          handleClose();
-                        }}
-                      >
-                        <ReplyIcon fontSize="small" className="mr-2" /> Trả lời
-                      </MenuItem>
-                      <MenuItem
-                        onClick={() => {
-                          onEdit(comment);
-                          handleClose();
-                        }}
-                      >
-                        <EditIcon fontSize="small" className="mr-2" /> Chỉnh sửa
-                      </MenuItem>
-                      <MenuItem
-                        onClick={() => {
-                          onDelete(comment.id);
-                          handleClose();
-                        }}
-                      >
-                        <DeleteIcon fontSize="small" className="mr-2" /> Xóa
-                      </MenuItem>
-                    </Menu>
-                  </div>
-                )}
+                      <FlagIcon
+                        fontSize="small"
+                        className="text-red-500 w-4 mr-2 aspect-square"
+                      />
+                      Tố cáo
+                    </MenuItem>
+                  </Menu>
+                </div>
               </div>
-
               <p className="text-sm text-gray-800 whitespace-pre-wrap break-words">
                 {comment.content}
               </p>
@@ -149,9 +171,6 @@ const CommentItem = ({
           </div>
 
           <div className="flex flex-row ml-10">
-            <div className="ml-2 mt-2 text-gray-500 text-sm cursor-pointer flex items-center gap-1 hover:underline">
-              <FaThumbsUp fontSize="medium" />
-            </div>
             <div className="ml-2 mt-2 text-blue-500 text-sm cursor-pointer flex items-center gap-1 hover:underline">
               <ReplyIcon fontSize="small" />
               <button onClick={() => onReply(comment)}>Trả lời</button>
@@ -188,6 +207,7 @@ const CommentItem = ({
             />
             <TextField
               fullWidth
+              disabled={!profile}
               placeholder={`Phản hồi ${comment.user.name}...`}
               value={text}
               onChange={(e) => setText(e.target.value)}
@@ -256,9 +276,9 @@ const buildTree = (flat) => {
   return roots;
 };
 
-export const CommentSection = ({ postId, open, cmtId }) => {
+export const CommentSection = ({ postId, open }) => {
   const confirm = useConfirm(); // Sửa lại như trong AddFriend
-
+  const { cmtVisible, setCmtVisible, setFetchCmt, fetchCmt } = useModule();
   const [comments, setComments] = useState([]);
   const [rootId, setRootId] = useState(null); // ← NEW
   const [text, setText] = useState("");
@@ -276,6 +296,12 @@ export const CommentSection = ({ postId, open, cmtId }) => {
       }
     }, 500); // Đặt thời gian chờ để DOM cập nhật
   }, [open, comments]);
+  useEffect(() => {
+    if (cmtVisible) {
+      handleViewMore(cmtVisible);
+      setCmtVisible(null);
+    }
+  }, [cmtVisible]);
   useEffect(() => {
     if (!postId) return;
 
@@ -342,7 +368,6 @@ export const CommentSection = ({ postId, open, cmtId }) => {
   };
   const handleSubmitCmt = async () => {
     if (!cmt.trim() || !postId) return;
-
     const result = await PostComment({
       postId: postId,
       content: cmt,
@@ -390,6 +415,7 @@ export const CommentSection = ({ postId, open, cmtId }) => {
           setComments((c) =>
             c.map((x) => (x.id === comment.id ? { ...x, content: newText } : x))
           );
+        setFetchCmt(!fetchCmt);
       } else {
         toast.error("Không thể sửa bình luận này");
       }
@@ -444,6 +470,7 @@ export const CommentSection = ({ postId, open, cmtId }) => {
 
         <TextField
           fullWidth
+          disabled={!profile}
           placeholder="Thêm bình luận..."
           value={cmt}
           onChange={(e) => setCMT(e.target.value)}
@@ -466,20 +493,20 @@ export const CommentSection = ({ postId, open, cmtId }) => {
 
 const switchData = (data) => {
   return {
-    id: data._id,
+    id: data?._id,
     post: data?.post,
-    parentId: data.idCmt,
+    parentId: data?.idCmt,
     user: {
       id: data?.author?._id,
       avatar: data?.author?.avatar || avt,
       name: data?.author?.firstName + " " + data?.author?.lastName,
     },
-    content: data.content,
+    content: data?.content,
     reactionCounts: data?.reactionCounts,
     mentions: data?.mentions,
     media: data?.media?.media,
     hashtags: data?.hashtags,
     updatedAt: data?.updatedAt,
-    createdAt: data.createdAt,
+    createdAt: data?.createdAt,
   };
 };
