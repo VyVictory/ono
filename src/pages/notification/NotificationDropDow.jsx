@@ -287,7 +287,8 @@ const Other = ({ data }) => {
   return (
     <div
       onClick={() => {
-        navigate(`/profile/posts?id=${data?.sender?._id}`);
+        // navigate(`/profile/posts?id=${data?.sender?._id}`);
+        
       }}
       className={`transition-opacity  w-full cursor-pointer duration-300 ${
         data?.isRead ? "opacity-60" : "opacity-100"

@@ -20,16 +20,17 @@ const SocketContext = createContext();
 const CustomToast = ({ message }) => {
   const navigate = useNavigate();
   return (
-    <Button
-      onClick={() => {
-        navigate(`/messages/inbox?idUser=${message?.sender?._id}`);
-      }}
+    <a
+      href={`/messages/inbox?idUser=${message?.sender?._id}`}
+      className="w-full"
     >
       <div className="w-full h-full flex flex-row">
-        <UserStatusIndicator
-          userId={message?.sender?._id}
-          userData={message?.sender}
-        />
+        <div className="w-12 h-12">
+          <UserStatusIndicator
+            userId={message?.sender?._id}
+            userData={message?.sender}
+          />
+        </div>
         {/* Nội dung tin nhắn */}
         <div className="pl-2">
           <p className="font-semibold">
@@ -38,7 +39,7 @@ const CustomToast = ({ message }) => {
           <p className="text-gray-500 text-start">{message?.content}</p>
         </div>
       </div>
-    </Button>
+    </a>
   );
 };
 
@@ -126,7 +127,7 @@ export const SocketProvider = ({ children }) => {
     const handleNewNotifi = (data) => {
       setNewNotifi(data);
     };
-    const handleLoadProfile = (data) => { 
+    const handleLoadProfile = (data) => {
       setLoadProfile(data);
     };
     socket.on("notification", handleNewNotifi);
