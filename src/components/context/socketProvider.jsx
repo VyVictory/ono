@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import io from "socket.io-client";
 import connectENV from "../../service/connectENV";
+import { getSetting } from "../../service/storage/setting";
 
 const SocketContext = createContext();
 
@@ -57,14 +58,14 @@ export const SocketProvider = ({ children }) => {
     });
 
     newSocket.on("connect", () => {
-      console.log("✅ Connected to socket:", newSocket.id);
+      console.log(" Connected to socket:", newSocket.id);
       setSocket(newSocket); // 🔹 Cập nhật socket ngay khi kết nối thành công
       newSocket.emit("authenticate", profile?._id);
     });
 
     newSocket.on("disconnect", (reason) => {
-      console.error("❌ Socket disconnected", reason);
-      setSocket(null); // 🚨 Cập nhật lại socket khi mất kết nối
+      console.error(" Socket disconnected", reason);
+      setSocket(null);
     });
 
     return () => newSocket.disconnect();
@@ -84,11 +85,10 @@ export const SocketProvider = ({ children }) => {
   }, [location.search]);
 
   const showToast = (message) => {
-    if (idUser === message?.sender?._id) {
-      // console.log(
-      //   "Đang ở trang hội thoại của user này, không hiển thị thông báo.",
-      //   idUser
-      // );
+    if (
+      idUser === message?.sender?._id ||
+      getSetting({ name: "inbox", userId: message?.sender?._id })
+    ) {
       return;
     }
     if (toastIdsRef.current.length >= 3) {

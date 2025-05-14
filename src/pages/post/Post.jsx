@@ -26,7 +26,7 @@ const Post = ({ data }) => {
   const confirm = useConfirm(); // Sửa lại như trong AddFriend
 
   const { profile } = useAuth();
-  const postsData = data?.posts || []; // ✅ Đảm bảo luôn có giá trị mặc định
+  const postsData = data?.posts || data || []; // ✅ Đảm bảo luôn có giá trị mặc định
   const [openGalleryIndex, setOpenGalleryIndex] = useState(null); // index của post
   const [openCmt, setOpenCmt] = useState(false); // index của post
   const [expandedPosts, setExpandedPosts] = useState({});
@@ -39,6 +39,7 @@ const Post = ({ data }) => {
 
   const [posts, setPosts] = useState([]);
   useEffect(() => {
+    console.log(postsData);
     setPosts(postsData);
   }, [data]); // ✅ Cập nhật lại posts khi data thay đổi
   useEffect(() => {
@@ -90,10 +91,19 @@ const Post = ({ data }) => {
       .replace(",", " lúc");
   };
   const addBookmark = async (postId) => {
-    const isConfirmed = await confirm("Bạn có chắc muốn gửi yêu cầu kết bạn?");
+    const isConfirmed = await confirm("Bạn có chắc muốn thêm bài này vào bookmark?");
     if (!isConfirmed) return;
-    const res = createBookmark(postId);
-    toast.success("đã thêm bài viết này vào bookmark");
+
+    const res = await createBookmark(postId);  
+    console.log(res);
+
+    if (res.status === 200 || res.status === 201) {
+      toast.success("Đã thêm bài viết này vào bookmark");
+    } else {
+      toast.error(
+        res.data?.message || "Lỗi khi thêm bài viết này vào bookmark"
+      );
+    }
   };
 
   const handleOpenGallery = (index) => {

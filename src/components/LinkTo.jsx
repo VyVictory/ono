@@ -13,6 +13,7 @@ const LinkTo = ({ namepage, children, css }) => {
     friends: "/friends",
     notification: "/notification",
     login: "/login",
+    bookmarks: "/bookmarks",
     // Add more mappings as needed
   };
 

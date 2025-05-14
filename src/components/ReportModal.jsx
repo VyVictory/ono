@@ -6,7 +6,9 @@ import {
   Button,
   MenuItem,
   TextField,
+  Divider,
 } from "@mui/material";
+import ReportIcon from "@mui/icons-material/Report";
 import { useModule } from "./context/Module";
 import { postReport } from "../service/report";
 import { toast } from "react-toastify";
@@ -19,14 +21,14 @@ const reportTypes = [
   "Khác",
 ];
 
-const ReportModal = ({ open, onClose, onSubmit }) => {
+const ReportModal = ({ open, onClose }) => {
   const [reportType, setReportType] = useState("");
   const [customReason, setCustomReason] = useState("");
   const { report, setReport } = useModule();
 
   const handleSubmit = async () => {
     const reason = reportType === "Khác" ? customReason : reportType;
-    if (!reason.trim()) return alert("Vui lòng nhập nội dung tố cáo");
+    if (!reason.trim()) return toast.warning("Vui lòng nhập nội dung tố cáo");
 
     const payload = {
       ...report,
@@ -41,7 +43,6 @@ const ReportModal = ({ open, onClose, onSubmit }) => {
       toast.error("Gửi tố cáo thất bại!");
     }
 
-    // Reset state
     setReportType("");
     setCustomReason("");
     setReport(null);
@@ -52,14 +53,27 @@ const ReportModal = ({ open, onClose, onSubmit }) => {
     <Modal open={open} onClose={onClose}>
       <Box
         className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
-                     bg-white p-6 rounded-2xl w-full max-w-md md:w-96 shadow-2xl border border-gray-200"
+                   bg-white p-6 rounded-2xl shadow-lg w-full max-w-md"
       >
+        <div className="flex items-center justify-center mb-4 text-red-600">
+          <ReportIcon fontSize="large" />
+        </div>
+
         <Typography
           variant="h6"
-          className="text-center font-semibold text-gray-800 mb-5"
+          className="text-center font-semibold text-gray-800 mb-2"
         >
-          Tố Cáo Vi Phạm
+          Báo Cáo Vi Phạm
         </Typography>
+
+        <Typography
+          variant="body2"
+          className="text-center text-gray-500 mb-4"
+        >
+          Vui lòng chọn lý do và cung cấp nội dung nếu cần thiết.
+        </Typography>
+
+        <Divider className="mb-4" />
 
         <TextField
           select
@@ -79,19 +93,25 @@ const ReportModal = ({ open, onClose, onSubmit }) => {
 
         {reportType === "Khác" && (
           <TextField
-            label="Nhập nội dung tố cáo"
+            label="Nội dung chi tiết"
             multiline
             rows={4}
             fullWidth
             value={customReason}
             onChange={(e) => setCustomReason(e.target.value)}
+            placeholder="Nhập nội dung cụ thể về vi phạm..."
             className="mb-4"
             size="small"
           />
         )}
 
         <div className="flex justify-end gap-3 mt-6">
-          <Button variant="outlined" onClick={onClose} className="capitalize">
+          <Button
+            variant="outlined"
+            onClick={onClose}
+            className="capitalize"
+            color="inherit"
+          >
             Hủy
           </Button>
           <Button
@@ -99,7 +119,7 @@ const ReportModal = ({ open, onClose, onSubmit }) => {
             onClick={handleSubmit}
             className="capitalize bg-red-600 hover:bg-red-700 text-white"
           >
-            Gửi
+            Gửi Báo Cáo
           </Button>
         </div>
       </Box>

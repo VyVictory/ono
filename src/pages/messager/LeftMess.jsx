@@ -16,7 +16,7 @@ import { ButtonBase, Paper } from "@mui/material";
 import { useSocketContext } from "../../components/context/socketProvider";
 import LoadingAnimation from "../../components/LoadingAnimation";
 import { getAdminList } from "../../service/admin";
-const LeftMess = ({ onClose }) => {
+const LeftMess = ({ onClose , setStartUser}) => {
   const { newMessInbox, recallMessId, setRecallMessId } = useSocketContext();
   const [searchText, setSearchText] = useState(false);
   const [friends, setFriends] = useState([]);

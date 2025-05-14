@@ -25,12 +25,14 @@ import { PostManagementPage } from "../pages/admin/PostManagementPage.jsx";
 import { CommentManagementPage } from "../pages/admin/CommentManagementPage.jsx";
 import { RepostManagementPage } from "../pages/admin/RepostManagementPage.jsx";
 import Friends from "../pages/Friends.jsx";
+import Bookmark from "../pages/bookmark/bookmark.jsx";
 const AppRouter = () => (
   <Routes>
     <Route element={<Layout />}>
       <Route element={<HomeLayout />}>
         <Route path="/" element={<UserPage />} />{" "}
         <Route path="/friends" element={<Friends />} />
+            <Route path="/bookmarks" element={<Bookmark />} />
       </Route>
       <Route element={<ProtectedRoute />}>
         <Route path="/messages/*" element={<Messages />} />
@@ -44,8 +46,7 @@ const AppRouter = () => (
       <Route path="/dashboard/posts" element={<PostManagementPage />} />
       <Route path="/dashboard/comments" element={<CommentManagementPage />} />
       <Route path="/dashboard/reports" element={<RepostManagementPage />} />
-    </Route>
-    {/* <Route path="/test" element={<Test />} /> */}
+    </Route> 
     <Route path="/login/*" element={<Auth />} />
     <Route path="/auth/callback" element={<Auth />} />
   </Routes>

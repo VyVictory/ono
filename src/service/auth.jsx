@@ -42,15 +42,17 @@ export const login = async (credentials) => {
     const response = await api.post("auth/login", credentials);
     const { token, user } = response.data;
 
-    // Lưu token vào localStorage
-    // saveToken(token);
     authToken.setToken(token);
     return { token, user };
   } catch (error) {
-    console.error("Login Error: ", error.response?.data || error.message);
-    throw error.response?.data || error.message;
+    const errData = error.response?.data || {
+      message: error.message || "Lỗi không xác định",
+    };
+    console.error("Login Error:", errData);
+    throw errData; // giữ nguyên để phía gọi xử lý hiển thị
   }
 };
+
 export const forgotPassword = async (email) => {
   try {
     const response = await api.post("auth/forgot-password", email);

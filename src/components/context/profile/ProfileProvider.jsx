@@ -75,6 +75,7 @@ export const ProfileProvider = ({ children }) => {
         setLoading,
         setCurrentUser,
         currentUser,
+        fetchProfile,
       }}
     >
       {children}

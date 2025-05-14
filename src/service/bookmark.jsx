@@ -24,7 +24,10 @@ export const createBookmark = async (postId) => {
     const response = await api.post(`/bookmark/${postId}`);
     return response;
   } catch (error) {
-    // nextError(error);
-    return null;
+    // return một đối tượng có cùng cấu trúc như response để xử lý thống nhất
+    return {
+      status: error.response?.status || 500,
+      data: error.response?.data || { message: "Lỗi không xác định" },
+    };
   }
 };

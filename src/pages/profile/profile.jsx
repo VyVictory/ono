@@ -18,8 +18,7 @@ import { Button, ButtonBase } from "@mui/material";
 import UserStatusIndicator from "../../components/UserStatusIndicator";
 import { getFriendsMess } from "../../service/friend";
 import DropdownChangeImage from "./DropdownChangeImage";
-import AddFollow from "./AddFollow";
-import LoadingAnimation from "../../components/LoadingAnimation";
+import AddFollow from "./AddFollow"; 
 const Profile = () => {
   const { setZoomImg } = useModule();
   const { setUsecase } = useModule();
@@ -70,6 +69,7 @@ const Profile = () => {
   const followersInfo = (
     <div className="text-center">0 followers ❁ 9 following</div>
   );
+ 
   if (userRender?.profile == null) {
     return (
       <div className="w-screen h-screen NavbarUser flex justify-center items-center">
@@ -137,7 +137,7 @@ const Profile = () => {
 
                 <div className="flex flex-col items-center md:items-start">
                   <strong className="text-3xl text-center md:text-start md:flex md:flex-row w-full ">
-                    <div> 
+                    <div>
                       {" "}
                       {(userRender?.profile?.firstName ?? "") +
                         " " +
@@ -197,7 +197,7 @@ const Profile = () => {
                     className="  cursor-pointer hover:scale-110   justify-center   rounded-md flex items-center transition-transform duration-200"
                   >
                     <ChatBubbleLeftEllipsisIcon className="w-8 h-8 text-gray-500 transition-transform duration-200  hover:text-violet-400" />
-                  </div>
+                  </div>  
                 </div>
               )}
             </div>

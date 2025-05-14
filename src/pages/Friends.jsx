@@ -47,12 +47,12 @@ const Friends = () => {
       setLoading(false);
       setLoadingAdd(false);
     }
-  }; 
-    friends.sort((a, b) => {
-      const onlineA = userStatus[a._id] ? 1 : 0;
-      const onlineB = userStatus[b._id] ? 1 : 0;
-      return onlineB - onlineA;
-    }); 
+  };
+  friends.sort((a, b) => {
+    const onlineA = userStatus[a._id] ? 1 : 0;
+    const onlineB = userStatus[b._id] ? 1 : 0;
+    return onlineB - onlineA;
+  });
   useEffect(() => {
     fetchFriends(0, limitCount, name);
   }, [name]);
@@ -81,7 +81,7 @@ const Friends = () => {
       <div className="max-w-[800px] px-4  space-y-3 h-full w-full bg-white ">
         <div className="   flex flex-col  sticky top-0  z-10 bg-white">
           <div className="flex relative">
-            <strong className="text-center mt-2 pb-2  w-full ">
+            <strong className="text-center mt-2 pb-2  w-full uppercase text-blue-500">
               Danh sách bạn bè
             </strong>
             <div className="absolute right-0 h-full w-6 flex items-center justify-center mr-2">

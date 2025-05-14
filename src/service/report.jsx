@@ -33,7 +33,7 @@ export const getReport = async (type) => {
     return response;
   } catch (error) {
     nextError(error);
-    return (error);
+    return error;
   }
 };
 export const resolvedReport = async (reportId, type) => {
@@ -46,18 +46,18 @@ export const resolvedReport = async (reportId, type) => {
     return response;
   } catch (error) {
     nextError(error);
-    return (error);
+    return error;
   }
 };
 export const deleteReport = async (reportId, type) => {
   console.log(reportId, type);
   try {
     const response = await api.delete(`/report/admin/`, {
-      data: { reportId, type },
+      data: { reportId: reportId, type: type },
     });
     return response;
   } catch (error) {
     nextError(error);
-    return (error); // Nếu đây không phải là Express, đổi tên 'res'
+    return error; // Nếu đây không phải là Express, đổi tên 'res'
   }
 };

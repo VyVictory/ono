@@ -187,6 +187,13 @@ export const RepostManagementPage = () => {
             ) : (
               reports.map((report) => {
                 const targetType = detectTargetType(report);
+                if (
+                  report?.comment === null ||
+                  report?.post === null ||
+                  report?.reportedUser === null
+                ) {
+                  return;
+                }
                 return (
                   <TableRow key={report._id}>
                     <TableCell>

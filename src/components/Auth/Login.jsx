@@ -49,12 +49,16 @@ export default function Login({ chaneform }) {
           ? { email: formData.identifier, password: formData.password }
           : { numberPhone: formData.identifier, password: formData.password };
 
-        // Gửi yêu cầu đăng nhập
-        const { token, user } = await login(requestData); 
+        const { token, user } = await login(requestData);
 
-        toast.success(`Chào mừng bạn, ${user?.firstName + user?.lastName}.`, {
-          autoClose: 500,
-        });
+        toast.success(
+          `Chào mừng bạn, ${user?.firstName ?? ""} ${user?.lastName ?? ""}`,
+          {
+            autoClose: 500,
+          }
+        );
+
+        setShowLogin(false);
 
         setTimeout(() => {
           if (window.location.pathname === "/login") {
@@ -63,10 +67,8 @@ export default function Login({ chaneform }) {
             window.location.reload();
           }
         }, 1000);
-
-        setShowLogin(false);
       } catch (error) {
-        toast.error(error.message || "Đăng nhập thất bại, vui lòng thử lại.", {
+        toast.error(error?.message || "Đăng nhập thất bại, vui lòng thử lại.", {
           autoClose: 500,
         });
       } finally {
@@ -109,7 +111,7 @@ export default function Login({ chaneform }) {
       [name]: "",
     });
   };
- 
+
   const openLoginPopup = () => {
     // Kích thước mặc định cho desktop
     let popupWidth = 500;

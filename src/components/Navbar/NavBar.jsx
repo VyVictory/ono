@@ -26,6 +26,7 @@ import WaterBubbleButton from "../button/WaterBubbleButton";
 import { Button, Paper } from "@mui/material";
 import { useModule } from "../context/Module";
 import NotificationDropDow from "../../pages/notification/NotificationDropDow";
+import { Bookmark } from "@mui/icons-material";
 const NavBar = () => {
   const { showLogin, setShowLogin, profile, isLoadingProfile } = useAuth();
   const { setUsecase, usecase } = useModule();
@@ -95,7 +96,7 @@ const NavBar = () => {
     { icon: HomeIcon, label: "Home", namepage: "home" },
     { icon: VideoCameraIcon, label: "Videos", namepage: "videos" },
     { icon: UserGroupIcon, label: "Friends", namepage: "friends" },
-    { icon: ShoppingBagIcon, label: "Marketplace", namepage: "store" },
+    { icon: Bookmark, label: "Bookmark", namepage: "bookmarks" },
   ];
   const [width, setWidth] = useState(234.913); // State to hold the current width
 

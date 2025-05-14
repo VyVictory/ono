@@ -1,7 +1,8 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useRef, useEffect, useMemo, useId } from "react";
 import {
   Bars3Icon,
   ExclamationCircleIcon,
+  FlagIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/solid";
 import UseClickOutside from "../../components/UseClickOutside";
@@ -17,15 +18,24 @@ import { getCurrentUser } from "../../service/user";
 import UserStatusIndicator from "../../components/UserStatusIndicator";
 import { ButtonBase, Paper } from "@mui/material";
 import LeftMess from "./LeftMess";
-import { Phone } from "@mui/icons-material";
+import {
+  NotificationsActiveSharp,
+  NotificationsNoneSharp,
+  NotificationsOffSharp,
+  Phone,
+} from "@mui/icons-material";
 import { useCall } from "../../components/context/CallProvider";
 import { useAuth } from "../../components/context/AuthProvider";
+import { getSetting, setSetting } from "../../service/storage/setting";
+import { useModule } from "../../components/context/Module";
 const Messages = () => {
   const { profile } = useAuth();
+  const { setReport } = useModule();
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const { setCallId } = useCall();
   const [isRightbarOpen, setRightbarOpen] = useState(false);
   const [profileUser, setProfileUser] = useState(null);
+  const [startUser, setStartUser] = useState(null);
   const [isRightbarOpen1, setRightbarOpen1] = useState(true);
   const MessMenuLeft = useRef(null);
   const MessMenuRight = useRef(null);
@@ -44,8 +54,7 @@ const Messages = () => {
       if (type == "inbox") {
         try {
           const response = await getCurrentUser(id);
-          setProfileUser(response.data);
-          // console.log(response);
+          setProfileUser(response.data); 
         } catch (error) {
           console.error("Get Profile Error:", error);
         }
@@ -101,6 +110,7 @@ const Messages = () => {
               </div>
             </div>
             <LeftMess
+              setStartUser={setStartUser}
               onClose={() => setSidebarOpen((prevState) => !prevState)}
             />
           </motion.div>
@@ -223,9 +233,52 @@ const Messages = () => {
                 className="h-8 xl:hidden hover:scale-125 text-blue-500 bg-violet-200 active:bg-violet-400 hover:bg-violet-300 rounded-3xl p-1 cursor-pointer"
               />
             </div>
-            <h2 className="w-full text-center text-2xl font-semibold">
-              Thông tin
-            </h2>
+            <div className="flex flex-col w-full justify-center">
+              <h2 className="w-full text-center text-2xl font-semibold pb-2 border-b">
+                Thông tin
+              </h2>
+              <div className="flex flex-col w-full items-center p-2">
+                {profileUser && (
+                  <>
+                    <div className="w-12 h-12">
+                      <UserStatusIndicator
+                        userId={profileUser?._id}
+                        userData={profileUser}
+                      />
+                    </div>
+                    <div>
+                      {" "}
+                      {profileUser?.role == 1 && (
+                        <strong className="text-red-500">Admin</strong>
+                      )}
+                      <h2 className="text-lg font-semibold text-gray-600">
+                        {`${profileUser?.firstName
+                          .charAt(0)
+                          .toUpperCase()}${profileUser.firstName.slice(1)} 
+          ${profileUser?.lastName
+            .charAt(0)
+            .toUpperCase()}${profileUser.lastName.slice(1)}`}
+                      </h2>
+                    </div>
+                  </>
+                )}
+              </div>
+              <div className="w-full flex justify-center gap-3">
+                {" "}
+                <NotificationUser userId={profileUser?._id} />
+                <div
+                  onClick={() => {
+                    if (profileUser?._id) {
+                      setReport({ userId: profileUser?._id });
+                    }
+                  }}
+                  className="hover:scale-110 cursor-pointer flex items-center flex-col"
+                >
+                  <FlagIcon className="text-red-500 w-6 h-6" />
+                  <p className="text-xs text-gray-500">Tố cáo</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -236,3 +289,47 @@ const Messages = () => {
 };
 
 export default Messages;
+
+const NotificationUser = ({ userId }) => {
+  const [isNotification, setIsNotification] = useState(false);
+
+  useEffect(() => {
+    if (userId) {
+      const saved = getSetting({ name: "inbox", userId });
+      if (saved !== null) {
+        setIsNotification(saved === "true"); // cookie luôn là string
+      }
+    }
+  }, [userId]);
+
+  const toggleNotification = () => {
+    const newValue = !isNotification;
+    setIsNotification(newValue);
+    setSetting({
+      name: "inbox",
+      userId,
+      value: String(newValue), // lưu dưới dạng chuỗi
+    });
+  };
+
+  return (
+    <div
+      onClick={toggleNotification}
+      className="cursor-pointer flex flex-col items-center hover:scale-125 uppercase"
+    >
+      {isNotification ? (
+        <>
+          {" "}
+          <NotificationsActiveSharp className="text-blue-500" />
+          <p className="text-xs text-gray-500">Tắt</p>
+        </>
+      ) : (
+        <>
+          {" "}
+          <NotificationsOffSharp className="text-blue-500" />
+          <p className="text-xs text-gray-500">Bật</p>
+        </>
+      )}
+    </div>
+  );
+};
