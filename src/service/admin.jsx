@@ -65,6 +65,15 @@ export const toogleBan = async (userId) => {
     return res(error);
   }
 };
+export const getAdminList = async () => {
+  try {
+    const response = await api.get(`/user/list/admin`);
+    return response.data.users;
+  } catch (error) {
+    // nextError(error);
+    return null;
+  }
+};
 export const updateUser = async (userId, userData) => {
   try {
     if (!token) {

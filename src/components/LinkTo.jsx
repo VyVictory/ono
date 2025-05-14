@@ -10,6 +10,7 @@ const LinkTo = ({ namepage, children, css }) => {
     videos: "/videos",
     store: "/store",
     groups: "/groups",
+    friends: "/friends",
     notification: "/notification",
     login: "/login",
     // Add more mappings as needed

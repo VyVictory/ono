@@ -94,7 +94,7 @@ const NavBar = () => {
   const menuItems = [
     { icon: HomeIcon, label: "Home", namepage: "home" },
     { icon: VideoCameraIcon, label: "Videos", namepage: "videos" },
-    { icon: UserGroupIcon, label: "Friends", namepage: "groups" },
+    { icon: UserGroupIcon, label: "Friends", namepage: "friends" },
     { icon: ShoppingBagIcon, label: "Marketplace", namepage: "store" },
   ];
   const [width, setWidth] = useState(234.913); // State to hold the current width

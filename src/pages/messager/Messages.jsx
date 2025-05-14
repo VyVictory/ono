@@ -13,18 +13,20 @@ import { useNavigate } from "react-router-dom";
 
 import UseMessageInfo from "./UseMessageInfo";
 import InputMessage from "./InputMessage";
-import { getCurrentUser } from "../../service/user"; 
+import { getCurrentUser } from "../../service/user";
 import UserStatusIndicator from "../../components/UserStatusIndicator";
 import { ButtonBase, Paper } from "@mui/material";
-import LeftMess from "./LeftMess"; 
-import { Phone } from "@mui/icons-material"; 
+import LeftMess from "./LeftMess";
+import { Phone } from "@mui/icons-material";
 import { useCall } from "../../components/context/CallProvider";
+import { useAuth } from "../../components/context/AuthProvider";
 const Messages = () => {
-  const [isSidebarOpen, setSidebarOpen] = useState(false); 
+  const { profile } = useAuth();
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
   const { setCallId } = useCall();
-  const [isRightbarOpen, setRightbarOpen] = useState(false); 
+  const [isRightbarOpen, setRightbarOpen] = useState(false);
   const [profileUser, setProfileUser] = useState(null);
-  const [isRightbarOpen1, setRightbarOpen1] = useState(true); 
+  const [isRightbarOpen1, setRightbarOpen1] = useState(true);
   const MessMenuLeft = useRef(null);
   const MessMenuRight = useRef(null);
   const { type, id } = UseMessageInfo();
@@ -32,7 +34,7 @@ const Messages = () => {
 
   const handleNewMessage = (newMessage) => {
     setMessages(newMessage); // ✅ Cập nhật tin nhắn mới, xoá danh sách cũ
-  };  
+  };
 
   UseClickOutside(MessMenuLeft, () => setSidebarOpen(false));
   UseClickOutside(MessMenuRight, () => setRightbarOpen(false));
@@ -63,7 +65,6 @@ const Messages = () => {
   {
     type && profileUser?._id ? Centter : <p>Đang tải...</p>;
   }
-
   return (
     <div className="flex flex-row">
       {/* Sidebar className={sidebarClass} */}
@@ -133,24 +134,32 @@ const Messages = () => {
                     avatar: { width: "40px", height: "40px" }, // ✅ Avatar không bị to quá
                   }}
                 />
-                <h2 className="text-lg font-semibold text-gray-600">
-                  {`${profileUser?.firstName
-                    .charAt(0)
-                    .toUpperCase()}${profileUser.firstName.slice(1)} 
+                <div>
+                  {" "}
+                  {profileUser?.role == 1 && (
+                    <strong className="text-red-500">Admin</strong>
+                  )}
+                  <h2 className="text-lg font-semibold text-gray-600">
+                    {`${profileUser?.firstName
+                      .charAt(0)
+                      .toUpperCase()}${profileUser.firstName.slice(1)} 
           ${profileUser?.lastName
             .charAt(0)
             .toUpperCase()}${profileUser.lastName.slice(1)}`}
-                </h2>
+                  </h2>
+                </div>
               </>
             )}
           </div>
-          <a
-            onClick={() => { 
-              setCallId(profileUser._id);
-            }}
-          >
-            <Phone className="w-12 cursor-pointer h-12 text-blue-400" />
-          </a>
+          {(profile?.role == 1 || profileUser?.friendStatus == "accepted") && (
+            <a
+              onClick={() => {
+                setCallId(profileUser._id);
+              }}
+            >
+              <Phone className="w-12 cursor-pointer h-12 hover:scale-125 text-blue-400" />
+            </a>
+          )}
           {/* lớn thì hiện */}
           <div className="flex items-center justify-center pl-2">
             <button className="xl:hidden">

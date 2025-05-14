@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import React from "react";
 import UseMessageInfo from "./UseMessageInfo";
-import { getMessageInbox, RecallMessage } from "../../service/message";
+import {
+  deleteMessage,
+  getMessageInbox,
+  RecallMessage,
+} from "../../service/message";
 import { CloudDownloadIcon } from "@heroicons/react/solid";
 import { useAuth } from "../../components/context/AuthProvider";
 import LoadingAnimation from "../../components/LoadingAnimation";
@@ -144,10 +148,10 @@ const Inbox = ({ newmess }) => {
 
     let timeoutId; // Biến để lưu `setTimeout`
 
-    const handleScroll = async () => { 
+    const handleScroll = async () => {
       const { scrollTop, scrollHeight, clientHeight } =
         containerRefMess?.current;
-      if( scrollTop, scrollHeight, clientHeight === undefined) return;
+      if ((scrollTop, scrollHeight, clientHeight === undefined)) return;
       // Kiểm tra có cần hiển thị nút cuộn xuống không
       setShowScrollButton(scrollTop < scrollHeight - clientHeight - 150);
 
@@ -239,12 +243,11 @@ const Inbox = ({ newmess }) => {
   };
 
   const handleDeleteMessage = async (messageId) => {
-    const isConfirmed = await confirm(
-      "Bạn có chắc muốn xóa tin nhắn này? .. lưu ý chức năng này chỉ là ảo :)))"
-    );
+    const isConfirmed = await confirm("Bạn có chắc muốn xóa tin nhắn này?");
     if (!isConfirmed) return;
     if (!messageId) return;
     try {
+      const rs = deleteMessage(messageId);
       // console.log(messageId);
       // console.log(messagesByDay);
       setMessagesByDay(
@@ -330,7 +333,7 @@ const Inbox = ({ newmess }) => {
                             </button>
                           )}
                         </Menu.Item>
-                        <Menu.Item>
+                        {/* <Menu.Item>
                           {({ active }) => (
                             <button
                               onClick={() => handleEditMessage(msg._id)}
@@ -341,7 +344,7 @@ const Inbox = ({ newmess }) => {
                               Chỉnh sửa
                             </button>
                           )}
-                        </Menu.Item>
+                        </Menu.Item> */}
                         <Menu.Item>
                           {({ active }) => (
                             <button

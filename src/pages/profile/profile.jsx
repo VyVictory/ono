@@ -24,7 +24,6 @@ const Profile = () => {
   const { setZoomImg } = useModule();
   const { setUsecase } = useModule();
   const { profileRender, content } = useProfile();
-
   const [userRender, setUserRender] = useState(null);
   const [friends, setFrineds] = useState([]);
   const navigate = useNavigate();
@@ -138,7 +137,7 @@ const Profile = () => {
 
                 <div className="flex flex-col items-center md:items-start">
                   <strong className="text-3xl text-center md:text-start md:flex md:flex-row w-full ">
-                    <div>
+                    <div> 
                       {" "}
                       {(userRender?.profile?.firstName ?? "") +
                         " " +

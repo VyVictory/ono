@@ -33,8 +33,7 @@ export const checkLike = async (type, refId) => {
       refId: refId,
     });
     return response;
-  } catch (error) {
-    nextError(error);
+  } catch (error) { 
     return error;
   }
 };
@@ -45,8 +44,7 @@ export const checkCount = async (type, refId) => {
       refId: refId,
     });
     return response.data;
-  } catch (error) {
-    nextError(error);
+  } catch (error) { 
     return error;
   }
 };

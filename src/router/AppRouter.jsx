@@ -24,14 +24,17 @@ import UserManagementPage from "../pages/admin/UserManagementPage.jsx";
 import { PostManagementPage } from "../pages/admin/PostManagementPage.jsx";
 import { CommentManagementPage } from "../pages/admin/CommentManagementPage.jsx";
 import { RepostManagementPage } from "../pages/admin/RepostManagementPage.jsx";
+import Friends from "../pages/Friends.jsx";
 const AppRouter = () => (
   <Routes>
     <Route element={<Layout />}>
       <Route element={<HomeLayout />}>
-        <Route path="/" element={<UserPage />} />
+        <Route path="/" element={<UserPage />} />{" "}
+        <Route path="/friends" element={<Friends />} />
       </Route>
       <Route element={<ProtectedRoute />}>
         <Route path="/messages/*" element={<Messages />} />
+
         <Route path="/profile/*" element={<ProfileLayout />} />
       </Route>
       <Route path="/*" element={<HomeLayout />} />

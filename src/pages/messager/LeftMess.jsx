@@ -15,6 +15,7 @@ import getTimeAgo from "../../components/GetTimeAgo";
 import { ButtonBase, Paper } from "@mui/material";
 import { useSocketContext } from "../../components/context/socketProvider";
 import LoadingAnimation from "../../components/LoadingAnimation";
+import { getAdminList } from "../../service/admin";
 const LeftMess = ({ onClose }) => {
   const { newMessInbox, recallMessId, setRecallMessId } = useSocketContext();
   const [searchText, setSearchText] = useState(false);
@@ -24,11 +25,21 @@ const LeftMess = ({ onClose }) => {
   const [hasMore, setHasMore] = useState(false);
   const [loadingAdd, setLoadingAdd] = useState(false);
   const [startIndex, setStartIndex] = useState(0);
+  const [admins, setAdmins] = useState(null);
+  const [menu, setMenu] = useState("friends");
   const [limitCount, setLimitCount] = useState(8);
   const [name, setName] = useState("");
   const navigate = useNavigate();
   const listRef = useRef(null);
   const scrollPositionRef = useRef(0);
+  useEffect(() => {
+    const fetchAdminList = async () => {
+      const res = await getAdminList();
+      console.log(res);
+      setAdmins(res);
+    };
+    fetchAdminList();
+  }, []);
   const fetchFriends = async (startIndex, limitCount, name, current) => {
     if (!current) {
       setLoading(false);
@@ -79,8 +90,6 @@ const LeftMess = ({ onClose }) => {
     fetchFriends(start, limit, name, current);
   };
   useEffect(() => {
-    // console.log(newMessInbox);
-
     if (newMessInbox && newMessInbox.message) {
       const messAdd = newMessInbox.message;
       console.log(messAdd);
@@ -183,17 +192,32 @@ const LeftMess = ({ onClose }) => {
       {/* Menu */}
       <div>
         <div className="p-2 flex space-x-2 bg-white shadow-sm rounded-lg overflow-x-auto pb-3 mx-1">
-          <button className="flex items-center space-x-2 bg-gray-100 text-gray-700 rounded-3xl px-4 py-2 shadow-sm hover:bg-violet-100 hover:scale-105 active:bg-violet-200 active:scale-105 transition-all duration-300 ease-in-out">
+          <button
+            onClick={() => {
+              setMenu("friends");
+            }}
+            className="flex items-center space-x-2 bg-gray-100 text-gray-700 rounded-3xl px-4 py-2 shadow-sm hover:bg-violet-100 hover:scale-105 active:bg-violet-200 active:scale-105 transition-all duration-300 ease-in-out"
+          >
             <FriendIcon />
             <span className="text-sm font-medium text-nowrap">Bạn bè</span>
           </button>
-          <button className="flex items-center space-x-2 bg-gray-100 text-gray-700 rounded-3xl px-4 shadow-sm hover:bg-blue-100 hover:scale-105 active:bg-blue-200 active:scale-105 transition-all duration-300 ease-in-out">
+          <button
+            onClick={() => {
+              setMenu("groups");
+            }}
+            className="flex items-center space-x-2 bg-gray-100 text-gray-700 rounded-3xl px-4 shadow-sm hover:bg-blue-100 hover:scale-105 active:bg-blue-200 active:scale-105 transition-all duration-300 ease-in-out"
+          >
             <GroupIcon />
             <span className="text-sm font-medium">Nhóm</span>
           </button>
-          <button className="flex items-center space-x-2 bg-gray-100 text-gray-700 rounded-3xl px-4 shadow-sm hover:bg-orange-100 hover:scale-105 active:bg-orange-200 active:scale-105 transition-all duration-300 ease-in-out">
+          <button
+            onClick={() => {
+              setMenu("admins");
+            }}
+            className="flex items-center space-x-2 bg-gray-100 text-gray-700 rounded-3xl px-4 shadow-sm hover:bg-orange-100 hover:scale-105 active:bg-orange-200 active:scale-105 transition-all duration-300 ease-in-out"
+          >
             <NewsIcon />
-            <span className="text-sm font-medium">Tin</span>
+            <span className="text-sm font-medium">Hỗ trợ</span>
           </button>
         </div>
       </div>
@@ -204,40 +228,92 @@ const LeftMess = ({ onClose }) => {
       >
         {/* Loading state */}
         {loading ? (
-          listChat?.friends?.map((friend, index) => (
-            <ButtonBase
-              onClick={() => {
-                handleLinkToMess("inbox", friend?._id);
-                onClose();
-              }}
-              key={friend._id}
-              className=" hover:bg-gray-100"
-            >
-              <div className="w-full flex items-center space-x-2 p-2 border-b border-gray-100 h-20">
-                {/* Avatar */}
-                <div className="w-10 h-10 rounded-full relative">
-                  <UserStatusIndicator userId={friend?._id} userData={friend} />
-                </div>
-                {/* Content */}
-                <div className="flex flex-col items-start justify-center flex-1">
-                  <div>
-                    <strong className="font-medium">
-                      {friend.firstName} {friend.lastName}
-                    </strong>
-                  </div>
-                  <div className="text-gray-500 overflow-hidden text-ellipsis whitespace-nowrap max-w-56 px-1">
-                    {friend?.lastMessage?.content}
-                  </div>
-                  <div className="text-xs text-gray-400 px-1">
-                    {/* Time Ago */}
-                    {getTimeAgo(friend?.lastMessage?.createdAt) !==
-                      "Invalid Date" &&
-                      getTimeAgo(friend?.lastMessage?.createdAt)}
-                  </div>
-                </div>
-              </div>
-            </ButtonBase>
-          ))
+          <>
+            {" "}
+            <>
+              {menu == "friends" &&
+                listChat?.friends?.map((friend, index) => (
+                  <ButtonBase
+                    onClick={() => {
+                      handleLinkToMess("inbox", friend?._id);
+                      onClose();
+                    }}
+                    key={friend._id}
+                    className=" hover:bg-gray-100"
+                  >
+                    <div className="w-full flex items-center space-x-2 p-2 border-b border-gray-100 h-20">
+                      {/* Avatar */}
+                      <div className="w-10 h-10 rounded-full relative">
+                        <UserStatusIndicator
+                          userId={friend?._id}
+                          userData={friend}
+                        />
+                      </div>
+                      {/* Content */}
+                      <div className="flex flex-col items-start justify-center flex-1">
+                        <div>
+                          <strong className="font-medium">
+                            {friend.firstName} {friend.lastName}
+                          </strong>
+                        </div>
+                        <div className="text-gray-500 overflow-hidden text-ellipsis whitespace-nowrap max-w-56 px-1">
+                          {friend?.lastMessage?.content}
+                        </div>
+                        <div className="text-xs text-gray-400 px-1">
+                          {/* Time Ago */}
+                          {getTimeAgo(friend?.lastMessage?.createdAt) !==
+                            "Invalid Date" &&
+                            getTimeAgo(friend?.lastMessage?.createdAt)}
+                        </div>
+                      </div>
+                    </div>
+                  </ButtonBase>
+                ))}
+            </>
+            <>
+              {menu == "admins" &&
+                admins &&
+                admins?.map((admin, index) => (
+                  <ButtonBase
+                    onClick={() => {
+                      handleLinkToMess("inbox", admin?._id);
+                      onClose();
+                    }}
+                    key={admin._id}
+                    className=" hover:bg-gray-100"
+                  >
+                    <div className="w-full flex items-center space-x-2 p-2 border-b border-gray-100 h-20">
+                      {/* Avatar */}
+                      <div className="w-10 h-10 rounded-full relative">
+                        <UserStatusIndicator
+                          userId={admin?._id}
+                          userData={admin}
+                        />
+                      </div>
+                      {/* Content */}
+                      <div className="flex flex-col items-start justify-center flex-1">
+                        {" "}
+                        <strong className="text-red-500">Admin</strong>
+                        <div>
+                          <strong className="font-medium">
+                            {admin.firstName} {admin.lastName}
+                          </strong>
+                        </div>
+                        {/* <div className="text-gray-500 overflow-hidden text-ellipsis whitespace-nowrap max-w-56 px-1">
+                        {admins?.lastMessage?.content}
+                      </div> */}
+                        {/*       <div className="text-xs text-gray-400 px-1">
+                
+                        {getTimeAgo(admins?.lastMessage?.createdAt) !==
+                          "Invalid Date" &&
+                          getTimeAgo(admins?.lastMessage?.createdAt)}
+                      </div> */}
+                      </div>
+                    </div>
+                  </ButtonBase>
+                ))}
+            </>
+          </>
         ) : (
           <LoadingAnimation />
         )}

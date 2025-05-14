@@ -17,7 +17,7 @@ import { PhoneXMarkIcon } from "@heroicons/react/24/outline";
 import { getCurrentUser } from "../../service/user";
 import UserStatusIndicator from "../UserStatusIndicator";
 import { useAuth } from "../context/AuthProvider";
-
+const requestTimeOut = 10000;
 const CallModel = ({ isOpen, onClose, id }) => {
   const { socket } = useSocketContext();
   const { profile } = useAuth();
@@ -34,18 +34,20 @@ const CallModel = ({ isOpen, onClose, id }) => {
   } = useCall();
   const [stream, setStream] = useState(null);
   const [profileRender, setProfileRender] = useState(null);
-  const [cameraOn, setCameraOn] = useState(true); // Camera state
+  const [cameraOn, setCameraOn] = useState(false); // Camera state
   const myVideoRef = useRef(null);
   const partnerVideoRef = useRef(null);
   const draggableRef = useRef(null);
   const peerRef = useRef(null);
-  const [isPartnerVideoOn, setIsPartnerVideoOn] = useState(true);
+  const [isPartnerVideoOn, setIsPartnerVideoOn] = useState(false);
   const [isLoadingVideo, setIsLoadingVideo] = useState(true);
   const [isSelfVideoMaximized, setIsSelfVideoMaximized] = useState(false);
   const audioContextRef = useRef(null); // Audio context để phân tích âm thanh
   const analyserRef = useRef(null); // Analyser để kiểm tra âm thanh
   const audioDataRef = useRef(new Uint8Array(0)); // Dữ liệu âm thanh
   const remoteStreamRef = useRef(null);
+  const timeoutRef = useRef(null);
+  const [callAccepted, setCallAccepted] = useState(false);
 
   useEffect(() => {
     if (!socket) return;
@@ -88,7 +90,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
   };
 
   useEffect(() => {
-    if (!isAccept) return; 
+    if (!isAccept) return;
     acceptCall();
     return () => {
       if (peerRef.current) {
@@ -109,6 +111,11 @@ const CallModel = ({ isOpen, onClose, id }) => {
       cleanupCall();
     } else {
       setIsVideo(true);
+      setCallAccepted(true);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
     }
   };
 
@@ -159,6 +166,15 @@ const CallModel = ({ isOpen, onClose, id }) => {
       console.error("Lỗi truy cập thiết bị:", error);
       toast.error("Không thể truy cập camera/micro!");
     }
+    setCallAccepted(false); // đảm bảo chưa chấp nhận
+
+    //  BẮT ĐẦU ĐẾM NGƯỢC
+    timeoutRef.current = setTimeout(() => {
+      if (!callAccepted) {
+        cleanupCall();
+        toast.error("Người dùng không bắt máy");
+      }
+    }, requestTimeOut); // 30 giây timeout
   };
   const fetchProfile = async () => {
     if (!callId) return;
@@ -195,7 +211,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
 
       peerRef.current.on("signal", (data) => {
         socket.emit("answer", { target: incomingCall.caller, sdp: data });
-      }); 
+      });
       peerRef.current.on("stream", (remoteStream) => {
         setIsLoadingVideo(false);
         remoteStreamRef.current = remoteStream; // Lưu stream của đối phương
@@ -293,7 +309,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
     audioDataRef.current = new Uint8Array(0);
 
     onClose?.();
-  }; 
+  };
   const endCallHand = async () => {
     if (socket && id) {
       return socket.emit("end-call", { target: id });
@@ -424,7 +440,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
                           ? "block"
                           : "none",
                     }}
-                  /> 
+                  />
                   {(!isPartnerVideoOn || !isVideo) && (
                     <div
                       className={`absolute top-0 left-0 flex h-full w-full items-center justify-center bg-black }`}
