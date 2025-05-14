@@ -16,10 +16,15 @@ import LikeDislike from "./LikeDislike";
 import { ChatBubbleLeftIcon } from "@heroicons/react/24/solid";
 import MenuPost from "./MenuPost";
 import { useAuth } from "../../components/context/AuthProvider";
+import { useConfirm } from "../../components/context/ConfirmProvider";
+import { toast } from "react-toastify";
+import { createBookmark } from "../../service/bookmark";
 const MAX_VISIBLE_IMAGES = 3; // Hiển thị tối đa 6 ảnh
 const Post = ({ data }) => {
   const { addPost, setAddPost, postUpdateData, setPostUpdateData, cmtVisible } =
     useModule();
+  const confirm = useConfirm(); // Sửa lại như trong AddFriend
+
   const { profile } = useAuth();
   const postsData = data?.posts || []; // ✅ Đảm bảo luôn có giá trị mặc định
   const [openGalleryIndex, setOpenGalleryIndex] = useState(null); // index của post
@@ -83,6 +88,12 @@ const Post = ({ data }) => {
         hour12: false,
       })
       .replace(",", " lúc");
+  };
+  const addBookmark = async (postId) => {
+    const isConfirmed = await confirm("Bạn có chắc muốn gửi yêu cầu kết bạn?");
+    if (!isConfirmed) return;
+    const res = createBookmark(postId);
+    toast.success("đã thêm bài viết này vào bookmark");
   };
 
   const handleOpenGallery = (index) => {
@@ -209,7 +220,12 @@ const Post = ({ data }) => {
                     <Share className="w-6 h-6" />
                   </button>
                 </div>
-                <button className="hover:text-yellow-500 transition">
+                <button
+                  onClick={() => {
+                    addBookmark(_._id);
+                  }}
+                  className="hover:text-yellow-500 transition"
+                >
                   <BookmarkBorderSharp />
                 </button>
               </div>

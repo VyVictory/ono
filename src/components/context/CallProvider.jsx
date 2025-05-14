@@ -9,9 +9,10 @@ import { Paper } from "@mui/material";
 const CallContext = createContext();
 import { useConfirm } from "./ConfirmProvider";
 import RequestCallModel from "../call/RequestCallModel";
-import { isCancel } from "axios";
 export const CallProvider = ({ children }) => {
   const { profile } = useAuth();
+  const REQUEST_TIMEOUT = 10000; // 10 seconds
+
   const { socket } = useSocketContext();
   const [callId, setCallId] = useState(null);
   const confirm = useConfirm();
@@ -19,16 +20,15 @@ export const CallProvider = ({ children }) => {
   const [isVideo, setIsVideo] = useState(null);
   const [openRequest, setOpenRequest] = useState(null);
   const [incomingCall, setIncomingCall] = useState(null);
+  const [reject, setReject] = useState(false);
 
   useEffect(() => {
     if (!socket) return;
-
     socket.on("offer", async ({ sdp, caller, profile }) => {
       if (!sdp || !caller) return;
       setIncomingCall({ sdp, caller, profile });
       setOpenRequest(true);
     });
-
     return () => {
       socket.off("offer");
     };
@@ -37,6 +37,8 @@ export const CallProvider = ({ children }) => {
   return (
     <CallContext.Provider
       value={{
+        reject,
+        setReject,
         setCallId,
         callId,
         isVideo,
@@ -45,6 +47,7 @@ export const CallProvider = ({ children }) => {
         setIncomingCall,
         isAccept,
         setIsAccept,
+        REQUEST_TIMEOUT,
       }}
     >
       {children}

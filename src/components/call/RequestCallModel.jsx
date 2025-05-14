@@ -1,19 +1,35 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Dialog } from "@headlessui/react";
 import { motion } from "framer-motion";
 import { PhoneXMarkIcon, PhoneIcon } from "@heroicons/react/24/solid";
 import { useCall } from "../context/CallProvider";
 import { useSocketContext } from "../context/socketProvider";
 import UserStatusIndicator from "../UserStatusIndicator";
-
 const RequestCallModel = ({ isOpen, onClose }) => {
-  const { incomingCall, setIncomingCall, setCallId, setIsAccept, setIsVideo } =
-    useCall();
+  const {
+    incomingCall,
+    setIncomingCall,
+    setCallId,
+    setIsAccept,
+    setIsVideo,
+    REQUEST_TIMEOUT,
+  } = useCall();
   const { socket } = useSocketContext();
+  const timeoutRef = useRef(null);
 
-  if (!incomingCall) return null;
+  useEffect(() => {
+    if (!isOpen || !incomingCall) return;
+
+    // Set timeout to auto-reject after 10s
+    timeoutRef.current = setTimeout(() => {
+      handleReject();
+    }, REQUEST_TIMEOUT-4000);
+
+    return () => clearTimeout(timeoutRef.current);
+  }, [isOpen, incomingCall]);
 
   const handleAccept = () => {
+    clearTimeout(timeoutRef.current);
     socket.emit("call-accept", { target: incomingCall.caller, status: true });
     setCallId(incomingCall.caller);
     setIsAccept(true);
@@ -22,10 +38,14 @@ const RequestCallModel = ({ isOpen, onClose }) => {
   };
 
   const handleReject = () => {
+    clearTimeout(timeoutRef.current);
     setIsAccept(false);
     socket.emit("call-accept", { target: incomingCall.caller, status: false });
+    setIncomingCall(null); // Clear the incoming call
     onClose();
   };
+
+  if (!incomingCall) return null;
 
   return (
     <Dialog
@@ -40,11 +60,9 @@ const RequestCallModel = ({ isOpen, onClose }) => {
         transition={{ duration: 0.2 }}
         className="bg-white rounded-2xl p-6 shadow-lg flex flex-col items-center h-[100dvh] lg:h-[96dvh] w-full lg:w-[60dvh] max-w-300px"
       >
-        {/* Avatar động khi có cuộc gọi đến */}
-        <div className=" flex flex-grow flex-col items-center justify-center">
+        <div className="flex flex-grow flex-col items-center justify-center">
           <motion.div
             className="relative flex aspect-square items-center justify-center"
-            // animate={{ scale: [1, 1.1, 1] }}
             transition={{
               repeat: Infinity,
               duration: 1.5,
@@ -60,24 +78,7 @@ const RequestCallModel = ({ isOpen, onClose }) => {
                 badge: { size: "14px" },
               }}
             />
-            {/* Viền phát sáng động */}
-            <div
-              className="absolute w-full h-full rounded-full border-4 border-green-500 ripple-green-soft"
-              initial={false}
-              animate="rippleLow"
-              variants={{
-                rippleLow: {
-                  scale: [1, 1.5],
-                  opacity: [1, 0],
-                },
-              }}
-              transition={{
-                duration: 1.2,
-                ease: "easeInOut",
-                repeat: Infinity,
-                repeatType: "loop",
-              }}
-            ></div>
+            <div className="absolute w-full h-full rounded-full border-4 border-green-500 ripple-green-soft"></div>
           </motion.div>
           <p className="text-lg font-semibold mt-4">Cuộc gọi đến...</p>
         </div>
@@ -92,12 +93,12 @@ const RequestCallModel = ({ isOpen, onClose }) => {
           <motion.button
             onClick={handleAccept}
             className="bg-green-500 p-4 rounded-full hover:bg-green-600"
-            animate={{ rotate: [0, -10, 10, -10, 10, 0] }} // Lắc khi hover
+            animate={{ rotate: [0, -10, 10, -10, 10, 0] }}
             transition={{
               duration: 0.5,
               repeat: Infinity,
               repeatType: "reverse",
-            }} // Lặp vô hạn
+            }}
           >
             <PhoneIcon className="w-8 h-8 text-white" />
           </motion.button>

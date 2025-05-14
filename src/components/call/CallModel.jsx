@@ -17,7 +17,6 @@ import { PhoneXMarkIcon } from "@heroicons/react/24/outline";
 import { getCurrentUser } from "../../service/user";
 import UserStatusIndicator from "../UserStatusIndicator";
 import { useAuth } from "../context/AuthProvider";
-const requestTimeOut = 10000;
 const CallModel = ({ isOpen, onClose, id }) => {
   const { socket } = useSocketContext();
   const { profile } = useAuth();
@@ -31,6 +30,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
     callId,
     isVideo,
     setIsVideo,
+    REQUEST_TIMEOUT,
   } = useCall();
   const [stream, setStream] = useState(null);
   const [profileRender, setProfileRender] = useState(null);
@@ -114,6 +114,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
       setCallAccepted(true);
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
+        cleanupCall();
         timeoutRef.current = null;
       }
     }
@@ -173,8 +174,9 @@ const CallModel = ({ isOpen, onClose, id }) => {
       if (!callAccepted) {
         cleanupCall();
         toast.error("Người dùng không bắt máy");
+        cleanupCall();
       }
-    }, requestTimeOut); // 30 giây timeout
+    }, REQUEST_TIMEOUT); // 30 giây timeout
   };
   const fetchProfile = async () => {
     if (!callId) return;
@@ -304,10 +306,8 @@ const CallModel = ({ isOpen, onClose, id }) => {
         analyser.disconnect();
       }
     }
-
     // Clear AudioData
     audioDataRef.current = new Uint8Array(0);
-
     onClose?.();
   };
   const endCallHand = async () => {
