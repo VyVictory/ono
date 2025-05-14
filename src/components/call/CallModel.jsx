@@ -31,6 +31,8 @@ const CallModel = ({ isOpen, onClose, id }) => {
     isVideo,
     setIsVideo,
     REQUEST_TIMEOUT,
+    callAccepted,
+    setCallAccepted,
   } = useCall();
   const [stream, setStream] = useState(null);
   const [profileRender, setProfileRender] = useState(null);
@@ -47,7 +49,6 @@ const CallModel = ({ isOpen, onClose, id }) => {
   const audioDataRef = useRef(new Uint8Array(0)); // Dữ liệu âm thanh
   const remoteStreamRef = useRef(null);
   const timeoutRef = useRef(null);
-  const [callAccepted, setCallAccepted] = useState(false);
 
   useEffect(() => {
     if (!socket) return;

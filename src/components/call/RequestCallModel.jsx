@@ -12,6 +12,8 @@ const RequestCallModel = ({ isOpen, onClose }) => {
     setCallId,
     setIsAccept,
     setIsVideo,
+    callAccepted,
+    setCallAccepted,
     REQUEST_TIMEOUT,
   } = useCall();
   const { socket } = useSocketContext();
@@ -19,14 +21,15 @@ const RequestCallModel = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     if (!isOpen || !incomingCall) return;
-
+    if (!callAccepted) return;
     // Set timeout to auto-reject after 10s
     timeoutRef.current = setTimeout(() => {
-      handleReject();
-    }, REQUEST_TIMEOUT-4000);
+      clearTimeout(timeoutRef.current);
+      setIsAccept(false);
+    }, REQUEST_TIMEOUT - 4000);
 
     return () => clearTimeout(timeoutRef.current);
-  }, [isOpen, incomingCall]);
+  }, [isOpen]);
 
   const handleAccept = () => {
     clearTimeout(timeoutRef.current);
@@ -38,7 +41,6 @@ const RequestCallModel = ({ isOpen, onClose }) => {
   };
 
   const handleReject = () => {
-    clearTimeout(timeoutRef.current);
     setIsAccept(false);
     socket.emit("call-accept", { target: incomingCall.caller, status: false });
     setIncomingCall(null); // Clear the incoming call

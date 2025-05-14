@@ -21,6 +21,7 @@ export const CallProvider = ({ children }) => {
   const [openRequest, setOpenRequest] = useState(null);
   const [incomingCall, setIncomingCall] = useState(null);
   const [reject, setReject] = useState(false);
+  const [callAccepted, setCallAccepted] = useState(false);
 
   useEffect(() => {
     if (!socket) return;
@@ -42,6 +43,8 @@ export const CallProvider = ({ children }) => {
         setCallId,
         callId,
         isVideo,
+        callAccepted,
+        setCallAccepted,
         setIsVideo,
         incomingCall,
         setIncomingCall,
