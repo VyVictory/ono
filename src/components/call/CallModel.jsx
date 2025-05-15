@@ -327,11 +327,11 @@ const CallModel = ({ isOpen, onClose, id }) => {
 
     const checkAudioActivity = () => {
       analyser.getByteFrequencyData(dataArray);
-      const isDetected = dataArray.some((value) => value > 80); // giảm ngưỡng
+      const isDetected = dataArray.some((value) => value > 20); // giảm ngưỡng
       setIsSpeakingSelf(isDetected);
     };
 
-    const intervalId = setInterval(checkAudioActivity, 100); // giảm xuống 100ms
+    const intervalId = setInterval(checkAudioActivity, 20); // giảm xuống 100ms
 
     return () => {
       clearInterval(intervalId);

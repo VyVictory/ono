@@ -213,12 +213,13 @@ const Post = ({ data }) => {
                               remaining > 0 &&
                               handleOpenGallery(index)
                             }
-                            className="relative cursor-pointer rounded-md overflow-hidden group"
+                            className="relative cursor-pointer rounded-md overflow-hidden group "
                           >
                             <FilePreview
                               fileUrl={file.url}
-                              pop="w-full h-auto max-h-[100dvh] object-cover group-hover:brightness-90 transition"
+                              pop="w-full h-auto max-h-[100dvh] object-cover group-hover:brightness-90 transition "
                             />
+                         
                             {isLastVisible && remaining > 0 && (
                               <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                                 <span className="text-white text-xl font-bold">

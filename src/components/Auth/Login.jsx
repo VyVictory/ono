@@ -127,7 +127,7 @@ export default function Login({ chaneform }) {
     const top = (window.innerHeight - popupHeight) / 2;
 
     window.open(
-      "https://ono-wtxp.onrender.com/auth/google/callback",
+      "http://localhost:3001/auth/google/callback ",
       "_blank",
       `width=${popupWidth},height=${popupHeight},top=${top},left=${left}`
     );

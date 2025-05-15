@@ -29,7 +29,7 @@ const NotificationDropDow = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [chane, setChane] = useState("Friend");
   const isFetchNotifi = useRef(false);
-  const { newNotifi, setNewNotifi } = useSocketContext();
+  const { newNotifi, setNewNotifi } = useSocketContext(); 
   const { profile } = useAuth();
   const [notifications, setNotifications] = useState([]); // đây là mảng {unreadCount, notifications[]}
   const containerRef = useRef(null);
@@ -49,8 +49,8 @@ const NotificationDropDow = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  useEffect(() => { 
-    if (newNotifi && profile && newNotifi?.type == "POST") {
+  useEffect(() => {
+    if (newNotifi && profile ) {
       setNotifications((prevNotifications) => ({
         ...prevNotifications,
         unreadCount: prevNotifications.unreadCount + 1,
@@ -96,7 +96,7 @@ const NotificationDropDow = () => {
     if (profile) {
       fetchNotifications();
     }
-  }, [profile]);
+  }, [profile, newNotifi]);
   const unreadMessagesCount = notifications?.unreadCount;
   const handleReadNotification = async (id, isRead) => {
     setTimeout(() => setIsOpen(false), 100);
@@ -184,7 +184,7 @@ const NotificationDropDow = () => {
                           onClick={() => {
                             handleReadNotification(noti?._id, noti?.isRead);
                           }}
-                          className="relative flex items-center w-full pr-2"
+                          className="relative flex items-center w-full pr-2 text-blue-500"
                         >
                           {noti?.referenceModel == "Friendship" &&
                             chane == "Friend" && <FriendShip data={noti} />}

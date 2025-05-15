@@ -37,7 +37,13 @@ const CustomToast = ({ message }) => {
           <p className="font-semibold">
             {message?.sender?.firstName} {message?.sender?.lastName}
           </p>
-          <p className="text-gray-500 text-start">{message?.content}</p>
+
+          <p className="text-gray-500 text-start">
+            {message?.content
+              ? message.content.split(" ").slice(0, 10).join(" ") +
+                (message.content.split(" ").length > 10 ? "..." : "")
+              : "vừa chia sẻ"}
+          </p>
         </div>
       </div>
     </a>
@@ -124,7 +130,7 @@ export const SocketProvider = ({ children }) => {
     // socket.on("messagesSeen", (data) => {
     //   console.log("Messages seen:", data.messages);
     // });
-    const handleNewNotifi = (data) => { 
+    const handleNewNotifi = (data) => {
       setNewNotifi(data);
     };
     const handleLoadProfile = (data) => {

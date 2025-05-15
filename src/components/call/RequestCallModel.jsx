@@ -17,7 +17,17 @@ const RequestCallModel = ({ isOpen, onClose }) => {
     setIsVideo(true);
     onClose();
   };
-
+  useEffect(() => {
+    if (!socket) return;
+    socket.on("end-call", ({ data }) => {
+      setIsAccept(false);
+      setIncomingCall(null); // Clear the incoming call
+      onClose();
+    });
+    return () => {
+      socket.off("end-call");
+    };
+  }, [socket]);
   const handleReject = () => {
     setIsAccept(false);
     socket.emit("call-accept", { target: incomingCall.caller, status: false });

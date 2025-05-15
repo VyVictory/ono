@@ -2,7 +2,7 @@ import { ButtonBase } from "@mui/material";
 import React from "react";
 import ReactPlayer from "react-player";
 import { useModule } from "./context/Module";
-export default function FilePreview({ fileUrl, pop ,popcontainer}) {
+export default function FilePreview({ fileUrl, pop, popcontainer }) {
   const fileType = fileUrl.split(".").pop().toLowerCase(); // Lấy phần mở rộng file
   const { setZoomImg } = useModule();
   const isImage =
@@ -12,7 +12,10 @@ export default function FilePreview({ fileUrl, pop ,popcontainer}) {
     );
   if (["jpg", "jpeg", "png", "gif", "webp"].includes(fileType) || isImage) {
     return (
-      <div className={`cursor-pointer`} onClick={() => setZoomImg(`${fileUrl}`)}>
+      <div
+        className={`cursor-pointer`}
+        onClick={() => setZoomImg(`${fileUrl}`)}
+      >
         <img
           src={fileUrl}
           alt="preview"
@@ -23,9 +26,14 @@ export default function FilePreview({ fileUrl, pop ,popcontainer}) {
   }
 
   if (["mp4", "webm", "ogg"].includes(fileType)) {
-    return <ReactPlayer url={fileUrl} controls width="auto" height="100%" />;
+    return (
+      <video width="100%" controls>
+        <source src={fileUrl} type="video/mp4" />
+        Trình duyệt của bạn không hỗ trợ thẻ video.
+      </video>
+    );
   }
-
+//  <ReactPlayer url={fileUrl} controls width="auto" height="100%" /> 
   if (["mp3", "wav", "ogg"].includes(fileType)) {
     return (
       <audio controls className="w-full">

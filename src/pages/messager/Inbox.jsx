@@ -193,9 +193,7 @@ const Inbox = ({ newmess }) => {
       }
       clearTimeout(timeoutId); // Hủy timeout khi component unmount
     };
-  }, [hasMore, isLoadingMore, fetchMessages, page, isLoadingProfile]);
-  // setPostId(msg?.share?.id);
-  //                                 setCmtVisible(msg?.share?.id);
+  }, [hasMore, isLoadingMore, fetchMessages, page, isLoadingProfile]); 
   const handleShareLink = async (share) => {
     if (!share || !share?.type || !share?.id) {
       return;
