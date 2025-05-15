@@ -219,7 +219,7 @@ export default function UserManagementPage() {
           {selectedUser && (
             <>
               <Box display="flex" alignItems="center" mb={2}>
-                <div className="w-10 h-10 rounded-full relative">
+                <div className="w-10 h-10 rounded-full relative mr-2">
                   <UserStatusIndicator
                     userId={selectedUser?._id}
                     userData={selectedUser}
@@ -296,7 +296,7 @@ export default function UserManagementPage() {
                       }))
                     }
                   />
-                  <TextField
+                  {/* <TextField
                     fullWidth
                     margin="dense"
                     label="Chức danh"
@@ -346,7 +346,7 @@ export default function UserManagementPage() {
                         },
                       }))
                     }
-                  />
+                  /> */}
 
                   {/* File inputs for avatar and cover photo */}
                   <Box display="flex" flexDirection="column" mt={2}>
