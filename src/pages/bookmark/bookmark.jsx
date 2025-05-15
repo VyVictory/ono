@@ -54,27 +54,31 @@ const Bookmark = () => {
   return (
     <div className="flex py-4 flex-col items-center h-screen overflow-auto">
       <div className="max-w-[700px] px-3 xl:px-0  space-y-3 w-full flex items-center flex-col">
-        <strong className="text-center text-blue-500 uppercase">Bài viết đã lưu</strong>
+        <strong className="text-center text-blue-500 uppercase">
+          Bài viết đã lưu
+        </strong>
         <div className={`space-y-4 min-w-full relative`}>
           {isLoading ? (
             <LoadingAnimation />
           ) : posts?.length > 0 ? (
-            posts.map((post, i) => (
-              <div className="relative">
-                <div
-                  onClick={() => {
-                    handleDeleteBookmark(post?._id);
-                  }}
-                >
-                  <X
-                    fontSize="small"
-                    className="right-12 text-gray-500 hover:scale-110 cursor-pointer top-4 absolute"
-                  />
-                </div>
-
-                <Post data={{ posts: [post] }} />
-              </div>
-            ))
+            posts.map(
+              (post, i) =>
+                post?._id && (
+                  <div className="relative">
+                    <div
+                      onClick={() => {
+                        handleDeleteBookmark(post?._id);
+                      }}
+                    >
+                      <X
+                        fontSize="small"
+                        className="right-12 text-gray-500 hover:scale-110 cursor-pointer top-4 absolute"
+                      />
+                    </div>
+                    <Post data={{ posts: [post] }} />
+                  </div>
+                )
+            )
           ) : (
             <p className="text-gray-500 text-center">
               Không có bài viết nào được lưu ở đây.
