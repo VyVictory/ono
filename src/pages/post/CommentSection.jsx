@@ -15,6 +15,7 @@ import {
   Send as SendIcon,
   Close as CloseIcon,
   ArrowBack,
+  Share,
 } from "@mui/icons-material";
 import avt from "../../img/DefaultAvatar.jpg";
 import { formatDistanceToNow } from "date-fns";
@@ -47,6 +48,7 @@ const CommentItem = ({
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const { profile } = useAuth();
+  const { setShare } = useModule();
   const [maxDepthCmt, setMaxDepthCmt] = useState(3);
   const { setReport } = useModule();
   const [showFullContent, setShowFullContent] = useState(false);
@@ -122,38 +124,38 @@ const CommentItem = ({
                   </IconButton>
                   <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
                     {" "}
-                    {comment.user.id === profile?._id ||
-                      (profile?.role == 1 && (
-                        <>
-                          {" "}
-                          <MenuItem
-                            onClick={() => {
-                              onReply(comment);
-                              handleClose();
-                            }}
-                          >
-                            <ReplyIcon fontSize="small" className="mr-2" /> Trả
-                            lời
-                          </MenuItem>
-                          <MenuItem
-                            onClick={() => {
-                              onEdit(comment);
-                              handleClose();
-                            }}
-                          >
-                            <EditIcon fontSize="small" className="mr-2" /> Chỉnh
-                            sửa
-                          </MenuItem>
-                          <MenuItem
-                            onClick={() => {
-                              onDelete(comment.id);
-                              handleClose();
-                            }}
-                          >
-                            <DeleteIcon fontSize="small" className="mr-2" /> Xóa
-                          </MenuItem>
-                        </>
-                      ))}
+                    {(comment.user.id == profile?._id ||
+                      profile?.role == 1) && (
+                      <>
+                        {" "}
+                        <MenuItem
+                          onClick={() => {
+                            onReply(comment);
+                            handleClose();
+                          }}
+                        >
+                          <ReplyIcon fontSize="small" className="mr-2" /> Trả
+                          lời
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => {
+                            onEdit(comment);
+                            handleClose();
+                          }}
+                        >
+                          <EditIcon fontSize="small" className="mr-2" /> Chỉnh
+                          sửa
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => {
+                            onDelete(comment.id);
+                            handleClose();
+                          }}
+                        >
+                          <DeleteIcon fontSize="small" className="mr-2" /> Xóa
+                        </MenuItem>
+                      </>
+                    )}
                     <MenuItem
                       onClick={() => {
                         if (comment?.id) {
@@ -190,6 +192,14 @@ const CommentItem = ({
             <div className="ml-2 mt-2 text-blue-500 text-sm cursor-pointer flex items-center gap-1 hover:underline">
               <ReplyIcon fontSize="small" />
               <button onClick={() => onReply(comment)}>Trả lời</button>
+            </div>
+            <div className="ml-2 mt-2 text-blue-500 text-sm cursor-pointer flex items-center gap-1 hover:underline">
+              <Share fontSize="small" />
+              <button
+                onClick={() => setShare({ id: comment?.id, type: "comment" })}
+              >
+                Share
+              </button>
             </div>
           </div>
           {depth >= maxDepthCmt && comment.replies.length > 0 && (
@@ -418,25 +428,34 @@ export const CommentSection = ({ postId, open }) => {
   };
   const handleEdit = async (comment) => {
     const newText = prompt("Chỉnh sửa bình luận", comment.content);
+
+    // Người dùng bấm Hủy hoặc không thay đổi nội dung thì không làm gì cả
+    if (
+      newText === null ||
+      newText.trim() === "" ||
+      newText === comment.content
+    ) {
+      toast.info("Bạn đã hủy chỉnh sửa hoặc không có thay đổi");
+      return;
+    }
+
     try {
       const res = await UpdateComment({
         commentId: comment?.id,
         content: newText,
-        // files,
-        // video,
       });
+
       if (res.status === 200 || res.status === 201) {
         toast.success("Đã sửa bình luận thành công");
-        if (newText != null)
-          setComments((c) =>
-            c.map((x) => (x.id === comment.id ? { ...x, content: newText } : x))
-          );
-        setFetchCmt(!fetchCmt);
+        setComments((c) =>
+          c.map((x) => (x.id === comment.id ? { ...x, content: newText } : x))
+        );
+        setFetchCmt((prev) => !prev);
       } else {
         toast.error("Không thể sửa bình luận này");
       }
     } catch (error) {
-      toast.error("lỗi khi sửa bình luận này");
+      toast.error("Lỗi khi sửa bình luận");
     }
   };
 

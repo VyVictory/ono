@@ -97,6 +97,34 @@ export const getFriendsMess = async (start, limit, name) => {
     return res(error);
   }
 };
+export const getFriends = async (start, limit, name) => {
+  try {
+    if (!token) {
+      nextLogin();
+    }
+    const response = await api.get(
+      `/friend/friends/?startIndex=${start}&limitCount=${Infinity}&name=${name}`
+    );
+    return response;
+  } catch (error) {
+    nextError(error);
+    return res(error);
+  }
+};
+export const getFriendById = async (start, limit, name, id) => {
+  try {
+    if (!token) {
+      nextLogin();
+    }
+    const response = await api.get(
+      `/friend/friends/friendByid/${id}?startIndex=${start}&limitCount=${limit}&name=${name}`
+    );
+    return response;
+  } catch (error) {
+    nextError(error);
+    return res(error);
+  }
+};
 export const unFriend = async (idUser) => {
   try {
     if (!token) {

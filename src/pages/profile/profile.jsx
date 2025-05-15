@@ -16,9 +16,9 @@ import { useNavigate } from "react-router-dom";
 import { getMyPost, getOrderPost, getPostHome } from "../../service/post";
 import { Button, ButtonBase } from "@mui/material";
 import UserStatusIndicator from "../../components/UserStatusIndicator";
-import { getFriendsMess } from "../../service/friend";
+import { getFriendById, getFriendsMess } from "../../service/friend";
 import DropdownChangeImage from "./DropdownChangeImage";
-import AddFollow from "./AddFollow"; 
+import AddFollow from "./AddFollow";
 const Profile = () => {
   const { setZoomImg } = useModule();
   const { setUsecase } = useModule();
@@ -49,15 +49,22 @@ const Profile = () => {
     fetchPosts();
   }, [profileRender]);
   useEffect(() => {
+    if (!profileRender?.profile?._id) {
+      return;
+    }
     const fetchFriend = async () => {
-      const response = await getFriendsMess(0, 6, "");
+      const response = await getFriendById(
+        0,
+        6,
+        "",
+        profileRender?.profile?._id
+      );
       if (response) {
-        setFrineds(response.data);
+        setFrineds(response?.data?.friends);
       }
     };
-
     fetchFriend();
-  }, []);
+  }, [profileRender]);
   useEffect(() => {
     setUserRender(profileRender);
   }, [profileRender]);
@@ -69,7 +76,7 @@ const Profile = () => {
   const followersInfo = (
     <div className="text-center">0 followers ❁ 9 following</div>
   );
- 
+
   if (userRender?.profile == null) {
     return (
       <div className="w-screen h-screen NavbarUser flex justify-center items-center">
@@ -152,7 +159,7 @@ const Profile = () => {
 
                   {followersInfo}
                   <div className="flex flex-row ">
-                    {friends?.friends?.map((_, index) => (
+                    {friends?.map((_, index) => (
                       <div
                         key={index}
                         className=" rounded-full border-gray-200 border-2 -mr-1"
@@ -197,7 +204,7 @@ const Profile = () => {
                     className="  cursor-pointer hover:scale-110   justify-center   rounded-md flex items-center transition-transform duration-200"
                   >
                     <ChatBubbleLeftEllipsisIcon className="w-8 h-8 text-gray-500 transition-transform duration-200  hover:text-violet-400" />
-                  </div>  
+                  </div>
                 </div>
               )}
             </div>
@@ -209,6 +216,7 @@ const Profile = () => {
           data={posts}
           content={content}
           profile={profileRender}
+          
         />
       </div>
     </div>

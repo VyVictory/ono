@@ -21,6 +21,7 @@
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
     "framer-motion": "^12.4.7",
+    "lodash": "^4.17.21",
     "mui": "^0.0.1",
     "photoswipe": "^5.4.4",
     "postcss": "^8.0.0",

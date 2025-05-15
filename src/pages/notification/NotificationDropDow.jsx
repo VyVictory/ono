@@ -34,7 +34,6 @@ const NotificationDropDow = () => {
   const [notifications, setNotifications] = useState([]); // đây là mảng {unreadCount, notifications[]}
   const containerRef = useRef(null);
   const { setPostId, setCmtVisible } = useModule();
-  // Đóng dropdown khi click bên ngoài container
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -50,8 +49,8 @@ const NotificationDropDow = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  useEffect(() => {
-    if (newNotifi && profile) {
+  useEffect(() => { 
+    if (newNotifi && profile && newNotifi?.type == "POST") {
       setNotifications((prevNotifications) => ({
         ...prevNotifications,
         unreadCount: prevNotifications.unreadCount + 1,
@@ -67,6 +66,7 @@ const NotificationDropDow = () => {
         ],
       }));
     }
+    setNewNotifi(null);
   }, [newNotifi, profile]);
 
   const fetchNotifications = async () => {
@@ -83,10 +83,12 @@ const NotificationDropDow = () => {
   const handleComment = async (data) => {
     if (data.referenceModel == "Comment") {
       const res = await getCmtById(data.reference);
-      console.log(res);
-      console.log(data?.reference, "  ", res?.post);
       setCmtVisible(data?.reference);
       setPostId(res?.post);
+    }
+    if (data.referenceModel == "Post") {
+      const res = await getCmtById(data.reference);
+      setPostId(data?.reference);
     }
   };
 

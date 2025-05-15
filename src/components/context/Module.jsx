@@ -5,6 +5,7 @@ import ImageZoomModal from "../ImageZoomModal";
 import UpdatePostModal from "../UpdatePostModal";
 import { PostDetail } from "../../pages/post/PostDetail";
 import ReportModal from "../ReportModal";
+import ShareWithFriendsModal from "../ShareWithFriendsModal";
 const ModuleContext = createContext();
 export const ModuleProvider = ({ children }) => {
   const [usecase, setUsecase] = useState(null);
@@ -16,12 +17,15 @@ export const ModuleProvider = ({ children }) => {
   const [postId, setPostId] = useState(null);
   const [addPost, setAddPost] = useState(null);
   const [report, setReport] = useState();
-
+  const [share, setShare] = useState(null);
+  //{type,id}
   const [fetchCmt, setFetchCmt] = useState(false);
   return (
     <ModuleContext.Provider
       value={{
         fetchCmt,
+        share,
+        setShare,
         setFetchCmt,
         usecase,
         setUsecase,
@@ -54,6 +58,7 @@ export const ModuleProvider = ({ children }) => {
         <ImageZoomModal imageUrl={zoomImg} onClose={() => setZoomImg(null)} />
       )}
       <ReportModal open={report} onClose={() => setReport(null)} />
+      <ShareWithFriendsModal open={share} onClose={() => setShare(null)} />
     </ModuleContext.Provider>
   );
 };

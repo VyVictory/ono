@@ -6,33 +6,11 @@ import { useCall } from "../context/CallProvider";
 import { useSocketContext } from "../context/socketProvider";
 import UserStatusIndicator from "../UserStatusIndicator";
 const RequestCallModel = ({ isOpen, onClose }) => {
-  const {
-    incomingCall,
-    setIncomingCall,
-    setCallId,
-    setIsAccept,
-    setIsVideo,
-    callAccepted,
-    setCallAccepted,
-    REQUEST_TIMEOUT,
-  } = useCall();
+  const { incomingCall, setIncomingCall, setCallId, setIsAccept, setIsVideo } =
+    useCall();
   const { socket } = useSocketContext();
-  const timeoutRef = useRef(null);
-
-  useEffect(() => {
-    if (!isOpen || !incomingCall) return;
-    if (!callAccepted) return;
-    // Set timeout to auto-reject after 10s
-    timeoutRef.current = setTimeout(() => {
-      clearTimeout(timeoutRef.current);
-      setIsAccept(false);
-    }, REQUEST_TIMEOUT - 4000);
-
-    return () => clearTimeout(timeoutRef.current);
-  }, [isOpen]);
 
   const handleAccept = () => {
-    clearTimeout(timeoutRef.current);
     socket.emit("call-accept", { target: incomingCall.caller, status: true });
     setCallId(incomingCall.caller);
     setIsAccept(true);

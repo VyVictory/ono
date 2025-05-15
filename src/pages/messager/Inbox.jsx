@@ -18,9 +18,15 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import IconButton from "@mui/material/IconButton";
 import { Menu } from "@headlessui/react";
 import { useConfirm } from "../../components/context/ConfirmProvider";
+import { Button, ButtonBase } from "@mui/material";
+import { Search } from "@mui/icons-material";
+import { useModule } from "../../components/context/Module";
+import { getCmtById } from "../../service/cmt";
+import { toast } from "react-toastify";
 const Inbox = ({ newmess }) => {
   const confirm = useConfirm();
   const { profile, isLoadingProfile } = useAuth();
+  const { setPostId, setCmtVisible } = useModule();
   const { newMessInbox, recallMessId, setRecallMessId } = useSocketContext();
   const lastMessageRef = useRef(null);
   const containerRefMess = useRef(null);
@@ -188,7 +194,23 @@ const Inbox = ({ newmess }) => {
       clearTimeout(timeoutId); // Hủy timeout khi component unmount
     };
   }, [hasMore, isLoadingMore, fetchMessages, page, isLoadingProfile]);
-
+  // setPostId(msg?.share?.id);
+  //                                 setCmtVisible(msg?.share?.id);
+  const handleShareLink = async (share) => {
+    if (!share || !share?.type || !share?.id) {
+      return;
+    }
+    if (share?.type == "comment") {
+      const res = await getCmtById(share?.id);
+      console.log(res?.post, share?.id);
+      setPostId(res?.post);
+      setCmtVisible(share?.id);
+    } else if (share?.type == "post") {
+      setPostId(share?.id);
+    } else {
+      toast.error("ôi không chúng tôi chưa hỗ trợ");
+    }
+  };
   const scroll = () => {
     lastMessageRef.current?.scrollIntoView({ behavior: "auto" });
   };
@@ -389,6 +411,25 @@ const Inbox = ({ newmess }) => {
                         </>
 
                         <>
+                          {msg?.share?.id && (
+                            <>
+                              <p className="break-words whitespace-pre-wrap p-2 pb-0">
+                                <Button
+                                  onClick={() => {
+                                    handleShareLink(msg?.share);
+                                  }}
+                                  className="hover:scale-105 p-2"
+                                >
+                                  <Search /> Xem ngay{" "}
+                                  {msg?.share?.type == "comment"
+                                    ? "Bình luận"
+                                    : msg?.share?.type == "post"
+                                    ? "Bài viết"
+                                    : msg?.share?.type}
+                                </Button>
+                              </p>
+                            </>
+                          )}
                           {msg.content && (
                             <p className="break-words whitespace-pre-wrap p-2 pb-0">
                               {msg.content}

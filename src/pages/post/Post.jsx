@@ -19,10 +19,17 @@ import { useAuth } from "../../components/context/AuthProvider";
 import { useConfirm } from "../../components/context/ConfirmProvider";
 import { toast } from "react-toastify";
 import { createBookmark } from "../../service/bookmark";
+import ShareWithFriendsModal from "../../components/ShareWithFriendsModal";
 const MAX_VISIBLE_IMAGES = 3; // Hiển thị tối đa 6 ảnh
 const Post = ({ data }) => {
-  const { addPost, setAddPost, postUpdateData, setPostUpdateData, cmtVisible } =
-    useModule();
+  const {
+    addPost,
+    setAddPost,
+    postUpdateData,
+    setPostUpdateData,
+    cmtVisible,
+    setShare,
+  } = useModule();
   const confirm = useConfirm(); // Sửa lại như trong AddFriend
 
   const { profile } = useAuth();
@@ -36,10 +43,14 @@ const Post = ({ data }) => {
       [postId]: !prev[postId],
     }));
   };
+  const [open, setOpen] = useState(false);
 
+  const handleShare = (selectedIds) => {
+    console.log("Chia sẻ với ID:", selectedIds);
+    // Gọi API shareMess tại đây
+  };
   const [posts, setPosts] = useState([]);
   useEffect(() => {
-    console.log(postsData);
     setPosts(postsData);
   }, [data]); // ✅ Cập nhật lại posts khi data thay đổi
   useEffect(() => {
@@ -91,10 +102,12 @@ const Post = ({ data }) => {
       .replace(",", " lúc");
   };
   const addBookmark = async (postId) => {
-    const isConfirmed = await confirm("Bạn có chắc muốn thêm bài này vào bookmark?");
+    const isConfirmed = await confirm(
+      "Bạn có chắc muốn thêm bài này vào bookmark?"
+    );
     if (!isConfirmed) return;
 
-    const res = await createBookmark(postId);  
+    const res = await createBookmark(postId);
     console.log(res);
 
     if (res.status === 200 || res.status === 201) {
@@ -116,133 +129,142 @@ const Post = ({ data }) => {
   return (
     <>
       <div id="gallery" className="flex flex-col gap-4 min-w-full">
-        {posts?.map((_, index) => (
-          <Paper key={index} className=" w-full">
-            <div className=" mx-2 ">
-              <div className="flex flex-row  items-center border-b p-1 pr-0 justify-between">
-                <div className="flex flex-row space-x-2">
-                  <div>
-                    <div className="w-10 h-10 rounded-full relative">
-                      <UserStatusIndicator
-                        userId={_?.author?._id}
-                        userData={_?.author}
-                        // onlineUsers={onlineUsers}
-                      />
-                    </div>
-                  </div>
-                  <div className="flex flex-col">
-                    <Link
-                      to={`/profile/posts?id=${_?.author?._id}`}
-                      className="text-sm font-semibold text-gray-600 hover:text-black"
-                    >
-                      {`${
-                        _?.author?.firstName
-                          ? _?.author?.firstName.charAt(0).toUpperCase() +
-                            _?.author?.firstName.slice(1)
-                          : "Unknown"
-                      } 
+        {posts?.map(
+          (_, index) =>
+            _?._id && (
+              <Paper key={index} className=" w-full">
+                <div className=" mx-2 ">
+                  <div className="flex flex-row  items-center border-b p-1 pr-0 justify-between">
+                    <div className="flex flex-row space-x-2">
+                      <div>
+                        <div className="w-10 h-10 rounded-full relative">
+                          <UserStatusIndicator
+                            userId={_?.author?._id}
+                            userData={_?.author}
+                            // onlineUsers={onlineUsers}
+                          />
+                        </div>
+                      </div>
+                      <div className="flex flex-col">
+                        <Link
+                          to={`/profile/posts?id=${_?.author?._id}`}
+                          className="text-sm font-semibold text-gray-600 hover:text-black"
+                        >
+                          {`${
+                            _?.author?.firstName
+                              ? _?.author?.firstName.charAt(0).toUpperCase() +
+                                _?.author?.firstName.slice(1)
+                              : "Unknown"
+                          } 
                       ${
                         _?.author?.lastName
                           ? _?.author?.lastName.charAt(0).toUpperCase() +
                             _?.author?.lastName.slice(1)
                           : ""
                       }`}
-                    </Link>
-                    <div className="text-gray-500 flex flex-row flex-wrap items-center text-xs">
-                      <div className="">{formatDate(_?.createdAt)}</div>
-                      <div className="flex flex-row items-center">
-                        <SecurityLabel security={_?.security} />
+                        </Link>
+                        <div className="text-gray-500 flex flex-row flex-wrap items-center text-xs">
+                          <div className="">{formatDate(_?.createdAt)}</div>
+                          <div className="flex flex-row items-center">
+                            <SecurityLabel security={_?.security} />
+                          </div>
+                        </div>
                       </div>
                     </div>
+                    <MenuPost data={_} setPosts={setPosts} />
                   </div>
-                </div>
-                <MenuPost data={_} setPosts={setPosts} />
-              </div>
-              {_?.content?.trim() && (
-                <div className="p-2 break-words break-all whitespace-pre-wrap w-full text-gray-800">
-                  {expandedPosts[_._id] || _?.content.length <= 300
-                    ? _?.content
-                    : `${_?.content.slice(0, 300)}...`}
-                  {_?.content.length > 300 && (
-                    <button
-                      onClick={() => toggleExpand(_._id)}
-                      className="ml-1 text-blue-500 hover:underline font-medium"
-                    >
-                      {expandedPosts[_._id] ? "Ẩn bớt" : "Xem thêm"}
-                    </button>
+                  {_?.content?.trim() && (
+                    <div className="p-2 break-words break-all whitespace-pre-wrap w-full text-gray-800">
+                      {expandedPosts[_._id] || _?.content.length <= 300
+                        ? _?.content
+                        : `${_?.content.slice(0, 300)}...`}
+                      {_?.content.length > 300 && (
+                        <button
+                          onClick={() => toggleExpand(_._id)}
+                          className="ml-1 text-blue-500 hover:underline font-medium"
+                        >
+                          {expandedPosts[_._id] ? "Ẩn bớt" : "Xem thêm"}
+                        </button>
+                      )}
+                    </div>
                   )}
                 </div>
-              )}
-            </div>
-            {/* Bố cục hiển thị ảnh */}
-            <div className="w-full">
-              <div className="w-full">
-                <div
-                  className={`grid gap-2 p-2 ${
-                    _.media.length === 1
-                      ? "grid-cols-1"
-                      : _.media.length === 2
-                      ? "grid-cols-2"
-                      : "grid-cols-3"
-                  }`}
-                >
-                  {_.media.slice(0, MAX_VISIBLE_IMAGES).map((file, i) => {
-                    const isLastVisible = i === MAX_VISIBLE_IMAGES - 1;
-                    const remaining = _.media.length - MAX_VISIBLE_IMAGES;
+                {/* Bố cục hiển thị ảnh */}
+                <div className="w-full">
+                  <div className="w-full">
+                    <div
+                      className={`grid gap-2 p-2 ${
+                        _?.media?.length === 1
+                          ? "grid-cols-1"
+                          : _?.media?.length === 2
+                          ? "grid-cols-2"
+                          : "grid-cols-3"
+                      }`}
+                    >
+                      {_?.media?.slice(0, MAX_VISIBLE_IMAGES).map((file, i) => {
+                        const isLastVisible = i === MAX_VISIBLE_IMAGES - 1;
+                        const remaining = _?.media?.length - MAX_VISIBLE_IMAGES;
 
-                    return (
-                      <div
-                        key={i}
-                        onClick={() =>
-                          isLastVisible &&
-                          remaining > 0 &&
-                          handleOpenGallery(index)
-                        }
-                        className="relative cursor-pointer rounded-md overflow-hidden group"
-                      >
-                        <FilePreview
-                          fileUrl={file.url}
-                          pop="w-full h-auto max-h-[100dvh] object-cover group-hover:brightness-90 transition"
-                        />
-                        {isLastVisible && remaining > 0 && (
-                          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                            <span className="text-white text-xl font-bold">
-                              +{remaining}
-                            </span>
+                        return (
+                          <div
+                            key={i}
+                            onClick={() =>
+                              isLastVisible &&
+                              remaining > 0 &&
+                              handleOpenGallery(index)
+                            }
+                            className="relative cursor-pointer rounded-md overflow-hidden group"
+                          >
+                            <FilePreview
+                              fileUrl={file.url}
+                              pop="w-full h-auto max-h-[100dvh] object-cover group-hover:brightness-90 transition"
+                            />
+                            {isLastVisible && remaining > 0 && (
+                              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                                <span className="text-white text-xl font-bold">
+                                  +{remaining}
+                                </span>
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="border-t mx-2 flex justify-between items-center p-2">
+                    <div className="flex items-center space-x-4 text-gray-600">
+                      <LikeDislike data={_} />
+                      <button
+                        onClick={() =>
+                          setOpenCmt(openCmt === _._id ? null : _._id)
+                        }
+                        className="flex items-center space-x-1"
+                      >
+                        <ChatBubbleLeftRightIcon className="text-gray-500 w-6 aspect-square" />
+                      </button>
+                      <>
+                        <button
+                          onClick={() => setShare({ id: _?._id, type: "post" })}
+                          className="hover:text-blue-500 transition"
+                        >
+                          <Share className="w-6 h-6" />
+                        </button>
+                      </>
+                    </div>
+                    <button
+                      onClick={() => {
+                        addBookmark(_._id);
+                      }}
+                      className="hover:text-yellow-500 transition"
+                    >
+                      <BookmarkBorderSharp />
+                    </button>
+                  </div>
                 </div>
-              </div>
-              <div className="border-t mx-2 flex justify-between items-center p-2">
-                <div className="flex items-center space-x-4 text-gray-600">
-                  <LikeDislike data={_} />
-                  <button
-                    onClick={() => setOpenCmt(openCmt === _._id ? null : _._id)}
-                    className="flex items-center space-x-1"
-                  >
-                    <ChatBubbleLeftRightIcon className="text-gray-500 w-6 aspect-square" />
-                  </button>
-
-                  <button className="hover:text-blue-500 transition">
-                    <Share className="w-6 h-6" />
-                  </button>
-                </div>
-                <button
-                  onClick={() => {
-                    addBookmark(_._id);
-                  }}
-                  className="hover:text-yellow-500 transition"
-                >
-                  <BookmarkBorderSharp />
-                </button>
-              </div>
-            </div>
-            {openCmt === _._id && <Comment postId={_._id} open={true} />}
-          </Paper>
-        ))}
+                {openCmt === _._id && <Comment postId={_._id} open={true} />}
+              </Paper>
+            )
+        )}
       </div>
 
       <Modal

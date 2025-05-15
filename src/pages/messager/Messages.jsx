@@ -240,7 +240,7 @@ const Messages = () => {
               <div className="flex flex-col w-full items-center p-2">
                 {profileUser && (
                   <>
-                    <div className="w-12 h-12">
+                    <div className="w-16 h-16 rounded-full border-2 border-blue-400">
                       <UserStatusIndicator
                         userId={profileUser?._id}
                         userData={profileUser}

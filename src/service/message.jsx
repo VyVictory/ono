@@ -34,6 +34,25 @@ export const SendToUser = async (id, message, files) => {
     return null;
   }
 };
+export const shareMess = async ({ id, type, useId }) => {
+  try {
+    if (!token) {
+      nextLogin();
+      return;
+    }
+    if (!id) {
+      console.log("post thieu id");
+      return;
+    }
+    const data = { type: type, id: id };
+    const response = await api.post(`/message/share/${useId}`, data);
+    return response;
+  } catch (error) {
+    nextError(error);
+    return null;
+  }
+};
+
 export const editMess = async (id, message, files) => {
   try {
     if (!token) {

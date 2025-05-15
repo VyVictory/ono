@@ -124,7 +124,7 @@ export const SocketProvider = ({ children }) => {
     // socket.on("messagesSeen", (data) => {
     //   console.log("Messages seen:", data.messages);
     // });
-    const handleNewNotifi = (data) => {
+    const handleNewNotifi = (data) => { 
       setNewNotifi(data);
     };
     const handleLoadProfile = (data) => {

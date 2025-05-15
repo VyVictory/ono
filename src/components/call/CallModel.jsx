@@ -29,10 +29,7 @@ const CallModel = ({ isOpen, onClose, id }) => {
     setCallId,
     callId,
     isVideo,
-    setIsVideo,
-    REQUEST_TIMEOUT,
-    callAccepted,
-    setCallAccepted,
+    setIsVideo, 
   } = useCall();
   const [stream, setStream] = useState(null);
   const [profileRender, setProfileRender] = useState(null);
@@ -48,7 +45,6 @@ const CallModel = ({ isOpen, onClose, id }) => {
   const analyserRef = useRef(null); // Analyser để kiểm tra âm thanh
   const audioDataRef = useRef(new Uint8Array(0)); // Dữ liệu âm thanh
   const remoteStreamRef = useRef(null);
-  const timeoutRef = useRef(null);
 
   useEffect(() => {
     if (!socket) return;
@@ -112,12 +108,6 @@ const CallModel = ({ isOpen, onClose, id }) => {
       cleanupCall();
     } else {
       setIsVideo(true);
-      setCallAccepted(true);
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        cleanupCall();
-        timeoutRef.current = null;
-      }
     }
   };
 
@@ -168,16 +158,6 @@ const CallModel = ({ isOpen, onClose, id }) => {
       console.error("Lỗi truy cập thiết bị:", error);
       toast.error("Không thể truy cập camera/micro!");
     }
-    setCallAccepted(false); // đảm bảo chưa chấp nhận
-
-    //  BẮT ĐẦU ĐẾM NGƯỢC
-    timeoutRef.current = setTimeout(() => {
-      if (!callAccepted) {
-        cleanupCall();
-        toast.error("Người dùng không bắt máy");
-        cleanupCall();
-      }
-    }, REQUEST_TIMEOUT); // 30 giây timeout
   };
   const fetchProfile = async () => {
     if (!callId) return;
